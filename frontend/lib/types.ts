@@ -50,6 +50,8 @@ export type Msg = {
   speakerName?: string;
   /** 유저가 이 말과 함께 고른 감정 */
   feelings?: string[];
+  /** 이 말에서 새 장(章)이 열린다 — 채팅 흐름에 꽂히는 이야기 구분선 */
+  chapter?: { act: string; note: string };
 };
 
 export type Inference = {

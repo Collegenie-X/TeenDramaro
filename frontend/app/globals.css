@@ -310,3 +310,29 @@ body {
 .helm-chip { font-size: 11.5px; padding: 5px 11px; border-radius: 999px; background: #1d1830; border: 1px dashed #3a2f56; color: #b9a9d9; }
 .helm-thread { border-style: solid; background: #241a3e; color: #d6c8ec; }
 .helm-next { border: 1px solid #45341a; background: #201808; color: var(--gold); }
+
+/* ---------- about: 스토리 형식 ---------- */
+.story { position: relative; padding-left: 18px; }
+.story::before {
+  content: ""; position: absolute; left: 4px; top: 6px; bottom: 6px;
+  width: 1px; background: linear-gradient(var(--accent), #45341a, transparent);
+}
+.story-step { position: relative; margin-bottom: 15px; }
+.story-step::before {
+  content: ""; position: absolute; left: -18px; top: 5px;
+  width: 9px; height: 9px; border-radius: 50%;
+  background: #1d1530; border: 1.5px solid var(--accent);
+}
+.story-step.ritual::before { border-color: var(--gold); background: #201808; }
+.story-act { font-size: 10.5px; letter-spacing: 0.7px; color: var(--gold); font-weight: 700; }
+.story-step b { display: block; font-size: 14px; margin: 3px 0 4px; letter-spacing: -0.2px; }
+.story-step p { font-size: 12.5px; line-height: 1.68; color: var(--ink-dim); margin: 0; }
+.story-line { font-size: 12.5px; line-height: 1.6; color: #e7dff5; background: var(--panel-2);
+  border: 1px solid var(--line); border-left: 2px solid var(--accent);
+  border-radius: 0 12px 12px 0; padding: 8px 11px; margin-top: 7px; }
+.story-line i { font-style: normal; color: var(--ink-faint); font-size: 11px; display: block; margin-bottom: 2px; }
+
+/* ---------- play: 장(章) 구분선 — /about 타임라인과 같은 톤 ---------- */
+.chapter { align-self: stretch; margin: 6px 0 2px; padding-left: 12px; border-left: 2px solid var(--gold); animation: pop 0.4s ease both; }
+.chapter-act { font-size: 10.5px; letter-spacing: 0.7px; color: var(--gold); font-weight: 700; }
+.chapter p { font-size: 12px; line-height: 1.62; color: var(--ink-dim); margin: 3px 0 0; }

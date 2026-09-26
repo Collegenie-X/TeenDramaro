@@ -8,7 +8,8 @@ export function Bubble({ m }: { m: Msg }) {
 
   const cls = m.role === "user" ? "b-user" : m.role === "other" ? "b-other" : "b-director";
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: m.role === "user" ? "flex-end" : "flex-start" }}>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: m.role === "user" ? "flex-end" : "flex-start", alignSelf: "stretch" }}>
+      {m.chapter && <Chapter act={m.chapter.act} note={m.chapter.note} />}
       {m.role === "other" && m.speakerName && <span className="speaker">🎭 {m.speakerName} 역</span>}
       <div className={`bubble ${cls}`}>{m.text}</div>
       {m.feelings && m.feelings.length > 0 && (
@@ -16,6 +17,16 @@ export function Bubble({ m }: { m: Msg }) {
           {m.feelings.map((f) => <span key={f}>{f}</span>)}
         </div>
       )}
+    </div>
+  );
+}
+
+/** 이야기의 장이 바뀌는 자리 — about 페이지의 타임라인과 같은 톤 */
+export function Chapter({ act, note }: { act: string; note: string }) {
+  return (
+    <div className="chapter">
+      <span className="chapter-act">{act}</span>
+      <p>{note}</p>
     </div>
   );
 }

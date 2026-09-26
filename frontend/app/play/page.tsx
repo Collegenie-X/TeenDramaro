@@ -68,6 +68,21 @@ const freshSession = (): SessionState => ({
 
 type Await = "none" | "input" | "confirm" | "draw" | "curtain";
 
+/**
+ * 막이 열릴 때 채팅에 꽂히는 한 줄 — 지금 어떤 장면에 서 있는지 이야기로 말해준다.
+ * 안내 페이지(/about)의 타임라인과 같은 말투를 쓴다.
+ */
+const CHAPTER_NOTE: Record<MovementId, string> = {
+  casting: "네가 아니라, 네가 만든 애가 무대에 서. 이름 하나만 줘도 시작돼.",
+  draw: "카드는 해석하려고 뽑는 게 아니야. 말문을 여는 소품이야.",
+  open: "하고 싶은 얘기를 꺼내. 줄거리보다 선명한 한 컷이 중요해.",
+  deepen: "사건이 아니라, 사건이 건드린 자리를 봐. 「모르겠어」도 완결된 답이야.",
+  meet: "사람이 있는 장면을 세워. 상대는 악역이 아니야.",
+  mirror: "네 말만 모아서 다시 읽어줄게. 틀린 데는 네가 고쳐.",
+  replay: "같은 장면, 다른 선택. 이게 정답이라는 뜻은 아니야.",
+  curtain: "오늘 이야기를 한 편으로 묶을게. 전부 네가 실제로 쓴 말이야.",
+};
+
 /** 막 진입 직후 첫 입력이 저장될 필드 */
 const FIRST_FIELD: Partial<Record<MovementId, "characterName" | "firstResponse" | "coreFeeling" | "otherName" | "replayResponse">> = {
   casting: "characterName",
@@ -212,7 +227,14 @@ export default function Play() {
       const lines = m.opening?.(snap) ?? [];
       for (let i = 0; i < lines.length; i++) {
         await sleep(i === 0 ? 300 : 620);
-        push({ role: "director", text: lines[i] }, i === 0 ? m.scene(snap) : undefined);
+        push(
+          {
+            role: "director",
+            text: lines[i],
+            chapter: i === 0 ? { act: m.label, note: CHAPTER_NOTE[m.id] } : undefined,
+          },
+          i === 0 ? m.scene(snap) : undefined
+        );
       }
 
       if (m.ritual === "draw") { setWait("draw"); return; }
@@ -327,7 +349,17 @@ export default function Play() {
       const lines = st.lines(snap);
       for (let i = 0; i < lines.length; i++) {
         await sleep(i === 0 ? 260 : 620);
-        push({ role: "director", text: lines[i] }, i === 0 ? st.scene(snap) : undefined);
+        push(
+          {
+            role: "director",
+            text: lines[i],
+            chapter:
+              i === 0 && c.i === 0
+                ? { act: `재도전 · ${BRANCH_SCRIPTS[c.b].label}`, note: "본편은 이미 저장됐어. 여기서 한 건 덤이야." }
+                : undefined,
+          },
+          i === 0 ? st.scene(snap) : undefined
+        );
       }
       if (st.otherLine) {
         await sleep(700);
@@ -542,7 +574,7 @@ export default function Play() {
         return;
       }
       if (wait === "confirm") {
-        setDemoNote("계속");
+        setDemoNote("이어서");
         await nap(DEMO_PACE.beforeConfirmMs);
         if (cancelled) return;
         onConfirm();
@@ -559,7 +591,7 @@ export default function Play() {
       }
 
       if (!ctx && mv.id === "casting" && beats === 0) {
-        setDemoNote("이름 입력");
+        setDemoNote("이름을 짓는 중");
         setAutofill({ text: "소라", nonce: Date.now() });
         await nap(DEMO_PACE.afterPickMs);
         if (cancelled) return;
@@ -567,7 +599,7 @@ export default function Play() {
         return;
       }
 
-      setDemoNote("방향을 기다리는 중");
+      setDemoNote("어느 쪽으로 갈지 고르는 중");
       const deadline = Date.now() + DEMO_PACE.waitChoicesMs;
       while (!cancelled && dirsRef.current.length === 0 && Date.now() < deadline) await nap(250);
       if (cancelled) return;
@@ -575,7 +607,7 @@ export default function Play() {
       const list = dirsRef.current;
       const pick = list.length ? list[beats % list.length] : null;
       const text = pick?.text ?? "그냥 그랬어. 말로 정리가 잘 안 돼.";
-      setDemoNote(pick ? `"${pick.label}" 고름` : "대본 답변 입력");
+      setDemoNote(pick ? `「${pick.label}」 쪽으로` : "네 말로 적는 중");
       setAutofill({ text, chip: pick?.label, nonce: Date.now() });
       await nap(DEMO_PACE.afterPickMs);
       if (cancelled) return;
@@ -630,7 +662,7 @@ export default function Play() {
               <button className="pause-btn" onClick={() => setGround(true)}>🫧 잠깐 멈출래</button>
             )}
             <span className="turn-pill" style={{ marginLeft: 0 }}>
-              {ctx ? `${ctx.i + 1}/${ctx.steps.length}` : `BEAT ${beats + 1}`}
+              {ctx ? `${ctx.i + 1}/${ctx.steps.length}` : `${beats + 1}번째 말`}
             </span>
           </div>
         </div>
@@ -649,7 +681,7 @@ export default function Play() {
 
       {demo && (
         <div className="demo-bar">
-          🎬 데모 자동 진행 중 · {ctx ? `분기 ${ctx.i + 1}/${ctx.steps.length}` : `${mv.label} · 비트 ${beats + 1}`}
+          🎬 데모 자동 진행 중 · {ctx ? `분기 ${ctx.i + 1}/${ctx.steps.length}` : `${mv.label} · ${beats + 1}번째 말`}
           {demoNote ? ` — ${demoNote}` : ""}
           <button className="demo-restart" onClick={() => window.location.reload()}>↻ 처음부터</button>
         </div>

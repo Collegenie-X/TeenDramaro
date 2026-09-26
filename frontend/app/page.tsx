@@ -65,7 +65,7 @@ export default function Home() {
         </svg>
 
         <Link href="/play" className="cta cta-primary" style={{ display: "block", textAlign: "center", textDecoration: "none" }}>
-          무대 올리기 · 20턴 시작
+          무대 올리기 · 오늘의 이야기
         </Link>
 
         <Link href="/drawer" className="row-item" style={{ textDecoration: "none", color: "inherit" }}>
