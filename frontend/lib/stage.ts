@@ -21,6 +21,7 @@
 import type { SceneState, SessionState } from "./types";
 import { cardById } from "./cards";
 import { 이가 } from "./josa";
+import { type DepthLevel, type DepthMove, depthBrief, rungAt } from "./depth";
 
 export type MovementId =
   | "casting"   // 무대에 세울 사람을 만든다
@@ -54,6 +55,15 @@ export type Movement = {
   lenses: Lens[];
   /** 이 정도 주고받으면 다음 막을 "제안"해볼 만하다. 강제하지 않는다. */
   suggestAfter: number;
+  /**
+   * 이 막이 오르내릴 수 있는 깊이 대역 (lib/depth.ts의 L1~L7).
+   * 막은 가로축(이야기 진행), 깊이는 세로축(같은 이야기의 안쪽)이다.
+   * 대역을 두는 이유: 1막에서 갑자기 뿌리까지 캐면 유저가 닫히고,
+   * 2막에서 계속 사실만 훑으면 잔잔바리가 된다.
+   */
+  depthBand: readonly [DepthLevel, DepthLevel];
+  /** 이 막에 들어설 때 시작하는 깊이 */
+  depthStart: DepthLevel;
   /** 질문 없이 디렉터가 진행하는 의식 */
   ritual?: "draw" | "mirror" | "replay" | "curtain";
   /** 오프닝 대사가 이미 던진 질문의 렌즈 id — 첫 비트가 같은 질문을 또 하지 않게 한다 */
@@ -75,24 +85,42 @@ const card = (s: SessionState) => (s.cardId ? cardById(s.cardId) : null);
 export const MOVEMENTS: Movement[] = [
   {
     id: "casting",
-    label: "무대 입장",
-    sub: "무대에 세울 사람을 만들어요",
+    label: "캐스팅",
+    sub: "대신 여행할 애를 만들어요",
     intent:
-      "유저가 자기 얘기를 3인칭으로 다룰 수 있게, 대신 무대에 설 캐릭터를 세운다. " +
-      "사건은 아직 묻지 않는다. 이름만 받으면 바로 다음으로 넘어가도 되고, " +
-      "유저가 캐릭터를 더 그리고 싶어 하면 얼마든지 머문다.",
+      "여기서 정하는 건 설정이 아니라 거리(距離)다. 무대에 서는 건 유저가 아니라 " +
+      "유저가 만든 애다. 유저는 무대를 만들고 그 애를 상황에 던지는 사람이다. " +
+      "이 거리가 확보되면 유저는 자기 얘기를 훨씬 멀리까지 할 수 있다.\n" +
+      "그래서 이 캐릭터는 무난하면 안 된다. 극단적이어야 투사가 걸린다. " +
+      "제일 약한 지점과 제일 센 지점을 둘 다 받아라 — '무난한 애'가 나오면 " +
+      "한 번 더 밀어라: '그 애의 제일 약한 데는 어디야? 진짜 극단적으로.'\n" +
+      "이름·약점·강점이 잡히면 마지막으로 상황을 받는다 — '오늘 이 애를 어디에 " +
+      "던질까?' 이게 유저가 여기 온 이유다. 단 3인칭으로 들어온다. " +
+      "유저 본인의 사정을 직접 묻지 마라. 캐릭터의 상황으로만 물어라.",
     lenses: [
-      { id: "name", intent: "캐릭터를 뭐라고 부를지", mirrorsTo: "characterName" },
-      { id: "basic", intent: "나이·학년 같은 기본 설정. 유저와 같아도 달라도 된다", mirrorsTo: "characterProfile" },
-      { id: "surface", intent: "남들 눈에 어떻게 보이는 사람인지" },
-      { id: "hidden", intent: "남들은 모르는 한 가지" },
-      { id: "world", intent: "이 캐릭터가 하루를 보내는 자리 — 학교, 집, 어디든" },
+      { id: "name", intent: "대신 무대에 설 애의 이름. 진짜 이름이 아닌 것으로", mirrorsTo: "characterName" },
+      { id: "weak", intent: "이 애의 제일 약한 지점 — 극단적으로. 무난하면 다시 밀어라", mirrorsTo: "characterProfile" },
+      { id: "strong", intent: "이 애의 제일 센 지점 — 이것도 극단적으로. 약점만 있으면 투사가 안 걸린다" },
+      { id: "gap", intent: "겉으로 보이는 모습과 속의 거리 — 남들은 이 애를 어떻게 아는지" },
+      { id: "throw", intent: "오늘 이 애를 던질 상황. 유저가 여기 온 이유가 3인칭으로 들어오는 자리" },
+      { id: "mine", intent: "이 애의 어디가 유저랑 닮았는지. 유저가 먼저 꺼낼 때만 받는다. 캐묻지 마라" },
     ],
-    suggestAfter: 2,
+    // 이름·약점·강점·겉모습·상황투입(throw)까지 5비트. throw는 이야기의 출발점이라
+    // 그 전에 "다음 장면으로"가 뜨면 무대 없이 1막으로 넘어가 버린다.
+    suggestAfter: 5,
+    /**
+     * 캐스팅은 깊이를 파는 자리가 아니라 거리를 만드는 자리다.
+     * 극단적인 약점·강점이 감정 재료가 되므로 L3까지만 열어둔다.
+     * 감정 명명(L4)부터는 1막·2막의 몫이다.
+     */
+    depthBand: [1, 3] as const,
+    depthStart: 1,
+    openingLens: "name",
     opening: () => [
-      "여기는 마음무대야. 오늘은 네가 작가고, 나는 연출을 맡을게.",
-      "무대에 설 캐릭터를 한 명 만들자. 네 얘기를 직접 하는 게 아니라, 이 캐릭터한테 일어난 일로 다룰 거야.",
-      "이름을 하나 줘봐. 진짜 이름 말고 가상의 이름으로.",
+      "여기는 마음무대야. 오늘 무대에 서는 건 네가 아니야.",
+      "네가 만든 애가 대신 여행을 해. 너는 무대를 세우고, 그 애를 상황에 던지는 사람이야. 연출은 내가 할게.",
+      "그러니까 이 애는 극단적이어도 돼. 무난한 애는 재미도 없고, 무대에서 아무 일도 안 일어나.",
+      "이름부터 하나 지어줘. 진짜 이름 말고.",
     ],
     scene: () => sc({ backdrop: "curtain", light: 1 }),
   },
@@ -104,9 +132,14 @@ export const MOVEMENTS: Movement[] = [
     intent: "카드를 한 장 뽑아 오늘 이야기의 실마리로 삼는다.",
     lenses: [],
     suggestAfter: 0,
+    /** 의식. 깊이를 움직이지 않는다. */
+    depthBand: [1, 2] as const,
+    depthStart: 1,
     ritual: "draw",
     opening: (s) => [
-      `${이가(me(s))} 무대에 올랐어. 조명 들어간다.`,
+      s.character.name
+        ? `${이가(me(s))} 무대에 올랐어. 조명 들어간다.`
+        : "무대에 조명 들어간다. 배우는 아직 이름이 없어도 돼.",
       "카드를 한 장 뽑아볼게. 네가 고르는 게 아니라 뽑히는 거야.",
     ],
     scene: () => sc({ backdrop: "stage", light: 2, card: "back" }),
@@ -131,13 +164,17 @@ export const MOVEMENTS: Movement[] = [
       { id: "elsewhere", intent: "이 얘기 말고 오늘 마음에 걸리는 다른 것" },
     ],
     suggestAfter: 8,
-    openingLens: "what",
+    /** 장면을 세우고(L2) 몸(L3)을 거쳐 감정 이름(L4)까지. 뿌리·욕구는 2막 몫. */
+    depthBand: [2, 4] as const,
+    depthStart: 2,
+    openingLens: "moment",
     opening: (s) => {
       const c = card(s)!;
       return [
         `${c.emoji} ${c.name} — ${c.keyword}.`,
         "이 카드는 그냥 말문 여는 용도야. 여기서 떠오르는 게 있으면 그걸로, 아예 다른 얘기가 하고 싶으면 그걸로 가도 돼.",
-        `${me(s)}한테 요즘 무슨 일이 있었어?`,
+        `조명 들어간다. ${이가(me(s))} 네가 던진 그 상황 안에 서 있어.`,
+        `${me(s)}한테 제일 선명한 순간이 어디야? 딱 한 컷만 무대에 올려봐.`,
       ];
     },
     scene: (s) => sc({ backdrop: "stage", light: 2, card: "face", caption: `${card(s)?.name} 카드가 열렸다` }),
@@ -161,6 +198,9 @@ export const MOVEMENTS: Movement[] = [
       { id: "exception", intent: "그렇지 않았던 때도 있었는지" },
     ],
     suggestAfter: 8,
+    /** 이 막이 깊이의 본진. 몸(L3)에서 욕구(L7)까지 한 칸씩 내려간다. */
+    depthBand: [3, 7] as const,
+    depthStart: 4,
     opening: () => ["조명 조금 내릴게. 이제 밖에서 안쪽으로 들어가자.", "안 가고 싶으면 말해. 여기서 멈춰도 돼."],
     scene: () => sc({ backdrop: "room", light: 1, mood: "tear", mask: 0.5, caption: "문을 닫은 뒤의 얼굴" }),
   },
@@ -183,6 +223,9 @@ export const MOVEMENTS: Movement[] = [
       { id: "wish", intent: "그 사람한테 진짜로 하고 싶었던 말" },
     ],
     suggestAfter: 8,
+    /** 사람이 있는 장면을 다시 세우므로 L2로 올라갔다가, 겉과 속의 차이(L5)까지. */
+    depthBand: [2, 5] as const,
+    depthStart: 2,
     openingLens: "who",
     opening: () => [
       "이야기에 사람이 있으면 한 명 무대로 불러올게. 마주치면 마음이 복잡해지는 사람, 있어? 이름을 지어줘.",
@@ -202,6 +245,9 @@ export const MOVEMENTS: Movement[] = [
       { id: "title", intent: "이 이야기에 제목을 붙인다면" },
     ],
     suggestAfter: 3,
+    /** 이미 나온 감정을 밖에서 되읽는 자리. 새로 파지 않는다. */
+    depthBand: [4, 6] as const,
+    depthStart: 4,
     ritual: "mirror",
     opening: () => [
       "이제 무대에서 한 발 내려와서, 밖에서 이 이야기를 볼 차례야.",
@@ -224,6 +270,9 @@ export const MOVEMENTS: Movement[] = [
       { id: "again", intent: "또 다른 버전으로도 해본다면" },
     ],
     suggestAfter: 4,
+    /** 몸의 반응(L3)으로 시작해 무서운 것(L5~6)까지. */
+    depthBand: [3, 6] as const,
+    depthStart: 3,
     ritual: "replay",
     opening: (s) => [
       "같은 장면으로 한 번만 더 가볼게. 이번엔 다르게 해도 돼.",
@@ -239,6 +288,9 @@ export const MOVEMENTS: Movement[] = [
     intent: "오늘 무대를 닫는다. 조언하지 말고, 유저가 실제로 쓴 말에 근거해서만 정리한다.",
     lenses: [],
     suggestAfter: 0,
+    /** 의식. 도달한 깊이를 그대로 정리한다. */
+    depthBand: [1, 7] as const,
+    depthStart: 7,
     ritual: "curtain",
     opening: (s) => [`${me(s)}의 이야기, 여기서 막을 내릴게.`],
     scene: (s) => sc({ backdrop: "stage", light: 4, mood: "warm", mask: 0, card: "flipped", caption: `${me(s)}의 이야기 · 커튼콜` }),
@@ -251,21 +303,58 @@ export const nextMovement = (id: MovementId): Movement | null => MOVEMENTS[movem
 
 export type { Thread } from "./types";
 
+/** 지금 비트의 깊이 상태 — 엔진이 lib/depth.ts의 nextDepth()로 계산해 넘긴다 */
+export type DepthCue = { level: DepthLevel; move: DepthMove; why: string };
+
 /**
  * 디렉터에게 넘기는 구조 브리핑.
+ *
+ * 두 축을 같이 준다:
+ *   가로축 = 막(Movement). 이야기가 어디까지 왔는가.
+ *   세로축 = 단계(Depth).  같은 이야기를 얼마나 안쪽에서 보고 있는가.
+ *
  * 핵심: "이걸 채워라"가 아니라 "이런 각도가 있다, 그런데 유저를 먼저 따라가라"다.
+ * 단계도만은 예외다 — 깊이는 한 칸씩 밟으라는 것이 지시다.
  */
-export function stageBrief(m: Movement, s: SessionState, beats: number): string {
+export function stageBrief(m: Movement, s: SessionState, beats: number, cue?: DepthCue): string {
   const openThreads = (s.threads ?? []).filter((t) => !t.pulled);
   const lenses = m.lenses.map((l) => `  · [${l.id}] ${l.intent}`).join("\n");
   const threads = openThreads.length
     ? openThreads.map((t) => `  · "${t.text}"`).join("\n")
     : "  (아직 없음)";
 
+  const cueBlock = cue
+    ? depthBrief(cue.level, m.depthBand, cue.move, cue.why)
+    : depthBrief(m.depthStart, m.depthBand, "hold", "이 막의 기본 깊이");
+
+  const rung = rungAt(cue?.level ?? m.depthStart);
+  const f = s.frame;
+  const frameBlock = f && (f.where || f.when || f.who?.length)
+    ? [
+        "[지금 세워진 장면 — 빈 칸이 있으면 그걸 묻는 것이 제일 좋은 질문이다]",
+        `  어디: ${f.where || "(비어 있음)"}`,
+        `  언제: ${f.when || "(비어 있음)"}`,
+        `  누가: ${f.who?.length ? f.who.join(", ") : "(비어 있음)"}`,
+        `  조명: ${f.light || "(비어 있음)"}`,
+        `  소리: ${f.sound || "(비어 있음)"}`,
+      ].join("\n")
+    : "[지금 세워진 장면] 아직 비어 있다. 장면이 없으면 감정을 물어도 허공에 뜬다 — 먼저 무대를 세워라.";
+
+  const feltBlock = s.feelings?.length
+    ? `[유저가 직접 고른 감정 — 이 단어 그대로 써라. 다른 말로 바꿔 부르지 마라]\n  ${s.feelings.join(" · ")}`
+    : "[유저가 직접 고른 감정] 아직 없다. 감정 단어는 디렉터가 붙이지 말고 유저가 고르게 해라.";
+
   return [
     `[지금 막] ${m.label} (${m.id}) — 이 막에서 ${beats}번째 주고받는 중`,
     `[이 막이 하려는 것]\n${m.intent}`,
+    ``,
+    cueBlock,
+    ``,
+    frameBlock,
+    feltBlock,
+    ``,
     `[써볼 수 있는 각도 — 의무 아님. 유저가 다른 데로 가면 버려라]\n${lenses || "  (없음)"}`,
+    `[지금 깊이(L${cue?.level ?? m.depthStart} ${rung.label})에 맞는 각도를 고르는 게 우선이다]`,
     `[유저가 흘렸지만 아직 안 펼친 말 — 이걸 먼저 잡아라]\n${threads}`,
     m.lenses.length
       ? "[가장 중요한 규칙] 각도 목록을 순서대로 채우지 마라. 유저가 방금 쓴 말에서 가장 살아 있는 단어 하나를 골라 거기서부터 열어라. 목록에 없는 방향이라도 유저가 그쪽으로 가면 따라가라."

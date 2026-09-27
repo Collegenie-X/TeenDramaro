@@ -12,6 +12,7 @@
 
 import type { Direction, SessionState } from "./types";
 import type { Movement, MovementId } from "./stage";
+import { type DepthLevel, type DepthMove, nextDepth } from "./depth";
 import { cardById } from "./cards";
 import { 은는, 을를, 이가 } from "./josa";
 
@@ -22,66 +23,121 @@ export type OpenBeat = {
   threads: string[];
   directions: Direction[];
   suggestNext: boolean;
+  /**
+   * 이 비트가 쓴 은행 질문의 id. 소진 기록은 lens가 아니라 이 id로 한다 —
+   * lens가 "free"인 질문이 여러 개 있으므로 lens로 기록하면 소진이 안 되고
+   * 같은 질문이 되풀이된다.
+   */
+  qid?: string;
+  /** 이 비트가 겨냥한 단계도의 단 */
+  depth: DepthLevel;
+  /** 이번에 깊이를 어떻게 움직였는지 */
+  depthMove: DepthMove;
+  /** 왜 그렇게 움직였는지 — 개발용 추적 */
+  depthWhy: string;
 };
 
 const me = (s: SessionState) => s.character.name || "주인공";
 const you = (s: SessionState) => s.other.name || "그 사람";
 const card = (s: SessionState) => (s.cardId ? cardById(s.cardId) : null);
 
-type Q = { id: string; lens: string; q: (s: SessionState) => string; d: (s: SessionState) => Direction[] };
+/**
+ * 은행 질문 하나.
+ * depth는 이 질문이 겨냥한 단계도의 단(L1~L7)이다. localBeat이 목표 깊이에
+ * 가장 가까운 질문을 고르므로, 같은 막 안에서도 깊이가 한 칸씩 내려간다.
+ */
+type Q = {
+  id: string;
+  lens: string;
+  depth: DepthLevel;
+  q: (s: SessionState) => string;
+  d: (s: SessionState) => Direction[];
+};
 
-const dir = (kind: Direction["kind"], label: string, text: string): Direction => ({ kind, label, text });
+const dir = (kind: Direction["kind"], label: string, text: string, depth?: number): Direction =>
+  ({ kind, label, text, depth });
 
 /* ══════════════════════════════════════════════════════
  * 막별 질문 은행 — 하나씩 소진하며 쓴다
  * ════════════════════════════════════════════════════ */
 
+/**
+ * 캐스팅 — 설정을 채우는 자리가 아니라 거리(距離)를 만드는 자리다.
+ *
+ * 무대에 서는 건 유저가 아니라 유저가 만든 애다. 유저는 무대를 세우고
+ * 그 애를 상황에 던지는 사람이다. 그래서 캐릭터는 무난하면 안 된다 —
+ * 제일 약한 지점과 제일 센 지점을 둘 다, 극단적으로 받는다.
+ * 무난한 캐릭터로는 투사가 걸리지 않고, 무대에서 아무 일도 안 일어난다.
+ *
+ * 마지막에 상황을 받는다(casting.throw). 유저가 여기 온 이유는
+ * "나 요즘 힘들어"가 아니라 "이 애를 여기에 던질래"로 들어온다.
+ */
 const CASTING: Q[] = [
   {
-    id: "casting.basic", lens: "basic",
-    q: (s) => `${은는(me(s))} 몇 살이야? 학교는 다니고 있어?`,
-    d: (s) => [
-      dir("scene", "비슷한 또래", `나랑 비슷한 나이야. 학교도 다녀.`),
-      dir("feeling", "겉과 속이 달라", `겉으론 멀쩡한데 속은 좀 복잡한 애야.`),
-      dir("turn", "학교 밖", `학교를 안 다녀. 요즘 집에 있는 시간이 길어.`),
-      dir("hold", "아직 안 정할래", `아직 안 정했어. 하면서 정할래.`),
-    ],
-  },
-  {
-    id: "casting.surface", lens: "surface",
-    q: (s) => `사람들은 ${을를(me(s))} 어떤 애라고 생각해?`,
-    d: (s) => [
-      dir("scene", "분위기 메이커", `애들은 재밌는 애라고 생각해. 항상 웃고 있으니까.`),
-      dir("feeling", "조용한 애", `조용하고 무난한 애. 있는지 없는지 모를 때도 있어.`),
-      dir("turn", "정반대로 봐", `다들 나를 완전히 잘못 알고 있어. 사실 정반대야.`),
-      dir("hold", "모르겠어", `사람들이 나를 어떻게 보는지 잘 모르겠어.`),
-    ],
-  },
-  {
-    id: "casting.hidden", lens: "hidden",
-    q: (s) => `${me(s)}한테 아무도 모르는 게 하나 있다면 뭘까?`,
-    d: (s) => [
-      dir("scene", "혼자 하는 것", `혼자 있을 때만 하는 게 있어. 아무한테도 말 안 했어.`),
-      dir("feeling", "숨기는 마음", `사실 되게 지쳐 있어. 근데 티를 안 내.`),
-      dir("turn", "좋아하는 게", `남들이 알면 놀랄 만한 걸 좋아해.`),
-      dir("hold", "지금은 비밀", `그건 나중에 얘기할래.`),
-    ],
-  },
-  {
-    id: "casting.world", lens: "world",
-    q: (s) => `${이가(me(s))} 하루 중에 제일 오래 있는 데는 어디야?`,
+    id: "casting.name", lens: "name", depth: 1,
+    q: () => `이름부터 하나 지어줘. 진짜 이름 말고.`,
     d: () => [
-      dir("scene", "교실", `교실. 근데 거기가 제일 편하진 않아.`),
-      dir("feeling", "내 방", `내 방. 문 닫으면 그제야 숨이 쉬어져.`),
-      dir("turn", "밖에서", `집에도 학교에도 안 있고 싶어서 그냥 돌아다녀.`),
-      dir("hold", "딱히 없어", `딱히 어디가 좋다는 게 없어.`),
+      dir("scene", "소라", `소라로 할래.`, 1),
+      dir("feeling", "나랑 닮은 애", `하늘. 나랑 좀 닮은 애야.`, 1),
+      dir("turn", "정반대인 애", `아예 나랑 안 닮은 애로 할래. 이름은 바다.`, 1),
+      dir("hold", "네가 정해", `아무 이름이나 네가 정해줘.`, 1),
+    ],
+  },
+  {
+    id: "casting.weak", lens: "weak", depth: 1,
+    q: (s) => `${me(s)}의 제일 약한 데는 어디야? 무난하게 말고, 진짜 극단적으로 줘봐.`,
+    d: (s) => [
+      dir("scene", "거절을 못 해", `거절을 아예 못 해. 싫어도 다 알았다고 해.`, 1),
+      dir("feeling", "버려질까 봐", `혼자 남는 걸 제일 무서워해. 그래서 다 맞춰줘.`, 2),
+      dir("turn", "터지면 크게", `평소엔 조용한데 한번 터지면 아예 관계를 끊어버려.`, 2),
+      dir("hold", "천천히", `그건 하다가 정할래.`, 1),
+    ],
+  },
+  {
+    id: "casting.strong", lens: "strong", depth: 1,
+    q: (s) => `반대로 ${me(s)}의 제일 센 데는? 이것도 세게.`,
+    d: (s) => [
+      dir("scene", "끝까지 버텀", `한번 마음먹으면 끝까지 버텨. 아무도 못 말려.`, 1),
+      dir("feeling", "다 알아챔", `남 기분을 너무 빨리 알아채. 그게 재능이자 병이야.`, 2),
+      dir("turn", "센 데가 없어", `센 데가 없는 애야. 그게 이 애 특징이야.`, 2),
+      dir("hold", "아직", `강한 건 아직 모르겠어.`, 1),
+    ],
+  },
+  {
+    id: "casting.gap", lens: "gap", depth: 2,
+    q: (s) => `남들은 ${을를(me(s))} 어떤 애로 알고 있어? 속과 얼마나 달라?`,
+    d: (s) => [
+      dir("scene", "밝은 애로", `애들은 제일 밝은 애라고 생각해. 완전 반대야.`, 2),
+      dir("feeling", "있는지 없는지", `조용해서 있는지 없는지 몰라. 속은 시끄러운데.`, 2),
+      dir("turn", "무서운 애로", `애들이 좀 무서워해. 사실 제일 겁이 많은데.`, 2),
+      dir("hold", "똑같아", `겉이랑 속이 똑같은 애야.`, 2),
+    ],
+  },
+  {
+    id: "casting.throw", lens: "throw", depth: 2,
+    q: (s) => `자, 무대는 네가 만들어. 오늘 ${을를(me(s))} 어떤 상황에 던질래?`,
+    d: (s) => [
+      dir("scene", "그날로", `며칠 전에 실제로 있었던 상황에 던질래.`, 2),
+      dir("feeling", "제일 싫은 자리", `이 애가 제일 있고 싶지 않은 자리에 던질래.`, 2),
+      dir("turn", "아직 안 온 일", `아직 안 일어난 일인데, 곧 닥칠 상황에 던질래.`, 2),
+      dir("hold", "네가 던져", `어디로 던질지 네가 골라줘.`, 1),
+    ],
+  },
+  {
+    id: "casting.mine", lens: "mine", depth: 3,
+    q: (s) => `${me(s)}의 어디가 너랑 제일 닮았어? 말 안 해도 돼.`,
+    d: (s) => [
+      dir("scene", "약한 데가", `약한 데는 거의 나야.`, 3),
+      dir("feeling", "안 닮은 데가", `센 데는 내가 갖고 싶은 거야. 나는 저렇게 못 해.`, 3),
+      dir("turn", "아무 상관 없어", `완전 다른 애야. 나랑 아무 상관 없어.`, 2),
+      dir("hold", "그건 패스", `그건 말 안 할래.`, 2),
     ],
   },
 ];
 
 const OPEN: Q[] = [
   {
-    id: "open.what", lens: "what",
+    id: "open.what", lens: "what", depth: 2,
     q: (s) => `${me(s)}한테 요즘 무슨 일이 있었어?`,
     d: (s) => [
       dir("scene", "그날 일", `며칠 전에 있었던 일이 계속 생각나.`),
@@ -91,7 +147,7 @@ const OPEN: Q[] = [
     ],
   },
   {
-    id: "open.scene", lens: "scene",
+    id: "open.scene", lens: "scene", depth: 2,
     q: () => `그게 언제였어? 어디였고, 누가 있었어?`,
     d: () => [
       dir("scene", "학교에서", `학교에서였어. 애들 다 있는 데서.`),
@@ -101,7 +157,7 @@ const OPEN: Q[] = [
     ],
   },
   {
-    id: "open.moment", lens: "moment",
+    id: "open.moment", lens: "moment", depth: 2,
     q: () => `그 일에서 제일 선명하게 남은 장면이 뭐야? 한 컷만 꺼내봐.`,
     d: () => [
       dir("scene", "누가 한 말", `누가 했던 말 한마디가 계속 남아 있어.`),
@@ -111,7 +167,7 @@ const OPEN: Q[] = [
     ],
   },
   {
-    id: "open.body", lens: "body",
+    id: "open.body", lens: "body", depth: 3,
     q: () => `그 순간에 몸은 어땠어? 목이 막혔어, 가슴이 눌렸어, 아니면 아무 느낌 없었어?`,
     d: () => [
       dir("scene", "몸이 굳었어", `몸이 딱 굳었어. 움직여지지가 않았어.`),
@@ -121,7 +177,7 @@ const OPEN: Q[] = [
     ],
   },
   {
-    id: "open.after", lens: "after",
+    id: "open.after", lens: "after", depth: 2,
     q: () => `그 일 끝나고 나서 뭐 했어?`,
     d: () => [
       dir("scene", "그냥 지나갔어", `아무 일 없던 것처럼 그냥 다음 수업 갔어.`),
@@ -131,7 +187,7 @@ const OPEN: Q[] = [
     ],
   },
   {
-    id: "open.before", lens: "before",
+    id: "open.before", lens: "before", depth: 2,
     q: () => `그게 처음이었어? 아니면 전에도 비슷한 적 있었어?`,
     d: () => [
       dir("scene", "전에도", `전에도 있었어. 한두 번이 아니야.`),
@@ -141,7 +197,7 @@ const OPEN: Q[] = [
     ],
   },
   {
-    id: "open.other", lens: "other",
+    id: "open.other", lens: "other", depth: 2,
     q: () => `그 자리에 다른 사람도 있었어? 걔들은 어땠어?`,
     d: () => [
       dir("scene", "다들 있었어", `애들 다 있었어. 근데 아무도 아무 말 안 했어.`),
@@ -151,7 +207,7 @@ const OPEN: Q[] = [
     ],
   },
   {
-    id: "open.elsewhere", lens: "elsewhere",
+    id: "open.elsewhere", lens: "elsewhere", depth: 2,
     q: () => `이 얘기 말고, 오늘 마음에 걸리는 다른 것도 있어?`,
     d: () => [
       dir("scene", "다른 일", `사실 이거 말고 다른 일도 있어.`),
@@ -160,11 +216,21 @@ const OPEN: Q[] = [
       dir("hold", "이거면 돼", `오늘은 이 얘기만 할래.`),
     ],
   },
+  {
+    id: "open.feelname", lens: "free", depth: 4,
+    q: () => `그 장면에 지금 이름을 붙인다면, 무슨 기분의 장면이야?`,
+    d: () => [
+      dir("scene", "혼자인 장면", `혼자 남겨진 장면이야.`, 4),
+      dir("feeling", "부끄러운 장면", `창피했던 장면이야. 그게 제일 커.`, 4),
+      dir("turn", "아무 기분 아냐", `별 기분 아닌데 왜 남아 있는지 모르겠어.`, 4),
+      dir("hold", "안 붙일래", `이름은 안 붙이고 싶어.`, 3),
+    ],
+  },
 ];
 
 const DEEPEN: Q[] = [
   {
-    id: "deepen.core", lens: "core",
+    id: "deepen.core", lens: "core", depth: 4,
     q: () => `그 일에서 제일 아팠던 데가 어디야? 사건 자체야, 아니면 다른 거야?`,
     d: () => [
       dir("scene", "그 말이", `누가 한 말 자체가 아팠어.`),
@@ -174,7 +240,7 @@ const DEEPEN: Q[] = [
     ],
   },
   {
-    id: "deepen.voice", lens: "voice",
+    id: "deepen.voice", lens: "voice", depth: 6,
     q: () => `그때 머릿속에서 맴돈 말이 있어? 그게 누구 목소리로 들려?`,
     d: () => [
       dir("scene", "내 목소리", `'왜 나만 이래' — 내 목소리였어.`),
@@ -184,7 +250,7 @@ const DEEPEN: Q[] = [
     ],
   },
   {
-    id: "deepen.first", lens: "first",
+    id: "deepen.first", lens: "first", depth: 6,
     q: () => `이 느낌, 언제부터 알고 있었어?`,
     d: () => [
       dir("scene", "올해부터", `올해 들어서 심해졌어.`),
@@ -194,7 +260,7 @@ const DEEPEN: Q[] = [
     ],
   },
   {
-    id: "deepen.fear", lens: "fear",
+    id: "deepen.fear", lens: "fear", depth: 5,
     q: (s) => `${이가(me(s))} 제일 무서워하는 게 뭘 것 같아? 일어날까 봐 겁나는 거.`,
     d: () => [
       dir("scene", "또 그럴까 봐", `또 똑같은 일이 생길까 봐.`),
@@ -204,7 +270,7 @@ const DEEPEN: Q[] = [
     ],
   },
   {
-    id: "deepen.want", lens: "want",
+    id: "deepen.want", lens: "want", depth: 7,
     q: () => `그 순간에 진짜로 원했던 건 뭐였어?`,
     d: () => [
       dir("scene", "누가 물어봐주길", `누가 괜찮냐고 한 번만 물어봐줬으면 했어.`),
@@ -214,7 +280,7 @@ const DEEPEN: Q[] = [
     ],
   },
   {
-    id: "deepen.cost", lens: "cost",
+    id: "deepen.cost", lens: "cost", depth: 7,
     q: (s) => `그렇게 버티느라 ${이가(me(s))} 포기한 게 있을까?`,
     d: () => [
       dir("scene", "사람", `친했던 애들이랑 멀어졌어.`),
@@ -224,7 +290,7 @@ const DEEPEN: Q[] = [
     ],
   },
   {
-    id: "deepen.exception", lens: "exception",
+    id: "deepen.exception", lens: "exception", depth: 5,
     q: () => `그렇지 않았던 때도 있었어? 조금이라도 편했던 순간.`,
     d: () => [
       dir("scene", "한 번 있었어", `딱 한 번, 괜찮았던 날이 있었어.`),
@@ -233,11 +299,94 @@ const DEEPEN: Q[] = [
       dir("hold", "없었어", `그런 때는 없었던 것 같아.`),
     ],
   },
+
+  /* ── 여기부터 감정 심층 — 단계도 L3~L7을 한 칸씩 채우는 질문들 ── */
+
+  {
+    id: "deepen.bodynow", lens: "free", depth: 3,
+    q: () => `지금 이 얘기 하면서도 몸이 반응해? 어디가 먼저 반응하는지 알겠어?`,
+    d: () => [
+      dir("scene", "지금도 눌려", `지금도 가슴이 눌리는 느낌이야.`, 3),
+      dir("feeling", "숨이 얕아", `말하다 보니까 숨이 얕아졌어.`, 3),
+      dir("turn", "오히려 풀려", `이상하게 말하니까 좀 풀리는 느낌이야.`, 3),
+      dir("hold", "아무 느낌", `지금은 아무 느낌 없어.`, 2),
+    ],
+  },
+  {
+    id: "deepen.locate", lens: "free", depth: 3,
+    q: () => `그 느낌은 무거워, 뜨거워, 아니면 차가워?`,
+    d: () => [
+      dir("scene", "무거워", `무거워. 위에서 누르는 것 같아.`, 3),
+      dir("feeling", "뜨거워", `뜨거워. 확 올라오는 느낌이야.`, 3),
+      dir("turn", "차가워", `차가워. 텅 비어 있는 느낌에 가까워.`, 3),
+      dir("hold", "표현이 안 돼", `뭐라고 표현해야 할지 모르겠어.`, 2),
+    ],
+  },
+  {
+    id: "deepen.nameit", lens: "core", depth: 4,
+    q: () => `그 느낌을 한 단어로만 말한다면? 정확하지 않아도 돼. 제일 가까운 걸로.`,
+    d: () => [
+      dir("scene", "억울함", `억울함. 그게 제일 가까워.`, 4),
+      dir("feeling", "창피함", `창피한 거였던 것 같아.`, 4),
+      dir("turn", "둘 다 아니야", `화도 슬픔도 아니야. 그냥 텅 빈 느낌.`, 4),
+      dir("hold", "한 단어로 안 돼", `한 단어로는 안 될 것 같아.`, 3),
+    ],
+  },
+  {
+    id: "deepen.mix", lens: "core", depth: 4,
+    q: () => `그 안에 두 가지가 섞여 있을 수도 있어. 그럴까?`,
+    d: () => [
+      dir("scene", "화랑 슬픔", `화나는 거랑 슬픈 게 같이 있어.`, 4),
+      dir("feeling", "미안함도", `싫으면서 동시에 미안해. 그게 제일 헷갈려.`, 4),
+      dir("turn", "안도도 있어", `이상하게 조금 편해진 것도 있어. 그게 죄책감 나.`, 5),
+      dir("hold", "하나인 것 같아", `하나인 것 같아. 그냥 그거 하나야.`, 4),
+    ],
+  },
+  {
+    id: "deepen.under", lens: "free", depth: 5,
+    q: () => `그 밑에 다른 게 깔려 있을까? 화 밑에 서운함 같은 거.`,
+    d: () => [
+      dir("scene", "서운함", `화난 것처럼 보였는데 사실 서운했던 것 같아.`, 5),
+      dir("feeling", "무서움", `밑에는 무서움이 있었던 것 같아.`, 5),
+      dir("turn", "아무것도 없어", `밑에는 아무것도 없어. 그게 다야.`, 5),
+      dir("hold", "거기까진 못 봐", `거기까지는 못 보겠어.`, 4),
+    ],
+  },
+  {
+    id: "deepen.armor", lens: "free", depth: 5,
+    q: () => `그 기분이 뭔가를 지켜주고 있었을 수도 있어. 뭘 지켜주고 있었을까?`,
+    d: () => [
+      dir("scene", "안 다치게", `더 안 다치게 막아주고 있었던 것 같아.`, 5),
+      dir("feeling", "안 들키게", `내가 흔들리는 걸 안 들키게 해줬어.`, 5),
+      dir("turn", "아무것도 안 지켜", `아무것도 안 지켜줬어. 그냥 나만 힘들었어.`, 5),
+      dir("hold", "모르겠어", `그건 생각해본 적 없어.`, 4),
+    ],
+  },
+  {
+    id: "deepen.youngest", lens: "first", depth: 6,
+    q: () => `이 기분을 제일 어렸을 때 느낀 게 언제야? 떠오르는 장면이 있어?`,
+    d: () => [
+      dir("scene", "초등학교 때", `초등학교 때 비슷한 일이 있었어.`, 6),
+      dir("feeling", "집에서", `집에서 그런 기분을 자주 느꼈어.`, 6),
+      dir("turn", "더 어릴 때", `기억도 안 날 만큼 어릴 때부터 있었던 것 같아.`, 6),
+      dir("hold", "떠오르는 게 없어", `떠오르는 게 없어.`, 5),
+    ],
+  },
+  {
+    id: "deepen.unsaid", lens: "want", depth: 7,
+    q: () => `그때 못 한 말이 있다면 뭐야? 아무한테도 못 한 말.`,
+    d: () => [
+      dir("scene", "그 사람한테", `"왜 나한테 그랬어" 라고 묻고 싶었어.`, 7),
+      dir("feeling", "나한테", `나한테 "괜찮다"고 말해주고 싶었어.`, 7),
+      dir("turn", "아무 말도", `말이 아니라 그냥 사라지고 싶었어.`, 7),
+      dir("hold", "지금은 안 할래", `그 말은 지금은 안 할래.`, 5),
+    ],
+  },
 ];
 
 const MEET: Q[] = [
   {
-    id: "meet.who", lens: "who",
+    id: "meet.who", lens: "who", depth: 2,
     q: (s) => `${me(s)} 주변에, 마주치면 마음이 복잡해지는 사람 있어? 이름을 지어줘.`,
     d: () => [
       dir("scene", "친한 애", `겉으로는 제일 친한 애야. 그래서 더 복잡해.`),
@@ -247,7 +396,7 @@ const MEET: Q[] = [
     ],
   },
   {
-    id: "meet.line", lens: "line",
+    id: "meet.line", lens: "line", depth: 2,
     q: (s) => `${이가(you(s))} 뭐라고 할 때 제일 힘들어? 그 말 그대로 적어줘.`,
     d: (s) => [
       dir("scene", "그 한마디", `"너는 괜찮잖아" 이 말이 제일 힘들어.`),
@@ -257,7 +406,7 @@ const MEET: Q[] = [
     ],
   },
   {
-    id: "meet.react", lens: "react",
+    id: "meet.react", lens: "react", depth: 2,
     q: (s) => `그때 ${은는(me(s))} 뭐라고 해? 아니면 아무 말 안 해?`,
     d: () => [
       dir("scene", "웃고 넘겼어", `그냥 웃으면서 넘겼어.`),
@@ -267,7 +416,7 @@ const MEET: Q[] = [
     ],
   },
   {
-    id: "meet.inner", lens: "inner",
+    id: "meet.inner", lens: "inner", depth: 5,
     q: () => `겉으로 한 거랑 속으로 한 말이 달랐어? 속에서는 뭐라고 했어?`,
     d: () => [
       dir("scene", "하고 싶던 말", `사실 하고 싶은 말이 있었는데 삼켰어.`),
@@ -277,7 +426,7 @@ const MEET: Q[] = [
     ],
   },
   {
-    id: "meet.history", lens: "history",
+    id: "meet.history", lens: "history", depth: 2,
     q: (s) => `${랑안전(you(s))} 원래는 어떤 사이였어?`,
     d: () => [
       dir("scene", "원래 친했어", `원래 제일 친했어. 그래서 더 이상해.`),
@@ -287,7 +436,7 @@ const MEET: Q[] = [
     ],
   },
   {
-    id: "meet.guess", lens: "guess",
+    id: "meet.guess", lens: "guess", depth: 3,
     q: (s) => `${은는(you(s))} 그때 무슨 생각이었을 것 같아?`,
     d: () => [
       dir("scene", "별생각 없었을 듯", `별생각 없었을 것 같아. 그냥 하던 대로.`),
@@ -297,7 +446,7 @@ const MEET: Q[] = [
     ],
   },
   {
-    id: "meet.wish", lens: "wish",
+    id: "meet.wish", lens: "wish", depth: 5,
     q: (s) => `${you(s)}한테 진짜로 하고 싶었던 말이 있어?`,
     d: () => [
       dir("scene", "직접 하고 싶은 말", `"나도 좀 껴줘" 라고 말하고 싶었어.`),
@@ -306,11 +455,31 @@ const MEET: Q[] = [
       dir("hold", "지금은 안 할래", `그 말은 지금은 안 할래.`),
     ],
   },
+  {
+    id: "meet.stand", lens: "free", depth: 2,
+    q: (s) => `그 장면에서 둘이 어디 서 있어? ${은는(me(s))} 어디고, 그 사람은 어디야?`,
+    d: () => [
+      dir("scene", "마주 보고", `마주 보고 서 있어. 거리가 꽤 가까워.`, 2),
+      dir("feeling", "등지고", `나는 등지고 있어. 얼굴을 안 보고 싶어서.`, 2),
+      dir("turn", "둘러싸여", `걔 혼자가 아니야. 애들 여러 명이 같이 있어.`, 2),
+      dir("hold", "기억 안 나", `어디 있었는지는 기억 안 나.`, 2),
+    ],
+  },
+  {
+    id: "meet.face", lens: "free", depth: 3,
+    q: (s) => `${은는(you(s))} 그때 어떤 표정이야? 몸은 어디를 향하고 있어?`,
+    d: () => [
+      dir("scene", "웃고 있어", `웃고 있어. 근데 그 웃음이 제일 싫었어.`, 3),
+      dir("feeling", "안 봐", `나를 안 봐. 딴 데 보면서 말해.`, 3),
+      dir("turn", "아무 표정 없어", `아무 표정도 없어. 그게 더 무서워.`, 3),
+      dir("hold", "못 봤어", `표정까지는 못 봤어.`, 2),
+    ],
+  },
 ];
 
 const MIRROR: Q[] = [
   {
-    id: "mirror.fix", lens: "fix",
+    id: "mirror.fix", lens: "fix", depth: 4,
     q: () => `이 이야기 어때? 맞는 부분, 아닌 부분 말해줘.`,
     d: () => [
       dir("scene", "대체로 맞아", `대체로 맞아. 근데 한 군데가 좀 달라.`),
@@ -320,7 +489,7 @@ const MIRROR: Q[] = [
     ],
   },
   {
-    id: "mirror.missing", lens: "missing",
+    id: "mirror.missing", lens: "missing", depth: 4,
     q: () => `이 이야기에서 빠진 게 있어?`,
     d: () => [
       dir("scene", "빠진 장면", `중요한 장면이 하나 빠졌어.`),
@@ -330,7 +499,7 @@ const MIRROR: Q[] = [
     ],
   },
   {
-    id: "mirror.title", lens: "title",
+    id: "mirror.title", lens: "title", depth: 4,
     q: () => `이 이야기에 제목을 붙인다면 뭐라고 할래?`,
     d: () => [
       dir("scene", "장면으로", `"복도에서" 같은 걸로 하고 싶어.`),
@@ -339,11 +508,31 @@ const MIRROR: Q[] = [
       dir("hold", "안 붙일래", `제목은 안 붙일래.`),
     ],
   },
+  {
+    id: "mirror.outside", lens: "free", depth: 5,
+    q: (s) => `밖에서 보니까 ${이가(me(s))} 어때 보여? 남 얘기처럼 들으면 뭐가 달라?`,
+    d: () => [
+      dir("scene", "안됐어 보여", `밖에서 보니까 좀 안됐어 보여.`, 5),
+      dir("feeling", "덜 잘못한 것 같아", `내 잘못이 아닌 것 같기도 해.`, 5),
+      dir("turn", "더 화나", `밖에서 보면 오히려 더 화나.`, 5),
+      dir("hold", "똑같아", `밖에서 봐도 똑같아.`, 4),
+    ],
+  },
+  {
+    id: "mirror.younger", lens: "free", depth: 6,
+    q: (s) => `이 이야기 속 ${이가(me(s))} 너보다 어린 애였다면, 뭐라고 해주고 싶어?`,
+    d: () => [
+      dir("scene", "괜찮다고", `"네 잘못 아니야" 라고 해주고 싶어.`, 6),
+      dir("feeling", "안아주고", `아무 말 안 하고 그냥 옆에 있어주고 싶어.`, 6),
+      dir("turn", "화내고 싶어", `왜 가만히 있었냐고 화내고 싶어. 그것도 좀 미안해.`, 6),
+      dir("hold", "할 말 없어", `해줄 말이 없어.`, 5),
+    ],
+  },
 ];
 
 const REPLAY: Q[] = [
   {
-    id: "replay.line", lens: "line",
+    id: "replay.line", lens: "line", depth: 3,
     q: (s) => `이번엔 ${은는(me(s))} 뭐라고 할래?`,
     d: () => [
       dir("scene", "솔직하게", `"나 그 말 들으면 좀 힘들어" 라고 말할래.`),
@@ -353,7 +542,7 @@ const REPLAY: Q[] = [
     ],
   },
   {
-    id: "replay.body", lens: "body",
+    id: "replay.body", lens: "body", depth: 3,
     q: () => `그 말을 한다고 상상하면 몸이 어때?`,
     d: () => [
       dir("scene", "두근거려", `심장이 엄청 빨리 뛰어.`),
@@ -363,7 +552,7 @@ const REPLAY: Q[] = [
     ],
   },
   {
-    id: "replay.cost", lens: "cost",
+    id: "replay.cost", lens: "cost", depth: 5,
     q: () => `그 말을 하면 뭐가 달라질 것 같아? 그리고 뭐가 제일 무서워?`,
     d: () => [
       dir("scene", "관계가 달라져", `걔랑 사이가 달라질 것 같아.`),
@@ -373,13 +562,23 @@ const REPLAY: Q[] = [
     ],
   },
   {
-    id: "replay.again", lens: "again",
+    id: "replay.again", lens: "again", depth: 3,
     q: () => `또 다른 버전으로도 해볼래? 이번엔 아예 다르게.`,
     d: () => [
       dir("scene", "터뜨리기", `이번엔 참지 않고 다 말해버릴래.`),
       dir("feeling", "조용히", `조용히 딱 한 마디만 할래.`),
       dir("turn", "먼저 묻기", `내가 먼저 물어볼래. 너 왜 그러냐고.`),
       dir("hold", "그만할래", `이제 충분해. 그만할래.`),
+    ],
+  },
+  {
+    id: "replay.after", lens: "free", depth: 6,
+    q: () => `그 말을 하고 나면, 그다음 장면은 어떻게 돼? 상상해볼래?`,
+    d: () => [
+      dir("scene", "걔가 놀라", `걔가 좀 놀랄 것 같아. 그리고 아무 말 못 할 거야.`, 6),
+      dir("feeling", "내가 후회해", `말하고 나서 내가 바로 후회할 것 같아.`, 6),
+      dir("turn", "아무 일 없어", `아무 일도 안 일어날 것 같아. 그게 제일 무서워.`, 6),
+      dir("hold", "상상 안 돼", `거기까지는 상상이 안 돼.`, 5),
     ],
   },
 ];
@@ -467,7 +666,16 @@ const REACTS = [
 
 /**
  * 규칙 기반 열린 비트.
- * used에 이미 쓴 질문 id가 들어 있고, 소진되면 스레드 질문으로 넘어간다.
+ *
+ * 고르는 순서:
+ *   1. 단계도로 이번 비트의 목표 깊이를 계산한다 (유저 답이 열렸나 닫혔나)
+ *   2 아직 안 쓴 질문 중 목표 깊이에 가장 가까운 것을 고른다
+ *      → 같은 막 안에서도 사실 → 장면 → 몸 → 감정 → 그 아래로 내려간다
+ *   3. 은행이 마르면 유저가 흘린 실마리로 이어간다
+ *   4. 그것도 없으면 핸들을 유저에게 넘긴다
+ *
+ * 앞에서부터 순서대로 뽑지 않는 이유: 은행 순서가 곧 대화의 깊이 순서가 되면
+ * 누가 해도 같은 이야기가 나온다. 깊이는 유저의 답이 정한다.
  */
 export function localBeat(
   m: Movement,
@@ -483,20 +691,40 @@ export function localBeat(
     ? REACTS[beats % REACTS.length](lastUser.slice(0, 18))
     : "";
 
-  const bank = BANK[m.id] ?? [];
-  const fresh = bank.filter((q) => !used.includes(q.id));
+  /* 1. 이번 비트의 깊이 — 유저가 방금 쓴 말이 정한다 */
+  const cur = (s.depth as DepthLevel) ?? m.depthStart;
+  const cue = nextDepth(cur, lastUser, m.depthBand, s.depthBeats ?? 0);
+  const tail = { depth: cue.level, depthMove: cue.move, depthWhy: cue.why };
 
-  // 은행이 남아 있으면 은행에서, 다 썼으면 유저가 흘린 실마리로 이어간다
+  const bank = BANK[m.id] ?? [];
+  let fresh = bank.filter((q) => !used.includes(q.id));
+
+  /* 무대 입장 특례 — 아직 이름이 없으면 이름 질문을 남겨두고, 있으면 빼버린다 */
+  if (m.id === "casting") {
+    fresh = s.character.name
+      ? fresh.filter((q) => q.lens !== "name")
+      // 이름은 첫 비트에 묻는다. 그 뒤로는 다른 각도가 먼저다.
+      : beats === 0
+        ? fresh.filter((q) => q.lens === "name").concat(fresh.filter((q) => q.lens !== "name"))
+        : fresh;
+  }
+
   if (fresh.length) {
-    // 앞에서부터가 아니라 비트 수에 따라 옮겨가며 골라서 매번 다른 각도로
-    const pick = fresh[beats % fresh.length];
+    // 목표 깊이에 가장 가까운 질문. 동거리면 비트 수로 흔들어 매번 다른 각도로.
+    const scored = fresh
+      .map((q, i) => ({ q, gap: Math.abs(q.depth - cue.level), i }))
+      .sort((a, b) => a.gap - b.gap || ((a.i + beats) % fresh.length) - ((b.i + beats) % fresh.length));
+    const pick = scored[0].q;
     return {
       react,
       question: pick.q(s),
       lens: pick.lens,
+      qid: pick.id,
       threads,
       directions: pick.d(s),
       suggestNext: beats >= m.suggestAfter,
+      ...tail,
+      depth: pick.depth,
     };
   }
 
@@ -509,6 +737,7 @@ export function localBeat(
       threads,
       directions: threadDirs(t.text),
       suggestNext: beats >= m.suggestAfter,
+      ...tail,
     };
   }
 
@@ -519,11 +748,12 @@ export function localBeat(
     lens: "free",
     threads,
     directions: [
-      dir("scene", "다른 장면", "다른 일이 하나 더 떠올랐어."),
-      dir("feeling", "지금 기분", "지금 이 얘기 하면서 드는 기분이 있어."),
-      dir("turn", "딴 얘기", "완전 다른 얘기 해도 돼?"),
-      dir("hold", "여기까지", "오늘은 여기까지 할래."),
+      dir("scene", "다른 장면", "다른 일이 하나 더 떠올랐어.", 2),
+      dir("feeling", "지금 기분", "지금 이 얘기 하면서 드는 기분이 있어.", 4),
+      dir("turn", "딴 얘기", "완전 다른 얘기 해도 돼?", 1),
+      dir("hold", "여기까지", "오늘은 여기까지 할래.", 1),
     ],
     suggestNext: true,
+    ...tail,
   };
 }

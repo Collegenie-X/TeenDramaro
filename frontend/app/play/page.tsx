@@ -28,6 +28,7 @@ import { type Branch, type Direction, type Msg, type SceneState, type SessionSta
 import { BRANCH_SCRIPTS } from "@/lib/branches";
 import { MOVEMENTS, movementById, movementIndex, nextMovement, stageBrief, type Movement, type MovementId } from "@/lib/stage";
 import { localBeat, openingDirections, pullThreads, type OpenBeat } from "@/lib/openbeat";
+import { nextDepth, rungAt, type DepthLevel } from "@/lib/depth";
 import { checkSafety, SESSION_LIMIT_MS } from "@/lib/safety";
 import { bumpSessionCount, dailyLimitReached, resetSessionCount, saveStory } from "@/lib/store";
 import { CARDS, type TarotCard } from "@/lib/cards";
@@ -64,6 +65,10 @@ const freshSession = (): SessionState => ({
   movement: "casting",
   beats: 0,
   threads: [],
+  depth: 1,
+  depthBeats: 0,
+  depthMax: 1,
+  depthLog: [],
 });
 
 type Await = "none" | "input" | "confirm" | "draw" | "curtain";
@@ -73,7 +78,7 @@ type Await = "none" | "input" | "confirm" | "draw" | "curtain";
  * 안내 페이지(/about)의 타임라인과 같은 말투를 쓴다.
  */
 const CHAPTER_NOTE: Record<MovementId, string> = {
-  casting: "네가 아니라, 네가 만든 애가 무대에 서. 이름 하나만 줘도 시작돼.",
+  casting: "무대에 서는 건 네가 아니야. 네가 만든 애가 대신 여행해. 극단적으로 만들어도 돼.",
   draw: "카드는 해석하려고 뽑는 게 아니야. 말문을 여는 소품이야.",
   open: "하고 싶은 얘기를 꺼내. 줄거리보다 선명한 한 컷이 중요해.",
   deepen: "사건이 아니라, 사건이 건드린 자리를 봐. 「모르겠어」도 완결된 답이야.",
@@ -82,6 +87,20 @@ const CHAPTER_NOTE: Record<MovementId, string> = {
   replay: "같은 장면, 다른 선택. 이게 정답이라는 뜻은 아니야.",
   curtain: "오늘 이야기를 한 편으로 묶을게. 전부 네가 실제로 쓴 말이야.",
 };
+
+/**
+ * AI가 준 깊이를 이 막의 대역 안으로, 그리고 현재 깊이에서 ±1 안으로 조인다.
+ * 단계도의 절대 규칙("한 비트에 두 단 이상 움직이지 않는다")을 코드에서도 지킨다 —
+ * 프롬프트로만 막으면 긴 세션에서 결국 점프가 나온다.
+ */
+function clampDepth(
+  want: number,
+  band: readonly [DepthLevel, DepthLevel],
+  current: DepthLevel
+): DepthLevel {
+  const step = Math.max(current - 1, Math.min(current + 1, Math.round(want)));
+  return Math.max(band[0], Math.min(band[1], step)) as DepthLevel;
+}
 
 /** 막 진입 직후 첫 입력이 저장될 필드 */
 const FIRST_FIELD: Partial<Record<MovementId, "characterName" | "firstResponse" | "coreFeeling" | "otherName" | "replayResponse">> = {
@@ -117,6 +136,30 @@ export default function Play() {
   const askedQ = useRef<string[]>([]);
   /** 마지막 비트가 다음 막을 제안했는가 */
   const [nextReady, setNextReady] = useState(false);
+  /** 디렉터가 쉬어가자고 먼저 제안했는가 — care 신호 */
+  const [careHint, setCareHint] = useState<string>("");
+
+  /**
+   * AI가 준 장면 뼈대(frame)와 안전 신호(care)를 세션에 반영한다.
+   * frame의 빈 칸은 다음 비트에서 "그걸 물어보라"는 힌트로 브리핑에 실린다.
+   */
+  const setFrame = useCallback((frame: unknown, care: unknown) => {
+    if (frame && typeof frame === "object") {
+      const f = frame as Record<string, unknown>;
+      setS((p) => ({
+        ...p,
+        frame: {
+          where: String(f.where ?? p.frame?.where ?? ""),
+          when: String(f.when ?? p.frame?.when ?? ""),
+          who: Array.isArray(f.who) ? (f.who as string[]) : p.frame?.who ?? [],
+          light: String(f.light ?? p.frame?.light ?? ""),
+          sound: String(f.sound ?? p.frame?.sound ?? ""),
+        },
+      }));
+    }
+    const c = care as { strain?: boolean; offerPause?: boolean } | undefined;
+    setCareHint(c?.offerPause ? "잠깐 멈춰도 돼" : c?.strain ? "넘어가도 돼" : "");
+  }, []);
 
   /* ── 데모 모드 (/play?demo=1) ───────────────── */
   const [demo, setDemo] = useState(false);
@@ -158,8 +201,15 @@ export default function Play() {
       setDirs([]);
       setNextReady(false);
 
+      /* 단계도 — 유저가 방금 쓴 말이 이번 비트의 깊이를 정한다 */
+      const curDepth = (snap.depth as DepthLevel) ?? m.depthStart;
+      const cue =
+        mode === "pivot"
+          ? { level: m.depthBand[0], move: "lighter" as const, why: "피벗 — 새 화제는 깊이를 물려받지 않는다" }
+          : nextDepth(curDepth, lastUser, m.depthBand, snap.depthBeats ?? 0);
+
       const note = [
-        stageBrief(m, snap, beatNo),
+        stageBrief(m, snap, beatNo, cue),
         askedQ.current.length
           ? `[이미 던진 질문 — 문장 구조를 겹치지 마라]\n${askedQ.current.slice(-6).map((q) => `  · ${q}`).join("\n")}`
           : "",
@@ -168,22 +218,41 @@ export default function Play() {
       const out = await ask(mode, lastUser, snap, note);
 
       let beat: OpenBeat;
-      if (out && !out.offline && typeof out.question === "string") {
+      const q = out?.question as { text?: string; depth?: number; lens?: string } | string | undefined;
+      const aiQuestion = typeof q === "string" ? q : q?.text;
+
+      if (out && !out.offline && typeof aiQuestion === "string" && aiQuestion.trim()) {
+        const r = out.react as { text?: string } | string | undefined;
         beat = {
-          react: (out.react as string) ?? "",
-          question: out.question as string,
-          lens: (out.lens as string) ?? "free",
-          threads: Array.isArray(out.threads) ? (out.threads as string[]).slice(0, 3) : [],
+          react: (typeof r === "string" ? r : r?.text) ?? "",
+          question: aiQuestion,
+          // lens는 question 안으로 옮겨졌지만 구 스키마도 받아준다
+          lens: (typeof q === "object" ? q.lens : undefined) ?? (out.lens as string) ?? "free",
+          threads: Array.isArray(out.threads)
+            ? (out.threads as (string | { text?: string })[])
+                .map((t) => (typeof t === "string" ? t : t?.text ?? ""))
+                .filter(Boolean)
+                .slice(0, 3)
+            : [],
           directions: Array.isArray(out.directions)
             ? (out.directions as Direction[]).filter((d) => d && d.label && d.text).slice(0, 4)
             : [],
           suggestNext: Boolean(out.suggestNext),
+          // AI가 준 깊이는 대역 안으로 조인다 — 두 단 점프를 막는다
+          depth: clampDepth(
+            (typeof q === "object" ? q.depth : undefined) ?? cue.level,
+            m.depthBand,
+            curDepth
+          ),
+          depthMove: (out.depthMove as OpenBeat["depthMove"]) ?? cue.move,
+          depthWhy: cue.why,
         };
+        setFrame(out.frame as SessionState["frame"], out.care);
       } else {
         beat = localBeat(m, snap, beatNo, lastUser, usedQ.current);
-        // 오프라인 질문은 소진 처리 — 같은 질문이 되풀이되지 않게
-        const bankId = `${m.id}.${beat.lens}`;
-        if (beat.lens !== "free" && !usedQ.current.includes(bankId)) usedQ.current.push(bankId);
+        // 오프라인 질문은 소진 처리 — 같은 질문이 되풀이되지 않게.
+        // 반드시 질문 id로 기록한다. lens는 "free"가 여러 개라 소진이 안 된다.
+        if (beat.qid && !usedQ.current.includes(beat.qid)) usedQ.current.push(beat.qid);
       }
 
       askedQ.current.push(beat.question);
@@ -206,6 +275,18 @@ export default function Play() {
         });
       }
 
+      /* 단계도 기록 — 같은 단에 몇 비트 머물렀는지가 다음 이동의 근거가 된다 */
+      setS((p) => ({
+        ...p,
+        depth: beat.depth,
+        depthBeats: p.depth === beat.depth ? (p.depthBeats ?? 0) + 1 : 0,
+        depthMax: Math.max(p.depthMax ?? 0, beat.depth),
+        depthLog: [
+          ...(p.depthLog ?? []),
+          { movement: m.id, level: beat.depth, move: beat.depthMove, why: beat.depthWhy },
+        ].slice(-40),
+      }));
+
       setBeatLens(beat.lens);
       setDirs(beat.directions);
       setNextReady(beat.suggestNext || beatNo >= m.suggestAfter);
@@ -222,7 +303,17 @@ export default function Play() {
       setBeats(0);
       setDirs([]);
       setNextReady(false);
-      setS((p) => ({ ...p, movement: m.id, beats: 0 }));
+      // 막이 바뀌면 깊이도 그 막의 시작 단으로 리셋한다. 장면이 바뀌었으니 무대도 비운다.
+      setS((p) => ({
+        ...p,
+        movement: m.id,
+        beats: 0,
+        depth: m.depthStart,
+        depthBeats: 0,
+        depthMax: Math.max(p.depthMax ?? 0, m.depthStart),
+        frame: undefined,
+      }));
+      setCareHint("");
 
       const lines = m.opening?.(snap) ?? [];
       for (let i = 0; i < lines.length; i++) {
@@ -265,9 +356,6 @@ export default function Play() {
         await sleep(600);
         push({ role: "other", text: snap.other.trigger, speakerName: snap.other.name }, m.scene(snap));
       }
-
-      // casting은 오프닝이 이미 이름을 물었다 — 비트 없이 바로 입력을 연다
-      if (m.id === "casting") { setWait("input"); return; }
 
       // 오프닝이 이미 질문을 던진 막 — 같은 질문을 또 만들지 않고 방향 칩만 붙인다
       if (m.openingLens) {
@@ -622,7 +710,9 @@ export default function Play() {
   const mvIdx = movementIndex(mv.id);
   const branchLabel = ctx ? BRANCH_SCRIPTS[ctx.b].label : null;
   const openThreads = (s.threads ?? []).filter((t) => !t.pulled).slice(-3);
-  const showControls = wait === "input" && !busy && !ctx && mv.id !== "casting";
+  // 캐스팅 첫 비트(이름 짓기)에서는 조종간을 숨긴다 — 아직 되짚을 얘기가 없다
+  const showControls = wait === "input" && !busy && !ctx && !(mv.id === "casting" && beats === 0);
+  const rung = rungAt(s.depth ?? mv.depthStart);
 
   if (blocked) {
     return (
@@ -664,6 +754,11 @@ export default function Play() {
             <span className="turn-pill" style={{ marginLeft: 0 }}>
               {ctx ? `${ctx.i + 1}/${ctx.steps.length}` : `${beats + 1}번째 말`}
             </span>
+            {!ctx && !s.done && (
+              <span className="turn-pill" style={{ marginLeft: 0 }} title={rung.intent}>
+                {rung.label}
+              </span>
+            )}
           </div>
         </div>
         <div className="acts">
@@ -689,6 +784,12 @@ export default function Play() {
 
       <div className="scroll" ref={scrollRef}>
         <StageScene scene={s.scene} cardId={s.cardId} protagonist={s.character.name || "?"} antagonist={s.other.name} />
+
+        {careHint && !s.done && (
+          <div className="infer" style={{ borderColor: "#2c3a4a", background: "#0d141a" }}>
+            <div className="infer-body">🫧 {careHint}. 이 질문 넘기고 다른 데서 가도 돼.</div>
+          </div>
+        )}
 
         {timeUp && !s.done && (
           <div className="infer" style={{ borderColor: "#4a3a1c", background: "#1a1409" }}>

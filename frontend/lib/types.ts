@@ -69,6 +69,44 @@ export type Direction = {
   kind: "scene" | "feeling" | "turn" | "hold";
   label: string;
   text: string;
+  /** 이 칩을 누르면 대략 어느 깊이(L1~L7)로 가는지 — 단계도 참고용 */
+  depth?: number;
+};
+
+/**
+ * 디렉터가 유저 말에서 읽어낸 것 — 단정이 아니라 항상 수정 가능한 제안.
+ * 비트마다 함께 오고, 확신이 낮으면 화면에 띄우지 않는다.
+ */
+export type BeatRead = {
+  /** 유저가 쓴 단어 그대로 되비추는 조각들 */
+  echo: string[];
+  /** 짐작한 감정 — 디렉터가 붙인 이름이므로 유저가 고친 것보다 약하다 */
+  feelingGuess: string[];
+  /** low면 화면에 띄우지 않는다 */
+  confidence: "low" | "mid" | "high";
+  /** 짐작을 내놓을 때 붙이는 수정 여지 한 문장 */
+  hedge: string;
+};
+
+/** 장면화 재료 — 디렉터가 지금 세우고 있는 무대의 뼈대 */
+export type BeatFrame = {
+  where: string;
+  when: string;
+  who: string[];
+  /** 조명·밝기 */
+  light: string;
+  /** 들리는 소리 */
+  sound: string;
+};
+
+/** 안전 신호 — 매 비트 함께 온다. AI보다 앞단의 safety.ts와 별개의 보조 신호다. */
+export type BeatCare = {
+  /** 힘들어 보이는 신호가 있는지 */
+  strain: boolean;
+  /** 쉬어가자고 먼저 제안할지 */
+  offerPause: boolean;
+  /** 지금 넘어가도 된다고 알려줄지 */
+  offerSkip: boolean;
 };
 
 /** 유저가 흘렸지만 아직 안 펼친 말 — 이야기가 자라는 씨앗 */
@@ -113,6 +151,18 @@ export type SessionState = {
   beats?: number;
   /** 유저가 흘렸지만 아직 안 펼친 말 */
   threads?: Thread[];
+
+  /* ── 단계도 (lib/depth.ts) ── */
+  /** 지금 깊이 L1~L7 */
+  depth?: number;
+  /** 지금 깊이에서 몇 비트째 머물고 있는지 */
+  depthBeats?: number;
+  /** 이 세션에서 도달한 가장 깊은 단 — 커튼콜에서 쓴다 */
+  depthMax?: number;
+  /** 깊이 이동 기록 — 어디서 닫히고 어디서 열렸는지 */
+  depthLog?: { movement: string; level: number; move: string; why: string }[];
+  /** 디렉터가 세우고 있는 장면의 뼈대 (마지막 비트 기준) */
+  frame?: BeatFrame;
 };
 
 export type StoryRecord = {
