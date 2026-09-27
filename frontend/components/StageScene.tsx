@@ -1,6 +1,7 @@
 "use client";
 
 import { cardById, type CardId } from "@/lib/cards";
+import { CardArtEmbed } from "./CardArt";
 import type { SceneState } from "@/lib/types";
 
 const MOOD_FACE: Record<SceneState["mood"], string> = {
@@ -213,17 +214,16 @@ export default function StageScene({
           {/* 부유하는 카드 */}
           {scene.card !== "none" && card && (
             <g className="float-card" transform="translate(300 62)">
-              <rect x="-22" y="-30" width="44" height="60" rx="6"
-                fill={scene.card === "back" ? "#241b38" : "#fdf6ea"}
-                stroke="#d9c38e" strokeWidth="1.5" />
               {scene.card === "back" ? (
-                <text x="0" y="6" fontSize="18" textAnchor="middle">✦</text>
+                <>
+                  <rect x="-22" y="-30" width="44" height="60" rx="6" fill="#241b38" stroke="#d9c38e" strokeWidth="1.5" />
+                  <text x="0" y="6" fontSize="18" textAnchor="middle" fill="#d9c38e">✦</text>
+                </>
               ) : (
                 <>
-                  <text x="0" y="0" fontSize="20" textAnchor="middle">
-                    {scene.card === "flipped" ? card.flip.emoji : card.emoji}
-                  </text>
-                  <text x="0" y="18" fontSize="7" textAnchor="middle" fill="#5a4a2a">
+                  <rect x="-23" y="-31" width="46" height="62" rx="6" fill="none" stroke="#d9c38e" strokeWidth="1.5" />
+                  <CardArtEmbed cardId={card.id} flipped={scene.card === "flipped"} x={-22} y={-30} width={44} />
+                  <text x="0" y="40" fontSize="7" textAnchor="middle" fill="#d9c38e">
                     {scene.card === "flipped" ? card.flip.name : card.name}
                   </text>
                 </>

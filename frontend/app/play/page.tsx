@@ -126,6 +126,16 @@ export default function Play() {
   const [blocked, setBlocked] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const started = useRef(false);
+  /** 서랍장에서 "이 카드로 무대 올리기"로 들어온 경우 — 뽑기 대신 그 카드가 등장한다 */
+  const [preset, setPreset] = useState<TarotCard | null>(null);
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search).get("card");
+    const c = CARDS.find((x) => x.id === q);
+    if (!c) return;
+    setPreset(c);
+    // 디렉터가 "고른 카드"라는 걸 알고 말하도록 세션에도 미리 적어둔다
+    setS((p) => ({ ...p, cardId: c.id }));
+  }, []);
 
   /** 지금 비트의 방향 칩과, 이 비트가 쓴 렌즈 (mirrorsTo 반영용) */
   const [dirs, setDirs] = useState<Direction[]>([]);
@@ -609,6 +619,7 @@ export default function Play() {
         };
         usedQ.current = [];
         askedQ.current = [];
+        setPreset(null); // 새 카드는 다시 뽑는다
         setS(reset);
         void enterMovement(movementById("draw"), reset);
         return;
@@ -658,7 +669,7 @@ export default function Play() {
         await nap(DEMO_PACE.beforeDrawMs);
         if (cancelled) return;
         setDemoNote("카드를 뽑는 중");
-        onDraw(CARDS[Math.floor(Math.random() * CARDS.length)]);
+        onDraw(preset ?? CARDS[Math.floor(Math.random() * CARDS.length)]);
         return;
       }
       if (wait === "confirm") {
@@ -801,7 +812,7 @@ export default function Play() {
         {s.messages.map((m) => <Bubble key={m.id} m={m} />)}
         {busy && <Typing />}
 
-        {wait === "draw" && <Deck onDraw={onDraw} />}
+        {wait === "draw" && <Deck onDraw={onDraw} preset={preset} />}
 
         {wait === "confirm" && !busy && (
           <button className="cta cta-primary" onClick={onConfirm}>계속</button>

@@ -8,11 +8,11 @@ import TabBar from "@/components/TabBar";
 import Logo from "@/components/Logo";
 
 export default function Home() {
-  const [collected, setCollected] = useState<Set<string>>(new Set());
+  const [stories, setStories] = useState(0);
   const [used, setUsed] = useState(0);
 
   useEffect(() => {
-    setCollected(new Set(loadStories().map((s) => s.cardId)));
+    setStories(loadStories().length);
     setUsed(sessionsToday());
   }, []);
 
@@ -73,10 +73,10 @@ export default function Home() {
         </Link>
 
         <Link href="/drawer" className="row-item" style={{ textDecoration: "none", color: "inherit" }}>
-          <span className="lg">🗄️</span>
+          <span className="lg">📖</span>
           <div style={{ flex: 1 }}>
-            <b>내 카드 서랍장</b>
-            <small>모은 카드 {collected.size}장 / 12장 · 지난 이야기 다시 보기</small>
+            <b>이야기 서랍장</b>
+            <small>{stories === 0 ? "지난 이야기 다시 보기 · 카드 골라 시작하기" : `지난 이야기 ${stories}편 · 카드 골라 시작하기`}</small>
           </div>
           <span style={{ color: "var(--ink-faint)" }}>›</span>
         </Link>

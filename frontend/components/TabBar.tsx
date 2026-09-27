@@ -4,8 +4,8 @@ import { usePathname } from "next/navigation";
 
 const TABS = [
   { href: "/", icon: "🎭", label: "무대" },
-  { href: "/drawer", icon: "🗄️", label: "카드 서랍장" },
-  { href: "/about", icon: "🛡️", label: "안전·안내" },
+  { href: "/drawer", icon: "📖", label: "서랍장" },
+  { href: "/about", icon: "✨", label: "소개" },
 ];
 
 export default function TabBar() {

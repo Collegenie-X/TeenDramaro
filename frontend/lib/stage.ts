@@ -141,7 +141,9 @@ export const MOVEMENTS: Movement[] = [
       s.character.name
         ? `${이가(me(s))} 무대에 올랐어. 조명 들어간다.`
         : "무대에 조명 들어간다. 배우는 아직 이름이 없어도 돼.",
-      "카드를 한 장 뽑아볼게. 네가 고르는 게 아니라 뽑히는 거야.",
+      s.cardId
+        ? "네가 서랍장에서 고른 카드로 가자. 뒤집어볼게."
+        : "카드를 한 장 뽑아볼게. 네가 고르는 게 아니라 뽑히는 거야.",
     ],
     scene: () => sc({ backdrop: "stage", light: 2, card: "back" }),
   },

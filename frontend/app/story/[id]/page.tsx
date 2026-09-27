@@ -7,6 +7,7 @@ import { cardById } from "@/lib/cards";
 import { loadStories } from "@/lib/store";
 import type { StoryRecord } from "@/lib/types";
 import StageScene from "@/components/StageScene";
+import { CardArt } from "@/components/CardArt";
 
 export default function Story() {
   const { id } = useParams<{ id: string }>();
@@ -29,9 +30,10 @@ export default function Story() {
   return (
     <>
       <header className="topbar">
-        <div className="topbar-row">
-          <div>
-            <div className="topbar-title">📖 {st.title || "제목 없는 이야기"}</div>
+        <div className="topbar-row" style={{ gap: 10 }}>
+          <span className="story-cover"><CardArt card={c} flipped width={30} label={false} /></span>
+          <div style={{ flex: 1 }}>
+            <div className="topbar-title">{st.title || "제목 없는 이야기"}</div>
             <div className="topbar-sub">{st.date} · {c.emoji} {c.name} → {c.flip.emoji} {c.flip.name}</div>
           </div>
         </div>
