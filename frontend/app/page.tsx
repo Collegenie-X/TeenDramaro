@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { loadStories, sessionsToday } from "@/lib/store";
 import { DAILY_SESSION_LIMIT } from "@/lib/safety";
 import TabBar from "@/components/TabBar";
+import Logo from "@/components/Logo";
 
 export default function Home() {
   const [collected, setCollected] = useState<Set<string>>(new Set());
@@ -21,9 +22,12 @@ export default function Home() {
     <>
       <header className="topbar">
         <div className="topbar-row">
-          <div>
-            <div className="topbar-title">🎭 마음무대 · MindStage</div>
-            <div className="topbar-sub">타로 × 사이코드라마 × AI 디렉터</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <Logo size={34} />
+            <div>
+              <div className="topbar-title">TeenDramaro · 마음무대</div>
+              <div className="topbar-sub">타로 × 사이코드라마 × AI 디렉터</div>
+            </div>
           </div>
           <span className="turn-pill">오늘 {left}/{DAILY_SESSION_LIMIT}회</span>
         </div>

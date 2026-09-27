@@ -2,9 +2,9 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "마음무대 · MindStage",
+  title: "TeenDramaro · 마음무대",
   description: "타로 카드 × 사이코드라마 × AI 디렉터 — 가상의 나로 내 이야기를 연출하는 무대",
-  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "마음무대" },
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "TeenDramaro" },
 };
 
 export const viewport: Viewport = {

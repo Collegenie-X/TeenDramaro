@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 128" width="420" height="128" role="img" aria-label="TeenDramaro">
+  <defs>
+    <linearGradient id="tdw-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1f1636"/><stop offset="100%" stop-color="#0b0714"/>
+    </linearGradient>
+    <radialGradient id="tdw-spot" cx="50%" cy="20%" r="70%">
+      <stop offset="0%" stop-color="#ffe9b8" stop-opacity=".38"/>
+      <stop offset="100%" stop-color="#ffe9b8" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="tdw-gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f3d79a"/><stop offset="100%" stop-color="#c9a15c"/>
+    </linearGradient>
+  </defs>
+
+  <g>
+    <rect width="128" height="128" rx="30" fill="url(#tdw-bg)"/>
+    <rect width="128" height="128" rx="30" fill="url(#tdw-spot)"/>
+    <path d="M18 18 h20 q-9 46 2 92 h-22 z" fill="#6d1a35"/>
+    <path d="M110 18 h-20 q9 46 -2 92 h22 z" fill="#6d1a35"/>
+    <path d="M18 18 h20 q-9 46 2 92 h-8 q-11 -46 -2 -92 z" fill="#4a1026" opacity=".7"/>
+    <path d="M110 18 h-20 q9 46 -2 92 h8 q11 -46 2 -92 z" fill="#4a1026" opacity=".7"/>
+    <g transform="rotate(-13 64 70)" opacity=".55">
+      <rect x="44" y="34" width="40" height="60" rx="7" fill="#2e2247" stroke="url(#tdw-gold)" stroke-width="2"/>
+    </g>
+    <g transform="rotate(13 64 70)" opacity=".55">
+      <rect x="44" y="34" width="40" height="60" rx="7" fill="#2e2247" stroke="url(#tdw-gold)" stroke-width="2"/>
+    </g>
+    <rect x="44" y="32" width="40" height="62" rx="8" fill="#17102a" stroke="url(#tdw-gold)" stroke-width="2.5"/>
+    <path d="M53 47 h22 M64 47 v32" stroke="url(#tdw-gold)" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="64" cy="86" r="3" fill="url(#tdw-gold)"/>
+    <ellipse cx="64" cy="104" rx="34" ry="5" fill="#ffe9b8" opacity=".16"/>
+  </g>
+
+  <g font-family="'Apple SD Gothic Neo','Pretendard','Noto Sans KR',system-ui,sans-serif">
+    <text x="150" y="66" font-size="34" font-weight="700" letter-spacing="-0.5" fill="#f4eefb">Teen<tspan fill="url(#tdw-gold)">Dramaro</tspan></text>
+    <text x="152" y="90" font-size="14" letter-spacing="3.2" fill="#b6a9c9">마음무대 · MIND STAGE</text>
+  </g>
+</svg>

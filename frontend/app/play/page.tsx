@@ -78,7 +78,7 @@ type Await = "none" | "input" | "confirm" | "draw" | "curtain";
  * 안내 페이지(/about)의 타임라인과 같은 말투를 쓴다.
  */
 const CHAPTER_NOTE: Record<MovementId, string> = {
-  casting: "무대에 서는 건 네가 아니야. 네가 만든 애가 대신 여행해. 극단적으로 만들어도 돼.",
+  casting: "무대에 서는 건 네가 아니야. 네가 만든 애가 대신 여행해. 솔직하게 만들수록 이야기가 살아나.",
   draw: "카드는 해석하려고 뽑는 게 아니야. 말문을 여는 소품이야.",
   open: "하고 싶은 얘기를 꺼내. 줄거리보다 선명한 한 컷이 중요해.",
   deepen: "사건이 아니라, 사건이 건드린 자리를 봐. 「모르겠어」도 완결된 답이야.",
