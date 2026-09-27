@@ -9,6 +9,8 @@ import {
 import { DAILY_SESSION_LIMIT, SAFETY_MESSAGE } from "@/lib/safety";
 
 type Step = {
+  /** 03 흐름 필름 컷(AboutArt의 FRAMES)과 같은 이모지 — 그림과 목록을 이어준다 */
+  em: string;
   act: string;
   title: string;
   body: string;
@@ -19,41 +21,48 @@ type Step = {
 /** 실제 엔진의 막 구성(lib/stage.ts)을 이야기 순서대로 풀어 쓴 것 */
 const STEPS: Step[] = [
   {
+    em: "🎭",
     act: "무대 입장",
     title: "네가 아니라, 네가 만든 애가 올라가",
     body: "이름 하나만 줘도 시작돼. 더 꾸미고 싶으면 얼마든지 있어도 되고. 걔가 겪는 일이면 좀 덜 부담돼.",
     line: { who: "디렉터", text: "무대에 설 캐릭터를 한 명 만들자. 이름을 하나 줘봐." },
   },
   {
+    em: "🃏",
     act: "카드 뽑기",
     title: "카드는 점 보려고 뽑는 거 아니야",
     body: "말문 여는 소품이야. 카드 보고 떠오르는 게 있으면 그걸로 가고, 아예 딴 얘기가 하고 싶으면 그걸로 가도 돼. 그럼 카드는 그냥 잊어버려.",
     ritual: true,
   },
   {
+    em: "📖",
     act: "1막 · 펼치기",
     title: "하고 싶은 얘기부터 꺼내",
     body: "정해진 주제 없어. 여기서 제일 오래 있어. 무슨 일이었는지, 어디였는지, 제일 선명하게 남은 게 뭔지 — 줄거리보다 한 컷이 중요해.",
     line: { who: "디렉터", text: "그 일에서 제일 선명하게 남은 장면이 뭐야? 한 컷만 꺼내봐." },
   },
   {
+    em: "💭",
     act: "2막 · 안쪽",
     title: "무슨 일이 있었나 말고, 그게 건드린 데",
     body: "제일 쎄했던 지점, 머릿속에 계속 맴돈 말, 그게 누구 목소리였는지. 「모르겠어」도 답이야. 넘어가도 돼.",
   },
   {
+    em: "🤝",
     act: "3막 · 마주침",
     title: "사람이 있는 장면을 세워",
     body: "상대가 나쁜 애라는 뜻은 아니야. 사람이 아니어도 되고 — 단톡방, 성적표, 집 현관도 상대가 될 수 있어. 없으면 없는 대로 가.",
     line: { who: "디렉터", text: "그때 진짜 하고 싶었던 말은 뭐였어?" },
   },
   {
+    em: "🪞",
     act: "4막 · 거울",
     title: "네가 한 말만 모아서 다시 읽어줄게",
     body: "없는 말 지어내지 않아. 맞는 데, 아닌 데, 빠진 거 — 네가 고쳐.",
     ritual: true,
   },
   {
+    em: "⏪",
     act: "5막 · 리플레이",
     title: "같은 장면, 다른 선택",
     body: "그때 못 한 말 여기서 해봐. 이게 정답이라고 안 해. 그냥 다른 버전도 된다는 걸 한 번 통과해 보는 거야.",
@@ -61,6 +70,7 @@ const STEPS: Step[] = [
     ritual: true,
   },
   {
+    em: "👏",
     act: "커튼콜",
     title: "제목 하나랑, 내일의 한마디",
     body: "제목 · 인사이트 3줄 · 내일의 한마디. 전부 네가 실제로 쓴 말에서만 나와. 조언도 처방도 없어. 그리고 또 해볼 수 있어 — 다른 대사로, 역할 바꿔서, 1년 뒤로 가서.",
@@ -198,7 +208,7 @@ export default function About() {
         </div>
       </header>
 
-      <div className="scroll" ref={scrollRef}>
+      <div className="scroll ab-scroll" ref={scrollRef}>
         {/* ── 히어로 ─────────────────────────────── */}
         <div className="ab-hero">
           <span className="badge">TEENDRAMARO · 마음무대</span>
@@ -293,6 +303,7 @@ export default function About() {
           <div className="story">
             {STEPS.map((s) => (
               <div key={s.act} className={`story-step rv${s.ritual ? " ritual" : ""}`}>
+                <span className="story-em" aria-hidden="true">{s.em}</span>
                 <span className="story-act">{s.act}</span>
                 <b>{s.title}</b>
                 <p>{s.body}</p>
