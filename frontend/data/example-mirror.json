@@ -1,0 +1,637 @@
+{
+  "id": "mirror",
+  "emoji": "🪞",
+  "title": "사진 속의 내가 싫어",
+  "tagline": "남들이 아는 나와 내가 아는 나가 다른 아이",
+  "theme": "외모 · 자기 인식 · SNS 비교",
+  "cast": {
+    "avatar": "린 — 단체사진에서 자기 얼굴만 먼저 확인하는 애",
+    "other": "단톡방 — 사람이 아니라 알림. 사진이 올라올 때마다 마음이 내려앉는다",
+    "card_main": "🪞 거울 (자기 인식)",
+    "card_mid": "🌙 달 (이름 붙이기 어려운 기분)"
+  },
+  "turns": [
+    {
+      "turn": 1,
+      "movement": "casting",
+      "depth": 1,
+      "director": "무대에 설 애 이름 하나 지어줄래? 진짜 네 이름 말고.",
+      "user": "린",
+      "scene": {
+        "bg": "curtain",
+        "cast": [],
+        "caption": "막이 오르기 전"
+      }
+    },
+    {
+      "turn": 2,
+      "movement": "casting",
+      "depth": 2,
+      "director": "린이는 남들이 보기에 어떤 애야?",
+      "user": "꾸미는 거 좋아하고 사진 잘 찍는 애로 알려져 있음.",
+      "scene": {
+        "bg": "spotlight",
+        "cast": [
+          {
+            "id": "rin",
+            "emo": "smile",
+            "pose": "stand",
+            "x": 0.5
+          }
+        ],
+        "caption": "사진 잘 찍는 애, 린"
+      }
+    },
+    {
+      "turn": 3,
+      "movement": "casting",
+      "depth": 2,
+      "director": "사진 잘 찍는 애. 근데 그런 애가 제일 약한 지점은?",
+      "user": "자기 사진은 못 봄. 단체사진 올라오면 자기 얼굴만 확대해서 봄.",
+      "scene": {
+        "bg": "spotlight",
+        "cast": [
+          {
+            "id": "rin",
+            "emo": "smile",
+            "pose": "stand",
+            "x": 0.5
+          }
+        ],
+        "caption": "사진 잘 찍는 애, 린"
+      }
+    },
+    {
+      "turn": 4,
+      "movement": "casting",
+      "depth": 2,
+      "director": "남 사진은 잘 찍고 자기 사진은 못 본다 — 아이러니하네. 제일 센 지점은?",
+      "user": "남을 예쁘게 찍어줌. 애들이 린이한테 찍어달라고 줄 섬.",
+      "scene": {
+        "bg": "spotlight",
+        "cast": [
+          {
+            "id": "rin",
+            "emo": "smile",
+            "pose": "stand",
+            "x": 0.5
+          }
+        ],
+        "caption": "사진 잘 찍는 애, 린"
+      }
+    },
+    {
+      "turn": 5,
+      "movement": "casting",
+      "depth": 2,
+      "director": "자, 오늘 린이는 어떤 상황이야?",
+      "user": "어제 소풍 단체사진이 단톡에 올라왔는데, 린이가 그 사진을 백 번쯤 봤어. 그리고 몰래 저장 안 하고 지웠음.",
+      "scene": {
+        "bg": "spotlight",
+        "cast": [
+          {
+            "id": "rin",
+            "emo": "worry",
+            "pose": "phone",
+            "x": 0.5
+          }
+        ],
+        "prop": "phone",
+        "caption": "백 번 본 단체사진"
+      }
+    },
+    {
+      "turn": 6,
+      "movement": "draw",
+      "depth": 1,
+      "director": "백 번 보고 지웠다. 소품 챙기고 들어가자. (🪞 거울) …하필 거울이네.",
+      "user": "(카드를 뽑음) 무섭다 진짜.",
+      "scene": {
+        "bg": "curtain",
+        "cast": [
+          {
+            "id": "rin",
+            "emo": "calm",
+            "pose": "stand",
+            "x": 0.5
+          }
+        ],
+        "prop": "card",
+        "caption": "🪞 거울 카드가 내려온다"
+      }
+    },
+    {
+      "turn": 7,
+      "movement": "open",
+      "depth": 2,
+      "director": "그 사진 처음 본 순간 장면으로 가자. 어디야, 몇 시야?",
+      "user": "밤에 침대. 알림 와서 봤어. 열자마자 자기 얼굴 찾았어.",
+      "decision": {
+        "prompt": "밤. 침대. 단체사진 알림이 떴다. — 린이는…",
+        "label": "🔍 열자마자 자기 얼굴부터 찾는다 (그날의 선택)",
+        "alt": {
+          "label": "👍 좋아요만 누르고 닫는다",
+          "branch": [
+            {
+              "role": "director",
+              "text": "닫았어. 린이가 폰을 내려놓고 천장을 봐."
+            },
+            {
+              "role": "director",
+              "text": "…3분. 7분. 10분. 머릿속에서 그 사진이 자기 멋대로 확대되기 시작해."
+            },
+            {
+              "role": "user",
+              "text": "(결국 다시 연다)"
+            },
+            {
+              "role": "director",
+              "text": "확인 안 하면 더 간지럽다는 거, 린이가 제일 잘 알지. 백 번 본 그날로 되감자."
+            }
+          ]
+        }
+      },
+      "scene": {
+        "bg": "room-night",
+        "light": 0,
+        "cast": [
+          {
+            "id": "rin",
+            "emo": "blank",
+            "pose": "phone",
+            "x": 0.42
+          }
+        ],
+        "prop": "phone",
+        "caption": "밤, 침대, 알림 하나"
+      }
+    },
+    {
+      "turn": 8,
+      "movement": "open",
+      "depth": 3,
+      "director": "제일 먼저 자기를 찾는 눈. 확대해서 보는 그 몇 초, 몸은 어땠어?",
+      "user": "속이 좀 안 좋아졌어. 그리고 턱을 만지고 있었어 나도 모르게.",
+      "scene": {
+        "bg": "room-night",
+        "light": 0,
+        "cast": [
+          {
+            "id": "rin",
+            "emo": "worry",
+            "pose": "phone",
+            "x": 0.42
+          }
+        ],
+        "prop": "phone",
+        "caption": "확대, 또 확대"
+      }
+    },
+    {
+      "turn": 9,
+      "movement": "open",
+      "depth": 3,
+      "director": "손이 턱으로 갔구나. 그 사진에서 린이는 뭘 보고 있었어? 구체적으로.",
+      "user": "옆에 있는 애랑 비교되는 거. 린이 얼굴이 더 크게 나왔어.",
+      "scene": {
+        "bg": "room-night",
+        "light": 0,
+        "cast": [
+          {
+            "id": "rin",
+            "emo": "worry",
+            "pose": "phone",
+            "x": 0.42
+          }
+        ],
+        "prop": "phone",
+        "caption": "확대, 또 확대"
+      }
+    },
+    {
+      "turn": 10,
+      "movement": "deepen",
+      "depth": 4,
+      "director": "비교가 먼저 눈에 들어왔네. 그때 속에서 돈 말을 그대로 써줄래? 대사로.",
+      "user": "\"이걸 다 봤겠네. 애들 다.\"",
+      "scene": {
+        "bg": "room-night",
+        "light": 0,
+        "cast": [
+          {
+            "id": "rin",
+            "emo": "sad",
+            "pose": "phone",
+            "x": 0.42
+          },
+          {
+            "id": "inner",
+            "emo": "blank",
+            "pose": "stand",
+            "x": 0.72,
+            "ghost": true
+          }
+        ],
+        "caption": "\"이걸 다 봤겠네\""
+      }
+    },
+    {
+      "turn": 11,
+      "movement": "deepen",
+      "depth": 4,
+      "director": "린이가 본 건 자기 얼굴이 아니라 '남들이 본 자기 얼굴'이었네. 그 기분에 이름 붙이면?",
+      "user": "모르겠어. 부끄러운 것도 아니고 슬픈 것도 아니고.",
+      "scene": {
+        "bg": "room-night",
+        "light": 0,
+        "cast": [
+          {
+            "id": "rin",
+            "emo": "sad",
+            "pose": "phone",
+            "x": 0.42
+          },
+          {
+            "id": "inner",
+            "emo": "blank",
+            "pose": "stand",
+            "x": 0.72,
+            "ghost": true
+          }
+        ],
+        "caption": "\"이걸 다 봤겠네\""
+      }
+    },
+    {
+      "turn": 12,
+      "movement": "deepen",
+      "depth": 2,
+      "director": "이름이 안 붙는 기분이 제일 다루기 힘들지. 카드로 가보자 — 한 장 뽑아볼래? (🌙 달)",
+      "user": "(카드를 뽑음) 달. 좋은지 나쁜지도 모르겠는 거. 맞아 이거야.",
+      "scene": {
+        "bg": "chat",
+        "cast": [
+          {
+            "id": "rin",
+            "emo": "worry",
+            "pose": "stand",
+            "x": 0.5
+          }
+        ],
+        "prop": "card",
+        "caption": "🌙 달 — 이름 붙이기 어려운 기분"
+      }
+    },
+    {
+      "turn": 13,
+      "movement": "deepen",
+      "depth": 5,
+      "director": "이름 없는 기분을 카드가 대신 불러줬네. 그럼 그 아래는 뭐가 있을까. \"애들 다 봤겠네\" 다음에 오는 말.",
+      "user": "애들이 나를 그 얼굴로 기억할 거라는 거. 내가 아는 나는 그게 아닌데.",
+      "decision": {
+        "prompt": "\"애들 다 봤겠네\" — 그 생각이 꼬리를 문다. — 린이는…",
+        "label": "🌀 그 생각을 끝까지 따라간다",
+        "alt": {
+          "label": "📵 폰을 끄고 생각을 끊는다",
+          "branch": [
+            {
+              "role": "director",
+              "text": "껐어. 화면이 깜깜해졌어. 근데—"
+            },
+            {
+              "role": "director",
+              "text": "머릿속 재생은 안 꺼져. 깜깜한 화면에 비친 자기 얼굴만 하나 더 늘었지."
+            },
+            {
+              "role": "director",
+              "text": "생각은 끊는 게 아니라, 끝까지 따라가서 정체를 보는 거야. 그래야 끝나. 같이 따라가 보자 — 되감는다."
+            }
+          ]
+        }
+      },
+      "scene": {
+        "bg": "chat",
+        "cast": [
+          {
+            "id": "rin",
+            "emo": "worry",
+            "pose": "stand",
+            "x": 0.5
+          }
+        ],
+        "prop": "card",
+        "caption": "🌙 달 — 이름 붙이기 어려운 기분"
+      }
+    },
+    {
+      "turn": 14,
+      "movement": "deepen",
+      "depth": 5,
+      "director": "내가 아는 나랑 애들이 아는 나가 다르다. …린이가 아는 린이는 어떤 얼굴이야?",
+      "user": "거울 볼 때는 괜찮아. 각도 맞춰서 보니까. 사진은 내가 못 고르는 각도야.",
+      "scene": {
+        "bg": "mirrorroom",
+        "cast": [
+          {
+            "id": "rin",
+            "emo": "calm",
+            "pose": "stand",
+            "x": 0.35
+          }
+        ],
+        "caption": "거울은 괜찮은데, 사진은 내가 못 고르는 각도"
+      }
+    },
+    {
+      "turn": 15,
+      "movement": "deepen",
+      "depth": 6,
+      "director": "린이가 통제할 수 있는 각도 안에서만 자기가 괜찮은 거구나. 그 각도 관리, 언제부터 시작됐을까.",
+      "user": "중2 때 누가 지나가면서 한마디 했어. 별말 아니었는데 그날부터 사진 다 확인함.",
+      "scene": {
+        "bg": "hallway",
+        "light": 1,
+        "cast": [
+          {
+            "id": "rin",
+            "emo": "tear",
+            "pose": "stand",
+            "x": 0.3
+          },
+          {
+            "id": "classmate",
+            "emo": "blank",
+            "pose": "walk",
+            "x": 0.75,
+            "flip": true
+          }
+        ],
+        "caption": "중2 — 지나가는 한마디"
+      }
+    },
+    {
+      "turn": 16,
+      "movement": "deepen",
+      "depth": 6,
+      "director": "별말 아닌 한마디가 몇 년치 습관을 만들었네. 객석에서 보자 — 그날의 중2 린이, 지금 어떻게 보여?",
+      "user": "걔 잘못 아님. 근데 너무 오래 들고 있었던 것 같아.",
+      "scene": {
+        "bg": "spotlight",
+        "cast": [
+          {
+            "id": "inner",
+            "emo": "sad",
+            "pose": "stand",
+            "x": 0.5,
+            "ghost": true
+          },
+          {
+            "id": "rin",
+            "emo": "calm",
+            "pose": "stand",
+            "x": 0.14
+          }
+        ],
+        "caption": "객석에서 중2의 나를 본다"
+      }
+    },
+    {
+      "turn": 17,
+      "movement": "deepen",
+      "depth": 7,
+      "director": "오래 들고 있었다 — 그 말 네가 했어. 그럼 린이가 진짜 원하는 건 뭘까. 예뻐지는 거 말고.",
+      "user": "각도 신경 안 쓰고 사진에 나오고 싶은 거. 그냥 같이 웃는 사진.",
+      "scene": {
+        "bg": "spotlight",
+        "cast": [
+          {
+            "id": "inner",
+            "emo": "sad",
+            "pose": "stand",
+            "x": 0.5,
+            "ghost": true
+          },
+          {
+            "id": "rin",
+            "emo": "calm",
+            "pose": "stand",
+            "x": 0.14
+          }
+        ],
+        "caption": "객석에서 중2의 나를 본다"
+      }
+    },
+    {
+      "turn": 18,
+      "movement": "meet",
+      "depth": 3,
+      "director": "좋아. 그럼 그 단톡방을 무대에 올려보자. 사람이 아니라 알림이 상대였지. 린이가 그 방에서 하고 싶은 게 뭐야?",
+      "user": "사진에 \"나 왜 이렇게 나왔냐 ㅋㅋ\" 하고 쓰고 싶은데 못 씀. 관심 끄는 것 같아서.",
+      "scene": {
+        "bg": "chat",
+        "cast": [
+          {
+            "id": "rin",
+            "emo": "worry",
+            "pose": "phone",
+            "x": 0.4
+          }
+        ],
+        "prop": "phone",
+        "caption": "단톡방 — 쓰고 싶은데 못 쓰는 말"
+      }
+    },
+    {
+      "turn": 19,
+      "movement": "replay",
+      "depth": 4,
+      "director": "실제로는 조용히 지웠지. 무대에선 몇 번이든 돼. 출구 여러 개야 — 그 댓글 쓰기 / 아예 안 보기 / 친한 애한테만 말하기 / 이번에도 조용히 지우기. 뭐로 갈래?",
+      "user": "친한 애한테만 말하기. \"나 저 사진 좀 별로야\" 하고 DM 보냄.",
+      "choice": {
+        "id": "dm",
+        "label": "💬 친한 애한테 DM"
+      },
+      "scene": {
+        "bg": "room-night",
+        "light": 1,
+        "cast": [
+          {
+            "id": "rin",
+            "emo": "calm",
+            "pose": "phone",
+            "x": 0.35
+          },
+          {
+            "id": "chingu",
+            "emo": "smile",
+            "pose": "stand",
+            "x": 0.78,
+            "ghost": true
+          }
+        ],
+        "prop": "phone",
+        "caption": "두 번째 테이크 — 친한 애한테 DM"
+      }
+    },
+    {
+      "turn": 20,
+      "movement": "replay",
+      "depth": 4,
+      "director": "(친구 역) \"엥 왜? 난 네가 제일 잘 나왔다고 생각했는데 ㅋㅋ 근데 싫으면 지워달라고 할까?\" — 어때?",
+      "user": "어… 지워달라고 할 수도 있는 거였네. 그 생각을 못 했어.",
+      "scene": {
+        "bg": "room-night",
+        "light": 1,
+        "cast": [
+          {
+            "id": "rin",
+            "emo": "blank",
+            "pose": "phone",
+            "x": 0.35
+          },
+          {
+            "id": "chingu",
+            "emo": "grin",
+            "pose": "stand",
+            "x": 0.78,
+            "ghost": true
+          }
+        ],
+        "prop": "phone",
+        "caption": "\"지워달라고 할까?\" — 그 생각을 못 했다"
+      }
+    },
+    {
+      "turn": 21,
+      "movement": "replay",
+      "depth": 5,
+      "director": "방법이 하나 더 있었던 거지. 다른 출구도 가볼래?",
+      "user": "단톡에 직접 써보기. \"나 왜 이렇게 나왔냐 ㅋㅋ 다음엔 내가 찍는다.\"",
+      "choice": {
+        "id": "talk",
+        "label": "📢 단톡에 직접 쓰기"
+      },
+      "scene": {
+        "bg": "chat",
+        "light": 1,
+        "cast": [
+          {
+            "id": "rin",
+            "emo": "calm",
+            "pose": "phone",
+            "x": 0.5
+          }
+        ],
+        "prop": "phone",
+        "caption": "이번엔 단톡에 직접"
+      }
+    },
+    {
+      "turn": 22,
+      "movement": "replay",
+      "depth": 5,
+      "director": "(단톡 역) \"ㅋㅋㅋ 아 그래서 네가 맨날 카메라 들고 있었냐\" \"다음엔 린이 꼭 넣어서 찍자\" — 린이 지금 몸은?",
+      "user": "턱 만지던 손이 내려감. 좀 웃김.",
+      "scene": {
+        "bg": "chat",
+        "light": 2,
+        "cast": [
+          {
+            "id": "rin",
+            "emo": "smile",
+            "pose": "phone",
+            "x": 0.5
+          }
+        ],
+        "prop": "phone",
+        "caption": "턱을 만지던 손이 내려간다"
+      }
+    },
+    {
+      "turn": 23,
+      "movement": "replay",
+      "depth": 6,
+      "director": "지우기, DM, 단톡에 직접 쓰기 — 셋 다 린이가 했어. 어느 게 정답이란 건 없어. 중2 때는 '확인하고 혼자 삼키기' 하나였는데 지금 셋이네.",
+      "user": "셋 다 가능하다는 게 신기함.",
+      "wrapup": true,
+      "scene": {
+        "bg": "chat",
+        "light": 2,
+        "cast": [
+          {
+            "id": "rin",
+            "emo": "smile",
+            "pose": "phone",
+            "x": 0.5
+          }
+        ],
+        "prop": "phone",
+        "caption": "턱을 만지던 손이 내려간다"
+      }
+    },
+    {
+      "turn": 24,
+      "movement": "curtain",
+      "depth": 4,
+      "director": "오늘 제목 — 「내가 못 고르는 각도」 어때?",
+      "user": "그거 좋다.",
+      "scene": {
+        "bg": "curtain",
+        "cast": [
+          {
+            "id": "rin",
+            "emo": "smile",
+            "pose": "stand",
+            "x": 0.5
+          }
+        ],
+        "caption": "막이 내려온다"
+      }
+    },
+    {
+      "turn": 25,
+      "movement": "curtain",
+      "depth": 4,
+      "director": "남길 세 줄: ① 린이는 남을 예쁘게 찍어주면서 자기 사진은 못 보는 애였다. ② \"애들 다 봤겠네\" — 린이가 본 건 자기 얼굴이 아니라 남들이 본 자기 얼굴이었다. ③ \"너무 오래 들고 있었던 것 같아\" — 중2의 한마디를 내려놓는 건 오늘부터 가능하다. 다 네 말이야.",
+      "user": "저장할래.",
+      "scene": {
+        "bg": "curtain",
+        "cast": [
+          {
+            "id": "rin",
+            "emo": "smile",
+            "pose": "stand",
+            "x": 0.5
+          }
+        ],
+        "caption": "막이 내려온다"
+      }
+    },
+    {
+      "turn": 26,
+      "movement": "curtain",
+      "depth": 2,
+      "director": "🪞 거울 뒤집으면 🖼️ 창문이야 — 계속 비춰보던 게 거울이 아니라 창문이었을 수도 있어, 건너편에 누가 있었어. 오늘 린이가 그 건너편을 봤네. 수고했어, 작가님.",
+      "user": "ㅎㅎ 다음에 또.",
+      "scene": {
+        "bg": "curtain",
+        "cast": [
+          {
+            "id": "rin",
+            "emo": "smile",
+            "pose": "stand",
+            "x": 0.4
+          },
+          {
+            "id": "director",
+            "emo": "smile",
+            "pose": "stand",
+            "x": 0.72
+          }
+        ],
+        "prop": "card",
+        "caption": "커튼콜"
+      }
+    }
+  ]
+}

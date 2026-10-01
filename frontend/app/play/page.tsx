@@ -24,7 +24,7 @@ import SafetySheet from "@/components/SafetySheet";
 import CurtainCall from "@/components/CurtainCall";
 import { Bubble, Typing } from "@/components/ChatBits";
 import { type Step } from "@/lib/flow";
-import { type Branch, type Direction, type Msg, type SceneState, type SessionState, type Thread } from "@/lib/types";
+import { type Branch, type Direction, type Msg, type PersonaCard, type SceneState, type SessionState, type Thread } from "@/lib/types";
 import { BRANCH_SCRIPTS } from "@/lib/branches";
 import { MOVEMENTS, movementById, movementIndex, nextMovement, stageBrief, type Movement, type MovementId } from "@/lib/stage";
 import { localBeat, openingDirections, pullThreads, type OpenBeat } from "@/lib/openbeat";
@@ -35,11 +35,22 @@ import { CARDS, type TarotCard } from "@/lib/cards";
 import { feelingEmoji } from "@/lib/emotions";
 import GroundingSheet from "@/components/GroundingSheet";
 import { DEMO_PACE } from "@/lib/demo";
+import { useSpeaker } from "@/lib/voice";
 
 let seq = 0;
 const uid = () => `m${++seq}`;
 let tseq = 0;
 const tid = () => `t${++tseq}`;
+
+/**
+ * 애매한 답 감지 — "몰라", "그냥", 아주 짧은 답이 이어지면 캐묻는 대신
+ * 카드 뽑기를 제안한다 (심문 → 놀이). AI의 suggestCard와 OR로 작동한다.
+ */
+const VAGUE = /^(몰라|모르겠|그냥|글쎄|별로|음+|어+|엄+|\.+|…+|ㅋ+|ㅎ+|ㅠ+|ㅜ+)/;
+const isVague = (t: string) => {
+  const x = t.trim();
+  return x.length > 0 && (x.replace(/\s/g, "").length <= 5 || VAGUE.test(x));
+};
 
 /** 커튼콜 뒤 재도전 분기(기존 Step 스크립트)를 돌릴 때만 쓴다 */
 type Ctx = { b: Exclude<Branch, "newcard">; steps: Step[]; i: number } | null;
@@ -102,6 +113,20 @@ function clampDepth(
   return Math.max(band[0], Math.min(band[1], step)) as DepthLevel;
 }
 
+/**
+ * AI가 준 aux(보조자아 한 턴)를 검증한다.
+ * 비어 있거나, 상대가 아직 없거나, 대사가 너무 길면 무대에 세우지 않는다 —
+ * 상대가 길게 말하면 무대가 상대 것이 되고 유저는 다시 구경꾼이 된다.
+ */
+function readAux(out: Record<string, unknown>, s: SessionState): OpenBeat["aux"] {
+  const a = out.aux as { speak?: boolean; name?: string; action?: string; line?: string } | undefined;
+  const line = (a?.line ?? "").trim();
+  if (!a?.speak || !line) return undefined;
+  const name = (a.name || s.other.name || "").trim();
+  if (!name) return undefined;
+  return { name, action: (a.action ?? "").trim().slice(0, 60), line: line.slice(0, 220) };
+}
+
 /** 막 진입 직후 첫 입력이 저장될 필드 */
 const FIRST_FIELD: Partial<Record<MovementId, "characterName" | "firstResponse" | "coreFeeling" | "otherName" | "replayResponse">> = {
   casting: "characterName",
@@ -148,6 +173,12 @@ export default function Play() {
   const [nextReady, setNextReady] = useState(false);
   /** 디렉터가 쉬어가자고 먼저 제안했는가 — care 신호 */
   const [careHint, setCareHint] = useState<string>("");
+  /** 애매한 답이 연속으로 온 횟수 — 2번이면 카드 제안 */
+  const vagueStreak = useRef(0);
+  /** "카드 한 장 뽑아볼까?" 제안이 떠 있는가 */
+  const [cardOffer, setCardOffer] = useState(false);
+  /** 이야기 중간 카드 뽑기 진행 중 */
+  const [midDraw, setMidDraw] = useState(false);
 
   /**
    * AI가 준 장면 뼈대(frame)와 안전 신호(care)를 세션에 반영한다.
@@ -178,11 +209,18 @@ export default function Play() {
   const autoKey = useRef("");
   const [autofill, setAutofill] = useState<{ text: string; chip?: string; feels?: string[]; nonce: number }>();
 
+  /** 🔊 디렉터 목소리 — 켜면 디렉터 대사를 읽어준다 */
+  const voice = useSpeaker();
+
   /* ── 유틸 ─────────────────────────────────── */
   const push = useCallback((m: Omit<Msg, "id">, scene?: SceneState) => {
     const msg: Msg = { ...m, id: uid() };
     setS((p) => ({ ...p, messages: [...p.messages, msg], scene: scene ?? p.scene }));
-  }, []);
+    // 🔊 디렉터와 보조자아의 대사만 읽어준다 — 유저가 쓴 말은 읽지 않는다
+    if (voice.on && m.text && (m.role === "director" || m.role === "other")) void voice.speak(m.text);
+    // voice는 ref 기반이라 의존성에 넣으면 push가 매번 새로 만들어진다
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [voice.on, voice.speak]);
 
   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -204,12 +242,37 @@ export default function Play() {
     }
   }, []);
 
+  /**
+   * 🎭 상대 인물 카드 만들기 (character.ai의 Definition).
+   * 상대 이름이나 "제일 힘든 한마디"가 잡힌 직후 백그라운드로 한 번 돌린다.
+   * 카드가 있어야 이후 모든 비트에서 같은 사람이 무대에 선다 — 없으면
+   * 상대는 매번 "평범한 또래" 한 명으로 리셋되고, 그게 지금까지의 약함이었다.
+   */
+  const personaSeq = useRef(0);
+  const buildPersona = useCallback(async (snap: SessionState) => {
+    const tick = ++personaSeq.current;
+    try {
+      const r = await fetch("/api/director", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ kind: "persona", input: snap.other.trigger || snap.other.name, session: snap }),
+      });
+      const j = await r.json();
+      const pc = j?.persona as PersonaCard | undefined;
+      if (tick !== personaSeq.current || !pc?.name) return;
+      setS((p) => ({ ...p, other: { ...p.other, persona: { ...pc, speech: Array.isArray(pc.speech) ? pc.speech.slice(0, 3) : [] } } }));
+    } catch {
+      /* 카드가 없어도 무대는 돌아간다 — 유저 말 재료로 폴백한다 */
+    }
+  }, []);
+
   /* ── 비트 실행 — 이 엔진의 심장 ───────────────── */
   const runBeat = useCallback(
     async (m: Movement, snap: SessionState, beatNo: number, lastUser: string, mode: "beat" | "pivot" = "beat") => {
       setWait("none");
       setDirs([]);
       setNextReady(false);
+      setCardOffer(false);
 
       /* 단계도 — 유저가 방금 쓴 말이 이번 비트의 깊이를 정한다 */
       const curDepth = (snap.depth as DepthLevel) ?? m.depthStart;
@@ -256,6 +319,7 @@ export default function Play() {
           ),
           depthMove: (out.depthMove as OpenBeat["depthMove"]) ?? cue.move,
           depthWhy: cue.why,
+          aux: readAux(out, snap),
         };
         setFrame(out.frame as SessionState["frame"], out.care);
       } else {
@@ -271,7 +335,16 @@ export default function Play() {
         await sleep(240);
         push({ role: "director", text: beat.react });
       }
-      await sleep(beat.react ? 560 : 240);
+      /* 🎭 보조자아가 무대에 선다 — 질문 앞에 상대가 먼저 말한다.
+         사이코드라마의 엔진은 질문이 아니라 거기 서 있는 사람이다. */
+      if (beat.aux) {
+        await sleep(beat.react ? 620 : 300);
+        push(
+          { role: "other", text: beat.aux.line, action: beat.aux.action || undefined, speakerName: beat.aux.name },
+          { ...snap.scene, other: true }
+        );
+      }
+      await sleep(beat.aux ? 760 : beat.react ? 560 : 240);
       push({ role: "director", text: beat.question });
 
       // 유저가 흘린 말을 스레드로 쌓는다 (중복 제거)
@@ -300,6 +373,10 @@ export default function Play() {
       setBeatLens(beat.lens);
       setDirs(beat.directions);
       setNextReady(beat.suggestNext || beatNo >= m.suggestAfter);
+      // 애매한 답이 이어지거나 AI가 제안하면 카드로 푼다 — 캐스팅 전에는 안 띄운다
+      setCardOffer(
+        (Boolean(out?.suggestCard) || vagueStreak.current >= 2) && m.id !== "casting"
+      );
       setWait("input");
     },
     [ask, push]
@@ -362,9 +439,21 @@ export default function Play() {
         return;
       }
 
-      if (m.ritual === "replay" && snap.other.trigger) {
+      /* 🎭 리플레이는 상대가 다시 서는 자리다. 저장된 한마디를 녹음기처럼 재생하지 않고,
+         인물 카드로 그 사람을 연기시킨다. 실패하면 원래 한마디로 폴백한다. */
+      if (m.ritual === "replay" && (snap.other.trigger || snap.other.persona?.name)) {
         await sleep(600);
-        push({ role: "other", text: snap.other.trigger, speakerName: snap.other.name }, m.scene(snap));
+        const out = await ask(
+          "roleplay",
+          snap.other.trigger,
+          snap,
+          `테이크 1. ${snap.other.name || "상대"}가 아바타 앞에 다시 섰다. 유저가 "제일 힘들다"고 한 그 말을 그 사람 입으로 다시 하게 해라. 말을 더 세게 만들지 말고, 그때의 질감 그대로.`
+        );
+        const line = ((out?.text as string) || "").trim() || snap.other.trigger;
+        push(
+          { role: "other", text: line, action: ((out?.action as string) || "").trim() || undefined, speakerName: snap.other.name },
+          m.scene(snap)
+        );
       }
 
       // 오프닝이 이미 질문을 던진 막 — 같은 질문을 또 만들지 않고 방향 칩만 붙인다
@@ -467,7 +556,14 @@ export default function Play() {
       if (st.ai === "compare") {
         const out = await ask("compare", st.aiInput?.(snap) ?? snap.replayResponse, snap, st.aiNote?.(snap));
         await sleep(200);
-        push({ role: "other", text: (out?.otherLine as string) ?? "...어, 그래.", speakerName: st.speaker?.(snap) ?? snap.other.name });
+        // 아바타가 어떻게 움직였는지 먼저 장면으로 돌려준다 — 선택의 결과를 보여주는 자리다
+        if (out?.action) push({ role: "director", text: out.action as string });
+        push({
+          role: "other",
+          text: (out?.otherLine as string) ?? "...어, 그래.",
+          action: (out?.otherAction as string) || undefined,
+          speakerName: st.speaker?.(snap) ?? snap.other.name,
+        });
         await sleep(600);
         push({ role: "director", text: (out?.text as string) ?? "" });
       }
@@ -544,6 +640,11 @@ export default function Play() {
         if (add.length) next.threads = [...(next.threads ?? []), ...add];
       }
 
+      // 상대 재료가 새로 잡혔으면 인물 카드를 세운다(또는 한마디로 보강한다)
+      if (field === "otherName" || field === "otherTrigger") void buildPersona(next);
+
+      vagueStreak.current = isVague(text) ? vagueStreak.current + 1 : 0;
+
       const nb = beats + 1;
       next.beats = nb;
       setS(next);
@@ -555,7 +656,7 @@ export default function Play() {
 
       void runBeat(mv, next, nb, text);
     },
-    [advanceBranch, beatLens, beats, ctx, mv, runBeat, s]
+    [advanceBranch, beatLens, beats, buildPersona, ctx, mv, runBeat, s]
   );
 
   /* ── 유저 조종간 — 스레드 / 피벗 / 다음 막 / 마무리 ── */
@@ -594,6 +695,35 @@ export default function Play() {
     push({ role: "user", text: "이제 마무리할래." });
     void enterMovement(movementById("curtain"), s);
   }, [enterMovement, push, s]);
+
+  /* ── 이야기 중간 카드 뽑기 — 애매할 때 놀이로 푼다 ── */
+  const onOfferDraw = useCallback(() => {
+    setCardOffer(false);
+    setWait("none");
+    push({ role: "user", text: "🃏 카드 한 장 뽑아볼래." });
+    void (async () => {
+      await sleep(360);
+      push({ role: "director", text: "좋아, 말이 안 나올 땐 머리 말고 손이 고르게 하자. 마음 가는 데를 탭해." });
+      setMidDraw(true);
+    })();
+  }, [push]);
+
+  const onMidDrawn = useCallback(
+    (c: TarotCard) => {
+      setMidDraw(false);
+      vagueStreak.current = 0;
+      push({ role: "director", text: `${c.emoji} ${c.name} — ${c.keyword}. ${c.cardHint}` });
+      const nb = beats + 1;
+      setBeats(nb);
+      void runBeat(
+        mv,
+        s,
+        nb,
+        `(유저가 중간 카드를 뽑았다: ${c.emoji} ${c.name}, 키워드 "${c.keyword}". 이 카드를 지금 장면에 가볍게 걸쳐서 놀이처럼 새 실마리를 열어줘. 점·해석 강요 금지, 아니면 바로 버려도 된다고 말해줘.)`
+      );
+    },
+    [beats, mv, push, runBeat, s]
+  );
 
   const onDraw = useCallback(
     (c: TarotCard) => {
@@ -750,11 +880,22 @@ export default function Play() {
     <>
       <header className="topbar">
         <div className="topbar-row">
-          <div>
-            <div className="topbar-title">{branchLabel ? `🔄 ${branchLabel}` : mv.label}</div>
-            <div className="topbar-sub">{branchLabel ? "재도전 무대 · 본편은 저장돼 있어" : mv.sub}</div>
+          <div className="topbar-left">
+            <button className="topbar-back" onClick={() => router.push("/")} aria-label="뒤로 가기">←</button>
+            <div className="topbar-info">
+              <div className="topbar-title">{branchLabel ? `🔄 ${branchLabel}` : mv.label}</div>
+              <div className="topbar-sub">{branchLabel ? "재도전 무대 · 본편은 저장돼 있어" : mv.sub}</div>
+            </div>
           </div>
-          <div style={{ marginLeft: "auto", display: "flex", gap: 6, alignItems: "center" }}>
+          <div className="topbar-right">
+            <button
+              className={`pause-btn voice-btn${voice.on ? " voice-on" : ""}`}
+              onClick={voice.toggle}
+              aria-pressed={voice.on}
+              title={voice.on ? "디렉터 목소리 끄기" : "디렉터 목소리 켜기"}
+            >
+              {voice.on ? (voice.speaking ? "🔊 말하는 중" : "🔊 목소리") : "🔇 목소리"}
+            </button>
             {demo ? (
               <button className="pause-btn" onClick={() => { demoRef.current = false; setDemo(false); }}>
                 ⏸ 자동 진행 멈춤
@@ -762,11 +903,11 @@ export default function Play() {
             ) : (
               <button className="pause-btn" onClick={() => setGround(true)}>🫧 잠깐 멈출래</button>
             )}
-            <span className="turn-pill" style={{ marginLeft: 0 }}>
+            <span className="turn-pill">
               {ctx ? `${ctx.i + 1}/${ctx.steps.length}` : `${beats + 1}번째 말`}
             </span>
             {!ctx && !s.done && (
-              <span className="turn-pill" style={{ marginLeft: 0 }} title={rung.intent}>
+              <span className="turn-pill" title={rung.intent}>
                 {rung.label}
               </span>
             )}
@@ -814,6 +955,8 @@ export default function Play() {
 
         {wait === "draw" && <Deck onDraw={onDraw} preset={preset} />}
 
+        {midDraw && <Deck onDraw={onMidDrawn} />}
+
         {wait === "confirm" && !busy && (
           <button className="cta cta-primary" onClick={onConfirm}>계속</button>
         )}
@@ -823,8 +966,13 @@ export default function Play() {
 
       {wait === "input" && !busy && (
         <>
-          {showControls && (openThreads.length > 0 || nextReady) && (
+          {showControls && (openThreads.length > 0 || nextReady || cardOffer) && (
             <div className="helm">
+              {cardOffer && (
+                <button className="helm-chip helm-card" onClick={onOfferDraw}>
+                  🃏 카드 한 장 뽑아볼래?
+                </button>
+              )}
               {openThreads.map((t) => (
                 <button key={t.id} className="helm-chip helm-thread" onClick={() => onPullThread(t)}>
                   🧵 {t.text.length > 14 ? t.text.slice(0, 14) + "…" : t.text}

@@ -81,6 +81,15 @@ export default function Home() {
           <span style={{ color: "var(--ink-faint)" }}>›</span>
         </Link>
 
+        <Link href="/examples" className="row-item" style={{ textDecoration: "none", color: "inherit" }}>
+          <span className="lg">🎬</span>
+          <div style={{ flex: 1 }}>
+            <b>예시 무대</b>
+            <small>세 가지 상황 · 실제 화면처럼 재생해 볼 수 있어</small>
+          </div>
+          <span style={{ color: "var(--ink-faint)" }}>›</span>
+        </Link>
+
         <p className="note">
           진단이나 처방은 하지 않아. 여기는 탐색하고 알아차리는 무대야.<br />
           하기 싫은 질문은 넘겨도 되고, 한 줄만 써도 충분해.<br />

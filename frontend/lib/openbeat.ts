@@ -35,6 +35,12 @@ export type OpenBeat = {
   depthMove: DepthMove;
   /** 왜 그렇게 움직였는지 — 개발용 추적 */
   depthWhy: string;
+  /**
+   * 🎭 이 비트에서 보조자아가 무대에 선다면 그 한 턴.
+   * 규칙 엔진(오프라인)은 쓰지 않고, AI 비트에서만 채워진다 —
+   * 상대의 말은 유저가 준 재료 없이 만들어낼 수 없기 때문이다.
+   */
+  aux?: { name: string; action: string; line: string };
 };
 
 const me = (s: SessionState) => s.character.name || "주인공";

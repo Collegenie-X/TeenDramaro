@@ -35,6 +35,27 @@ export type SceneState = {
   swapped?: boolean;
 };
 
+/**
+ * 인물 카드 — character.ai의 Definition에 해당한다. 상대(보조자아)를 연기할 때
+ * 매 호출에 다시 주입해서, 세션 내내 같은 사람이 무대에 서게 한다.
+ * 유저 말에서 뽑아낸 것만 담는다. 디렉터가 상상해서 채우지 않는다.
+ */
+export type PersonaCard = {
+  name: string;
+  /** 한 줄 정의 */
+  one: string;
+  /** 이 인물 입에서 나올 문장 질감 1~3개 */
+  speech: string[];
+  /** 겉으로 원하는 것 */
+  wants: string;
+  /** 속으로 무서운 것 */
+  fears: string;
+  /** 몸에 나오는 습관 */
+  tells: string;
+  /** 이 인물이 절대 하지 않는 것 */
+  nevers: string;
+};
+
 export type Msg = {
   id: string;
   /** director = AI 디렉터, user = 유저, other = 보조자아(갈등 상대) */
@@ -48,6 +69,8 @@ export type Msg = {
   scene?: SceneState;
   /** 보조자아 이름 */
   speakerName?: string;
+  /** 대사 앞의 지문 — 보조자아가 무대에서 하는 몸짓 한 줄 */
+  action?: string;
   /** 유저가 이 말과 함께 고른 감정 */
   feelings?: string[];
   /** 이 말에서 새 장(章)이 열린다 — 채팅 흐름에 꽂히는 이야기 구분선 */
@@ -125,7 +148,7 @@ export type SessionState = {
   turn: number;
   character: { name: string; profile: string };
   cardId: CardId | null;
-  other: { name: string; trigger: string };
+  other: { name: string; trigger: string; persona?: PersonaCard | null };
   /** 턴 인덱스별 유저 원문 */
   answers: Record<number, string>;
   /** 재도전 분기에서 받은 답 (키는 분기 스텝의 bkey) */

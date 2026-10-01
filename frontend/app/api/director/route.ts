@@ -25,10 +25,23 @@ function offline(kind: string, input: string, s: SessionState) {
     case "mirror":
       return { source: "offline", text: localMirror(s) };
     case "roleplay":
-      return { source: "offline", text: s.other.trigger || "야, 우리 먼저 갈게~" };
+      return { source: "offline", action: "", text: s.other.trigger || "야, 우리 먼저 갈게~", subtext: "" };
+    case "persona":
+      // 오프라인에서는 유저가 준 최소 재료만으로 카드를 세운다 — 상상해서 채우지 않는다.
+      return {
+        source: "offline",
+        persona: {
+          name: s.other.name || "",
+          one: "",
+          speech: s.other.trigger ? [s.other.trigger] : [],
+          wants: "", fears: "", tells: "", nevers: "",
+        },
+      };
     case "compare":
       return {
         source: "offline",
+        action: "",
+        otherAction: "",
         otherLine: localOtherReaction(input, s),
         text: "처음엔 아무 말도 안 나왔고, 두 번째엔 한마디가 나왔어. 상황은 똑같았는데 말이지. 어느 쪽이 맞다는 건 아니야 — 네가 둘 다 할 수 있다는 게 중요한 거야.",
       };

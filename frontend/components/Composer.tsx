@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import EmotionPalette from "./EmotionPalette";
+import { useDictation } from "@/lib/voice";
 
 export type Choice = { label: string; text: string };
 
@@ -29,6 +30,16 @@ export default function Composer({
   const [picked, setPicked] = useState<string[]>([]);
   const [pickedChip, setPickedChip] = useState<string | null>(null);
   const ref = useRef<HTMLTextAreaElement>(null);
+
+  /* ── 🎙 말로 입력 — Whisper, 안 되면 브라우저 내장 ── */
+  const dict = useDictation((t) => {
+    setText(t);
+    requestAnimationFrame(grow);
+  });
+  const toggleMic = () => {
+    if (dict.state === "recording") dict.stop();
+    else if (dict.state === "idle") void dict.start(text);
+  };
 
   const pickChip = (c: Choice) => {
     setPickedChip(c.label);
@@ -60,6 +71,7 @@ export default function Composer({
   };
 
   const send = () => {
+    dict.stop();
     const t = text.trim();
     if (!t || disabled) return;
     onSubmit(t, picked);
@@ -112,6 +124,17 @@ export default function Composer({
       )}
 
       <div className="input-row">
+        {dict.supported && (
+          <button
+            className={`mic mic-${dict.state}`}
+            onClick={toggleMic}
+            disabled={dict.state === "working"}
+            aria-label={dict.state === "recording" ? "말하기 멈추기" : "말로 입력하기"}
+            title="글로 쓰기 힘들면 말로 해도 돼"
+          >
+            {dict.state === "recording" ? "⏹" : dict.state === "working" ? "…" : "🎙"}
+          </button>
+        )}
         <textarea
           ref={ref} className="ta" rows={1} value={text} placeholder={placeholder}
           onChange={(e) => { setText(e.target.value); grow(); }}

@@ -1,0 +1,731 @@
+{
+  "id": "grade",
+  "emoji": "🔗",
+  "title": "성적표 앞에서",
+  "tagline": "엄마의 한숨이 말보다 무서운 아이",
+  "theme": "학업 압박 · 부모의 기대 · 내 것이 아닌 선택",
+  "cast": {
+    "avatar": "해든 — 반에서 조용히 성실한 애. 성적이 떨어진 걸 아직 집에 말 못 했다",
+    "other": "엄마 — 화를 내지 않는다. 대신 한숨을 쉬고 조용해진다",
+    "card_main": "🔗 사슬 (압박·속박)",
+    "card_mid": "🚪 문 (선택·기로)"
+  },
+  "turns": [
+    {
+      "turn": 1,
+      "movement": "casting",
+      "depth": 1,
+      "director": "오늘 무대에 설 애 이름부터 지어줄래? 진짜 네 이름 말고.",
+      "user": "해든",
+      "scene": {
+        "bg": "curtain",
+        "cast": [],
+        "caption": "막이 오르기 전"
+      }
+    },
+    {
+      "turn": 2,
+      "movement": "casting",
+      "depth": 2,
+      "director": "해든이는 어떤 애야? 남들이 보기에.",
+      "user": "조용하고 성실한 애. 시험기간에 제일 늦게까지 남아 있음.",
+      "scene": {
+        "bg": "spotlight",
+        "cast": [
+          {
+            "id": "haden",
+            "emo": "calm",
+            "pose": "stand",
+            "x": 0.5
+          }
+        ],
+        "caption": "조용하고 성실한 애, 해든"
+      }
+    },
+    {
+      "turn": 3,
+      "movement": "casting",
+      "depth": 2,
+      "director": "그런 애가 제일 약한 지점은 뭘까. 솔직할수록 이야기가 살아나.",
+      "user": "실망시키는 걸 못 견뎌. 혼나는 건 괜찮은데 실망은 못 봄.",
+      "scene": {
+        "bg": "spotlight",
+        "cast": [
+          {
+            "id": "haden",
+            "emo": "calm",
+            "pose": "stand",
+            "x": 0.5
+          }
+        ],
+        "caption": "조용하고 성실한 애, 해든"
+      }
+    },
+    {
+      "turn": 4,
+      "movement": "casting",
+      "depth": 2,
+      "director": "혼나는 건 괜찮고 실망은 못 본다 — 그거 완전 다른 거지. 반대로 해든이의 제일 센 지점은?",
+      "user": "한번 하기로 하면 끝까지 함. 혼자서도 함.",
+      "scene": {
+        "bg": "spotlight",
+        "cast": [
+          {
+            "id": "haden",
+            "emo": "calm",
+            "pose": "stand",
+            "x": 0.5
+          }
+        ],
+        "caption": "조용하고 성실한 애, 해든"
+      }
+    },
+    {
+      "turn": 5,
+      "movement": "casting",
+      "depth": 2,
+      "director": "자, 해든이를 상황에 세우자. 오늘 이 애는 어떤 상황이야?",
+      "user": "성적이 많이 떨어졌는데 아직 집에 말 안 했어. 가방에 성적표가 사흘째 들어 있음.",
+      "scene": {
+        "bg": "spotlight",
+        "cast": [
+          {
+            "id": "haden",
+            "emo": "worry",
+            "pose": "stand",
+            "x": 0.5
+          }
+        ],
+        "prop": "paper",
+        "caption": "가방 속 사흘째 성적표"
+      }
+    },
+    {
+      "turn": 6,
+      "movement": "draw",
+      "depth": 1,
+      "director": "사흘째 가방 속 성적표… 무겁다. 소품 하나 챙기고 들어가자. (🔗 사슬) 사슬이 나왔네. 해석은 네가 하는 거야.",
+      "user": "(카드를 뽑음) 가방이 사슬이네 진짜.",
+      "scene": {
+        "bg": "curtain",
+        "cast": [
+          {
+            "id": "haden",
+            "emo": "calm",
+            "pose": "stand",
+            "x": 0.5
+          }
+        ],
+        "prop": "card",
+        "caption": "🔗 사슬 카드가 내려온다"
+      }
+    },
+    {
+      "turn": 7,
+      "movement": "open",
+      "depth": 2,
+      "director": "장면으로 가보자. 성적표를 처음 받은 순간 — 어디야, 몇 시야?",
+      "user": "교실. 5교시 끝나고. 선생님이 한 명씩 불러서 나눠줬어.",
+      "scene": {
+        "bg": "classroom",
+        "cast": [
+          {
+            "id": "haden",
+            "emo": "blank",
+            "pose": "stand",
+            "x": 0.4
+          },
+          {
+            "id": "jjak",
+            "emo": "calm",
+            "pose": "sit",
+            "x": 0.75
+          }
+        ],
+        "prop": "paper",
+        "caption": "5교시 끝난 교실"
+      }
+    },
+    {
+      "turn": 8,
+      "movement": "open",
+      "depth": 2,
+      "director": "자기 이름 불리고 앞으로 나가는 그 몇 걸음. 받고 나서 해든이는 바로 봤어?",
+      "user": "아니. 접어서 그냥 가방에 넣었어. 복도 나와서 창가에서 봤어.",
+      "decision": {
+        "prompt": "교실. 성적표가 손에 들어왔다. 옆자리가 힐끔거린다. — 해든이는…",
+        "label": "🎒 접어서 가방에 넣는다 (그날의 선택)",
+        "alt": {
+          "label": "📄 그 자리에서 펼친다",
+          "branch": [
+            {
+              "role": "director",
+              "text": "펼쳤어. 숫자가 눈에 들어오기도 전에—"
+            },
+            {
+              "role": "other",
+              "speakerName": "짝꿍",
+              "text": "어, 너 몇 등급? …아 미안, 안 볼게."
+            },
+            {
+              "role": "director",
+              "text": "해든이는 괜찮은 표정을 만드느라 정작 숫자를 못 읽었어. 표정 관리에 다 쓴 거지."
+            },
+            {
+              "role": "director",
+              "text": "혼자 볼 곳을 찾아 나간 그날의 선택은 도망이 아니라 자기를 지킨 거였어. 되감자."
+            }
+          ]
+        }
+      },
+      "scene": {
+        "bg": "classroom",
+        "cast": [
+          {
+            "id": "haden",
+            "emo": "worry",
+            "pose": "stand",
+            "x": 0.4
+          },
+          {
+            "id": "jjak",
+            "emo": "calm",
+            "pose": "sit",
+            "x": 0.75
+          }
+        ],
+        "prop": "paper",
+        "caption": "접어서, 가방 속으로"
+      }
+    },
+    {
+      "turn": 9,
+      "movement": "open",
+      "depth": 3,
+      "director": "혼자 볼 데를 찾아서 나갔구나. 숫자 보는 순간 몸은 어땠어?",
+      "user": "손끝이 저렸어. 그리고 숨을 좀 참고 있었어.",
+      "scene": {
+        "bg": "hallway",
+        "light": 1,
+        "cast": [
+          {
+            "id": "haden",
+            "emo": "sad",
+            "pose": "stand",
+            "x": 0.78,
+            "flip": true
+          }
+        ],
+        "prop": "paper",
+        "caption": "복도 창가, 혼자 펼친 숫자"
+      }
+    },
+    {
+      "turn": 10,
+      "movement": "open",
+      "depth": 3,
+      "director": "숨을 참고 있었다는 거, 중요한 말이야. …그날 집에 들어갈 때는 어땠어?",
+      "user": "현관에서 신발 벗기 전에 거실 소리 먼저 들었어. 엄마가 어떤 기분인지 확인하고 들어감.",
+      "decision": {
+        "prompt": "현관문 앞. 안에서 TV 소리가 샌다. — 해든이는…",
+        "label": "👂 거실 분위기를 먼저 살핀다 (그날의 선택)",
+        "alt": {
+          "label": "🚪 바로 들어가 말해버린다",
+          "branch": [
+            {
+              "role": "director",
+              "text": "바로 들어갔어. 신발도 다 안 벗고."
+            },
+            {
+              "role": "user",
+              "text": "엄마, 나 성적표 나왔어. 많이 떨어졌어."
+            },
+            {
+              "role": "other",
+              "speakerName": "엄마",
+              "text": "…그래? (TV를 끈다) 일단 저녁부터 먹어."
+            },
+            {
+              "role": "director",
+              "text": "어쩌면 이렇게 싱겁게 끝났을 수도 있어. 근데 그 용기는 그날의 해든이에겐 없었고, 그건 잘못이 아니야. 없던 용기는 무대에서 연습해서 만드는 거야 — 그걸 지금부터 할 거고. 되감자."
+            }
+          ]
+        }
+      },
+      "scene": {
+        "bg": "entry",
+        "light": 0,
+        "cast": [
+          {
+            "id": "haden",
+            "emo": "worry",
+            "pose": "stand",
+            "x": 0.3
+          }
+        ],
+        "caption": "현관 앞 — 신발 벗기 전, 소리부터"
+      }
+    },
+    {
+      "turn": 11,
+      "movement": "deepen",
+      "depth": 4,
+      "director": "신발 벗기 전에 기상예보를 확인하는 거네. 그 확인하는 순간의 기분에 이름을 붙이면? 네 단어로.",
+      "user": "긴장. 아니 눈치보기인가. 둘 다인 듯.",
+      "scene": {
+        "bg": "entry",
+        "light": 0,
+        "cast": [
+          {
+            "id": "haden",
+            "emo": "worry",
+            "pose": "stand",
+            "x": 0.3
+          },
+          {
+            "id": "inner",
+            "emo": "blank",
+            "pose": "stand",
+            "x": 0.1,
+            "ghost": true
+          }
+        ],
+        "caption": "기상예보를 확인하는 아이"
+      }
+    },
+    {
+      "turn": 12,
+      "movement": "deepen",
+      "depth": 2,
+      "director": "둘 다여도 돼. 둘 다인 게 더 정확할 때가 많아.",
+      "user": "그 다음은 모르겠어. 그냥 그래.",
+      "scene": {
+        "bg": "entry",
+        "light": 0,
+        "cast": [
+          {
+            "id": "haden",
+            "emo": "worry",
+            "pose": "stand",
+            "x": 0.3
+          },
+          {
+            "id": "inner",
+            "emo": "blank",
+            "pose": "stand",
+            "x": 0.1,
+            "ghost": true
+          }
+        ],
+        "caption": "기상예보를 확인하는 아이"
+      }
+    },
+    {
+      "turn": 13,
+      "movement": "deepen",
+      "depth": 2,
+      "director": "모르겠다도 답이야. 말이 안 나올 땐 손이 고르게 하자 — 카드 한 장 뽑아볼래? (🚪 문)",
+      "user": "(카드를 뽑음) 문… 해든이는 문 앞에서 계속 서 있는 거 같아. 말할까 말까.",
+      "scene": {
+        "bg": "chat",
+        "cast": [
+          {
+            "id": "haden",
+            "emo": "calm",
+            "pose": "stand",
+            "x": 0.5
+          }
+        ],
+        "prop": "card",
+        "caption": "🚪 문 — 말할까, 말까"
+      }
+    },
+    {
+      "turn": 14,
+      "movement": "deepen",
+      "depth": 5,
+      "director": "문 앞에 서 있는 애. 들어가면 뭐가 제일 무서워? 혼나는 건 괜찮다고 했잖아.",
+      "user": "엄마가 아무 말도 안 하는 게 무서워. 한숨 한 번 쉬고 방에 들어가버리는 거.",
+      "scene": {
+        "bg": "entry",
+        "light": 0,
+        "cast": [
+          {
+            "id": "haden",
+            "emo": "sad",
+            "pose": "stand",
+            "x": 0.3
+          },
+          {
+            "id": "mom",
+            "emo": "blank",
+            "pose": "stand",
+            "x": 0.75,
+            "flip": true
+          }
+        ],
+        "caption": "무서운 건 호통이 아니라 침묵"
+      }
+    },
+    {
+      "turn": 15,
+      "movement": "deepen",
+      "depth": 5,
+      "director": "소리치는 것보다 조용해지는 게 무섭다. 그 침묵이 해든이한테 뭐라고 말하는 것 같아?",
+      "user": "\"너한테 기대한 내가 바보지.\" 그렇게 들려.",
+      "scene": {
+        "bg": "entry",
+        "light": 0,
+        "cast": [
+          {
+            "id": "haden",
+            "emo": "sad",
+            "pose": "stand",
+            "x": 0.3
+          },
+          {
+            "id": "mom",
+            "emo": "blank",
+            "pose": "stand",
+            "x": 0.75,
+            "flip": true
+          }
+        ],
+        "caption": "무서운 건 호통이 아니라 침묵"
+      }
+    },
+    {
+      "turn": 16,
+      "movement": "deepen",
+      "depth": 6,
+      "director": "그 문장 — 해든이가 처음 들은 게 언제쯤일까. 실제로 들은 적 있어, 아니면 해든이가 번역한 거야?",
+      "user": "실제로 들은 건 아님. 중1 때 한 번 한숨 쉬고 방 들어간 적 있고, 그때부터 혼자 그렇게 들음.",
+      "scene": {
+        "bg": "room-night",
+        "light": 0,
+        "cast": [
+          {
+            "id": "haden",
+            "emo": "tear",
+            "pose": "sit",
+            "x": 0.4
+          },
+          {
+            "id": "inner",
+            "emo": "sad",
+            "pose": "stand",
+            "x": 0.7,
+            "ghost": true
+          }
+        ],
+        "caption": "중1의 밤 — 한숨을 번역하기 시작한 날"
+      }
+    },
+    {
+      "turn": 17,
+      "movement": "deepen",
+      "depth": 6,
+      "director": "한숨 하나를 몇 년째 번역해서 듣고 있었구나. 잠깐 객석에서 보자 — 중1 해든이가 그 번역을 만든 거잖아. 지금 보면 어때?",
+      "user": "좀 과하게 알아들은 것 같긴 해. 근데 걔는 그렇게라도 대비해야 했음.",
+      "scene": {
+        "bg": "spotlight",
+        "cast": [
+          {
+            "id": "inner",
+            "emo": "sad",
+            "pose": "stand",
+            "x": 0.5,
+            "ghost": true
+          },
+          {
+            "id": "haden",
+            "emo": "calm",
+            "pose": "stand",
+            "x": 0.14
+          }
+        ],
+        "caption": "객석에서 중1의 나를 본다"
+      }
+    },
+    {
+      "turn": 18,
+      "movement": "deepen",
+      "depth": 7,
+      "director": "대비였네. 그럼 해든이가 진짜 원하는 건 뭘까. 성적 말고.",
+      "user": "성적 떨어져도 엄마가 나 안 싫어한다는 걸 확인하고 싶은 거.",
+      "scene": {
+        "bg": "spotlight",
+        "cast": [
+          {
+            "id": "inner",
+            "emo": "sad",
+            "pose": "stand",
+            "x": 0.5,
+            "ghost": true
+          },
+          {
+            "id": "haden",
+            "emo": "calm",
+            "pose": "stand",
+            "x": 0.14
+          }
+        ],
+        "caption": "객석에서 중1의 나를 본다"
+      }
+    },
+    {
+      "turn": 19,
+      "movement": "meet",
+      "depth": 3,
+      "director": "그 확인을 받을 사람을 무대에 올리자. 엄마. 어디서 만나게 할까?",
+      "user": "저녁 먹고 설거지할 때. 등 돌리고 있을 때가 말이 나올 것 같아.",
+      "scene": {
+        "bg": "kitchen",
+        "cast": [
+          {
+            "id": "haden",
+            "emo": "worry",
+            "pose": "stand",
+            "x": 0.32
+          },
+          {
+            "id": "mom",
+            "emo": "calm",
+            "pose": "turn",
+            "x": 0.72
+          }
+        ],
+        "caption": "설거지하는 등 뒤"
+      }
+    },
+    {
+      "turn": 20,
+      "movement": "meet",
+      "depth": 4,
+      "director": "등 돌린 엄마 뒤에서. 물소리 때문에 목소리를 좀 키워야 하는 그 상황. 실제 그날은 어떻게 됐어?",
+      "user": "아무 말도 못 했어. 그냥 방에 들어가서 성적표를 책상 서랍에 넣었어.",
+      "scene": {
+        "bg": "room-night",
+        "light": 0,
+        "cast": [
+          {
+            "id": "haden",
+            "emo": "sad",
+            "pose": "sit",
+            "x": 0.4
+          }
+        ],
+        "prop": "paper",
+        "caption": "그날 — 성적표는 서랍으로"
+      }
+    },
+    {
+      "turn": 21,
+      "movement": "replay",
+      "depth": 4,
+      "director": "그날은 서랍이 끝이었지. 근데 무대에선 몇 번이든 다시 돼. 출구는 여러 개야 — 그냥 말하기 / 종이만 내밀기 / 농담으로 열기 / 이번에도 서랍. 뭐부터 가볼래?",
+      "user": "종이만 내밀기. \"엄마, 이거.\" 하고 성적표만 줄래.",
+      "choice": {
+        "id": "paper",
+        "label": "📄 종이만 내밀기"
+      },
+      "scene": {
+        "bg": "kitchen",
+        "light": 1,
+        "cast": [
+          {
+            "id": "haden",
+            "emo": "calm",
+            "pose": "stand",
+            "x": 0.32
+          },
+          {
+            "id": "mom",
+            "emo": "calm",
+            "pose": "turn",
+            "x": 0.72
+          }
+        ],
+        "prop": "paper",
+        "caption": "두 번째 테이크 — 종이만 내민다"
+      }
+    },
+    {
+      "turn": 22,
+      "movement": "replay",
+      "depth": 4,
+      "director": "(엄마 역) \"…응.\" (한참 보고) \"많이 힘들었나 보네.\" — 어때, 이 반응?",
+      "user": "어… 예상 못 했어. 이럴 수도 있나.",
+      "scene": {
+        "bg": "kitchen",
+        "light": 1,
+        "cast": [
+          {
+            "id": "haden",
+            "emo": "blank",
+            "pose": "stand",
+            "x": 0.32
+          },
+          {
+            "id": "mom",
+            "emo": "sad",
+            "pose": "stand",
+            "x": 0.72,
+            "flip": true
+          }
+        ],
+        "prop": "paper",
+        "caption": "\"많이 힘들었나 보네\""
+      }
+    },
+    {
+      "turn": 23,
+      "movement": "replay",
+      "depth": 5,
+      "director": "예상 못 한 반응이 나왔네. 해든이가 사흘 동안 돌린 시나리오엔 이건 없었을 거야. 다른 출구도 가볼래?",
+      "user": "말로 해보기. \"나 이번에 많이 떨어졌어. 근데 포기한 건 아니야.\"",
+      "choice": {
+        "id": "speak",
+        "label": "🗣 말로 해보기"
+      },
+      "scene": {
+        "bg": "kitchen",
+        "light": 1,
+        "cast": [
+          {
+            "id": "haden",
+            "emo": "calm",
+            "pose": "stand",
+            "x": 0.32
+          },
+          {
+            "id": "mom",
+            "emo": "calm",
+            "pose": "turn",
+            "x": 0.72
+          }
+        ],
+        "caption": "이번엔 말로"
+      }
+    },
+    {
+      "turn": 24,
+      "movement": "replay",
+      "depth": 5,
+      "director": "(엄마 역) \"알아. 네가 제일 늦게까지 하는 거 아는데.\" (물 잠그고 돌아봄) — 해든이 몸은 지금 어때?",
+      "user": "참고 있던 숨이 쉬어짐. 아까 교실에서 참았던 거.",
+      "scene": {
+        "bg": "kitchen",
+        "light": 2,
+        "cast": [
+          {
+            "id": "haden",
+            "emo": "smile",
+            "pose": "stand",
+            "x": 0.32
+          },
+          {
+            "id": "mom",
+            "emo": "smile",
+            "pose": "stand",
+            "x": 0.72,
+            "flip": true
+          }
+        ],
+        "caption": "물이 잠기고, 엄마가 돌아본다"
+      }
+    },
+    {
+      "turn": 25,
+      "movement": "replay",
+      "depth": 6,
+      "director": "교실에서 참은 숨이 여기서 쉬어졌네. 서랍, 종이 내밀기, 말하기 — 셋 다 해든이가 했어. 정답은 없어. 다만 중1 때는 출구가 '혼자 대비하기' 하나였는데 지금 셋이 생겼지.",
+      "user": "그러네. 서랍도 나쁜 선택은 아니었던 것 같고.",
+      "wrapup": true,
+      "scene": {
+        "bg": "kitchen",
+        "light": 2,
+        "cast": [
+          {
+            "id": "haden",
+            "emo": "smile",
+            "pose": "stand",
+            "x": 0.32
+          },
+          {
+            "id": "mom",
+            "emo": "smile",
+            "pose": "stand",
+            "x": 0.72,
+            "flip": true
+          }
+        ],
+        "caption": "물이 잠기고, 엄마가 돌아본다"
+      }
+    },
+    {
+      "turn": 26,
+      "movement": "curtain",
+      "depth": 4,
+      "director": "맞아, 서랍은 그때의 최선이었어. 오늘 제목 — 「참았던 숨」 어때?",
+      "user": "좋아.",
+      "scene": {
+        "bg": "curtain",
+        "cast": [
+          {
+            "id": "haden",
+            "emo": "smile",
+            "pose": "stand",
+            "x": 0.5
+          }
+        ],
+        "caption": "막이 내려온다"
+      }
+    },
+    {
+      "turn": 27,
+      "movement": "curtain",
+      "depth": 4,
+      "director": "남길 세 줄: ① 해든이는 \"혼나는 건 괜찮은데 실망은 못 봄\"인 애였다. ② 한숨 하나를 몇 년째 \"너한테 기대한 내가 바보지\"로 번역해 왔다 — 중1이 만든 대비였다. ③ 교실에서 참은 숨이 설거지 앞에서 쉬어졌다. 전부 네 말이야.",
+      "user": "저장.",
+      "scene": {
+        "bg": "curtain",
+        "cast": [
+          {
+            "id": "haden",
+            "emo": "smile",
+            "pose": "stand",
+            "x": 0.5
+          }
+        ],
+        "caption": "막이 내려온다"
+      }
+    },
+    {
+      "turn": 28,
+      "movement": "curtain",
+      "depth": 2,
+      "director": "🔗 사슬 뒤집으면 🔓 느슨해진 고리야 — 사슬은 그대로인데 한 칸이 헐거워졌어, 한 칸이면 손은 빠져. 오늘 그 한 칸 헐거워졌네. 수고했어, 작가님.",
+      "user": "다음에 또 올게.",
+      "scene": {
+        "bg": "curtain",
+        "cast": [
+          {
+            "id": "haden",
+            "emo": "smile",
+            "pose": "stand",
+            "x": 0.4
+          },
+          {
+            "id": "director",
+            "emo": "smile",
+            "pose": "stand",
+            "x": 0.72
+          }
+        ],
+        "prop": "card",
+        "caption": "커튼콜"
+      }
+    }
+  ]
+}

@@ -11,6 +11,8 @@ export function Bubble({ m }: { m: Msg }) {
     <div style={{ display: "flex", flexDirection: "column", alignItems: m.role === "user" ? "flex-end" : "flex-start", alignSelf: "stretch" }}>
       {m.chapter && <Chapter act={m.chapter.act} note={m.chapter.note} />}
       {m.role === "other" && m.speakerName && <span className="speaker">🎭 {m.speakerName} 역</span>}
+      {/* 지문 — 보조자아가 무대에서 하는 몸짓. 대사 위에 한 줄 */}
+      {m.action && <span className="stage-dir">{m.action}</span>}
       <div className={`bubble ${cls}`}>{m.text}</div>
       {m.feelings && m.feelings.length > 0 && (
         <div className="bubble-feels">
