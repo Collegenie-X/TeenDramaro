@@ -115,8 +115,6 @@ export default function Composer({
         </div>
       )}
 
-      {feelings && <EmotionPalette picked={picked} onToggle={toggle} />}
-
       {!open && hints.length > 0 && (
         <button className="hint-btn" onClick={() => setOpen(true)} style={{ marginBottom: 9 }}>
           💡 막히면 눌러
@@ -144,6 +142,8 @@ export default function Composer({
         />
         <button className="send" onClick={send} disabled={!text.trim() || disabled} aria-label="보내기">↑</button>
       </div>
+
+      {feelings && <EmotionPalette picked={picked} onToggle={toggle} />}
     </div>
   );
 }

@@ -245,32 +245,70 @@ body {
 @keyframes blink { 0%,60%,100% { opacity: 0.25 } 30% { opacity: 1 } }
 
 /* ── 감정 팔레트 ────────────────────────────────────── */
-.feel-btn {
-  display: inline-flex; align-items: center; gap: 5px; margin-bottom: 9px;
-  font-size: 12px; color: #f0cfe4; background: #2b1a2c; border: 1px solid #4d2f4c;
-  padding: 6px 11px; border-radius: 999px; text-align: left; max-width: 100%;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+/* ── 감정 Dock (macOS Dock 스타일) ── */
+.emo-dock-wrap { position: relative; display: flex; align-items: center; gap: 8px; min-width: 0; }
+.emo-dock {
+  display: flex; align-items: center; gap: 2px; padding: 2px 4px;
 }
-.feel-panel {
-  border: 1px solid #4d2f4c; background: #1c1220; border-radius: 13px;
-  padding: 11px 12px; margin-bottom: 9px; animation: pop 0.3s ease both;
+.emo-dock-btn {
+  position: relative; width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0;
+  background: transparent; border: 1px solid transparent; cursor: pointer;
+  color: var(--emo-fg); opacity: 0.6;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.15s cubic-bezier(0.22, 1.4, 0.4, 1), background 0.12s, opacity 0.12s;
 }
-.feel-head { display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: #f0cfe4; }
-.feel-head i { font-style: normal; font-size: 10.5px; color: var(--ink-faint); margin-left: 5px; }
-.feel-head button { background: none; border: none; color: var(--ink-faint); font-size: 14px; padding: 0 2px; }
-.feel-groups { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; }
-.feel-group {
-  font-size: 11.5px; padding: 5px 10px; border-radius: 999px;
-  background: #241a2c; border: 1px solid #3d2c46; color: var(--ink-dim);
+.emo-dock-btn:hover { transform: scale(1.25) translateY(-4px); opacity: 1; }
+.emo-dock-btn:active { transform: scale(1.05); }
+.emo-dock-on, .emo-dock-has {
+  opacity: 1; background: var(--emo-bg); border-color: var(--emo-border);
 }
-.feel-items { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; }
-.feel-items .chip { padding: 5px 11px; font-size: 12px; }
-.chip-on { font-weight: 700; }
-.feel-picked {
-  margin-top: 10px; font-size: 11.5px; color: #e6d3ef;
-  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+.emo-dock-on { transform: scale(1.12) translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,0.35); }
+.emo-dock-badge {
+  position: absolute; top: -5px; right: -5px; min-width: 16px; height: 16px; padding: 0 4px;
+  border-radius: 999px; font-size: 10px; font-weight: 800; line-height: 16px; text-align: center;
+  background: var(--emo-fg); color: var(--emo-bg); border: 1.5px solid var(--panel, #120c22);
 }
-.feel-picked button { background: none; border: none; color: var(--ink-faint); font-size: 11px; text-decoration: underline; }
+.emo-picked {
+  display: flex; gap: 5px; padding-left: 10px; min-width: 0; flex-wrap: wrap;
+  border-left: 1px solid var(--line);
+}
+.emo-picked-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11.5px; font-weight: 700; padding: 4px 8px 4px 7px; border-radius: 999px;
+  border: 1px solid; cursor: pointer;
+}
+.emo-picked-x { font-size: 9px; opacity: 0.6; margin-left: 2px; }
+
+/* 팝업 — dock 위로 뜸 */
+.emo-popup {
+  position: absolute; bottom: 100%; left: 0; right: 0;
+  margin-bottom: 6px; padding: 10px 12px; border-radius: 14px;
+  background: var(--emo-bg, #1c1220); border: 1px solid var(--emo-border, #4d2f4c);
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.4); animation: emo-pop 0.2s cubic-bezier(0.22, 1.4, 0.4, 1) both;
+  z-index: 10;
+}
+@keyframes emo-pop { from { opacity: 0; transform: translateY(8px) scale(0.96); } }
+.emo-popup-head {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 13px; font-weight: 700; color: var(--emo-fg, #f0cfe4); margin-bottom: 8px;
+}
+.emo-popup-head span { display: inline-flex; align-items: center; gap: 5px; }
+.emo-popup-head button { background: none; border: none; color: var(--ink-faint); font-size: 14px; padding: 0 2px; cursor: pointer; }
+.emo-popup-items { display: flex; flex-wrap: wrap; gap: 6px; }
+.emo-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 12.5px; padding: 6px 12px; border-radius: 999px;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: var(--ink-dim);
+  cursor: pointer; transition: transform 0.1s, background 0.12s;
+}
+.emo-chip:active { transform: scale(0.95); }
+.emo-chip-on {
+  font-weight: 800; background: var(--emo-fg); color: var(--emo-bg); border-color: var(--emo-fg);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+.emo-chip-check { font-size: 11px; }
+.emo-chip:disabled { opacity: 0.3; cursor: default; }
+.emo-popup-head .emo-count { margin-left: auto; margin-right: 8px; font-size: 11px; font-weight: 600; opacity: 0.7; }
 /* 유저 말풍선에 붙는 감정 태그 */
 .bubble-feels { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; margin: 4px 2px 0; }
 .bubble-feels span {
@@ -340,6 +378,11 @@ body {
   border: 1px solid var(--line); border-left: 2px solid var(--accent);
   border-radius: 0 12px 12px 0; padding: 8px 11px; margin-top: 7px; }
 .story-line i { font-style: normal; color: var(--ink-faint); font-size: 11px; display: block; margin-bottom: 2px; }
+/* 1부/2부 구분 띠 — 스텝 위에 얹힌다 */
+.story-part { margin: 0 0 14px -36px; padding: 7px 11px; border-radius: 10px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.06), transparent); border-left: 2px solid var(--gold); }
+.story-part b { display: block; font-size: 12px; margin: 0; letter-spacing: 0.4px; color: var(--gold); }
+.story-part small { display: block; font-size: 11px; color: var(--ink-dim); margin-top: 2px; }
 
 /* ---------- about v2: 스테이지 스토리 스크롤 ---------- */
 /* 인덱스 바가 스크롤 맨 위에 딱 붙도록, 본문 위쪽 여백은 히어로가 대신 낸다 */
@@ -533,7 +576,7 @@ body {
 .reel { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; }
 .reel-track { display: flex; height: 100%; transition: transform 0.34s cubic-bezier(0.22, 1, 0.3, 1); }
 .reel-frame {
-  flex: 0 0 100%; display: flex; flex-direction: column; justify-content: center;
+  flex: 0 0 100%; display: flex; flex-direction: column; justify-content: flex-start;
   align-items: stretch; gap: 7px; padding: 10px 22px; box-sizing: border-box; overflow-y: auto;
 }
 .reel-speaker { font-size: 10.5px; letter-spacing: 0.4px; color: var(--ink-faint); }
@@ -567,11 +610,23 @@ body {
 @keyframes fate-in { from { opacity: 0; transform: scale(1.5); } }
 .fate-prompt { text-align: center; font-size: 13px; color: var(--ink-dim); line-height: 1.6; margin-bottom: 4px; }
 .fate-btn {
-  width: 100%; padding: 13px 14px; border-radius: 14px; font-size: 14px; font-weight: 700;
-  line-height: 1.45; text-align: left;
+  width: 100%; padding: 15px 16px; border-radius: 16px; font-size: 14.5px; font-weight: 700;
+  line-height: 1.45; text-align: left; cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
-.fate-a { background: linear-gradient(135deg, #2a1f0c, #3d2d12); border: 1px solid #5a4420; color: var(--gold); }
-.fate-b { background: #191030; border: 1px solid #3d2d5e; color: #cdb8f0; }
+.fate-btn:active { transform: scale(0.97); }
+.fate-a {
+  background: linear-gradient(135deg, #2a1f0c 0%, #3d2d12 100%);
+  border: 1.5px solid #5a4420; color: var(--gold);
+  box-shadow: 0 2px 12px rgba(214, 154, 60, 0.15), inset 0 1px 0 rgba(255, 220, 140, 0.06);
+}
+.fate-a:active { box-shadow: 0 1px 4px rgba(214, 154, 60, 0.1); }
+.fate-b {
+  background: linear-gradient(135deg, #191030 0%, #221840 100%);
+  border: 1.5px solid #3d2d5e; color: #cdb8f0;
+  box-shadow: 0 2px 10px rgba(120, 80, 200, 0.1), inset 0 1px 0 rgba(200, 180, 240, 0.04);
+}
+.fate-b:active { box-shadow: 0 1px 4px rgba(120, 80, 200, 0.08); }
 .fate-btn:disabled { opacity: 0.45; }
 
 /* ── 🎨 커스텀 SVG 무대 ───── */
@@ -586,8 +641,28 @@ body {
 .reel-pair { display: flex; flex-direction: column; gap: 3px; }
 .reel-pair.user { align-items: flex-end; }
 .reel-pair.director, .reel-pair.other { align-items: flex-start; }
+.note-chip {
+  align-self: flex-start; margin: 2px 0 0 4px; padding: 3px 9px; border-radius: 999px;
+  font-size: 10.5px; color: var(--ink-faint); background: transparent; border: 1px dashed var(--line);
+}
+.note-chip.on { color: var(--gold); border-color: #5a4420; border-style: solid; }
+.note-why {
+  margin: 4px 0 0 4px; padding: 8px 11px; border-radius: 10px; font-size: 12px; line-height: 1.55;
+  color: var(--ink-dim); background: var(--panel-2); border-left: 2px solid var(--gold);
+  animation: pop 0.25s ease both;
+}
 .reel-wait { color: var(--ink-faint); font-size: 18px; letter-spacing: 3px; padding-left: 8px; animation: pop 0.3s ease both; }
-.fate-answer { justify-content: flex-end; background: rgba(10, 6, 18, 0.82); }
-.fate-sub { display: block; font-size: 10.5px; font-weight: 400; opacity: 0.65; margin-top: 3px; }
+/* ✍️ 답하기는 오버레이가 아니라 이번 턴 아래에 붙는 패널 */
+.fate-answer {
+  position: static; inset: auto; flex: 0 0 auto; max-height: 46vh;
+  justify-content: flex-start; gap: 10px; padding: 14px 18px 16px;
+  background: var(--panel); backdrop-filter: none;
+  border-top: 1px solid var(--line);
+}
+.fate-answer .fate-flash { text-align: left; font-size: 14px; }
+.fate-sub { display: block; font-size: 10.5px; font-weight: 400; opacity: 0.55; margin-top: 4px; letter-spacing: 0.3px; }
+.fate-btn-inner { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.fate-arrow { font-size: 20px; opacity: 0.5; flex-shrink: 0; transition: transform 0.15s ease; }
+.fate-btn:active .fate-arrow { transform: translateX(3px); }
 .fate-write { display: flex; gap: 8px; align-items: flex-end; }
 .fate-write .ta { flex: 1; }

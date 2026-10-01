@@ -201,7 +201,7 @@ export function StageArt() {
 
 /* ══ 03 흐름 — 여덟 컷 필름 ═══════════════════════════ */
 const FRAMES: { em: string; ritual?: boolean }[] = [
-  { em: "🎭" }, { em: "🃏", ritual: true }, { em: "📖" }, { em: "💭" },
+  { em: "🙋" }, { em: "🎭" }, { em: "🃏", ritual: true }, { em: "📖" }, { em: "💭" },
   { em: "🤝" }, { em: "🪞", ritual: true }, { em: "⏪", ritual: true }, { em: "👏", ritual: true },
 ];
 
@@ -217,13 +217,13 @@ export function ActsArt() {
         </g>
       ))}
       {FRAMES.map((f, i) => (
-        <g key={i} transform={`translate(${10 + i * 43} 32)`}>
+        <g key={i} transform={`translate(${8 + i * 39} 32)`}>
           <rect
-            width="36" height="32" rx="6"
+            width="33" height="32" rx="6"
             fill={f.ritual ? "#241b10" : "#241a3e"}
             stroke={f.ritual ? GOLD : "#3f2f60"} strokeWidth="1.4"
           />
-          <text x="18" y="22" fontSize="16" textAnchor="middle">{f.em}</text>
+          <text x="16.5" y="22" fontSize="15" textAnchor="middle">{f.em}</text>
         </g>
       ))}
       <path className="ab-flow" d="M14 88 H346" stroke={ACCENT} strokeWidth="1.6" opacity="0.7" fill="none" />

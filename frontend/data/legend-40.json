@@ -1,1199 +1,485 @@
 {
-  "id": "friend",
-  "emoji": "🎭",
-  "title": "나만 빼고 약속",
-  "tagline": "웃는 걸로 살아남은 아이",
-  "theme": "친구 관계 · 가면 · 배제",
+  "id": "love",
+  "emoji": "🚪",
+  "title": "두 번째 줄",
+  "tagline": "고백할까 말까 — 손이 멈추는 자리에서",
+  "theme": "연애 · 고백 · 자동 선택",
   "legend": true,
-  "purpose": "이 흐름이 이 서비스가 지향하는 '이상적인 한 판'이다. 디렉터 프롬프트 튜닝, 데모, 평가의 기준으로 쓴다. 핵심: 자연스러운 수다처럼 흐르다가 → 내면 무대가 서고 → 애매하면 카드로 풀고 → 같은 장면을 여러 출구로 부딪쳐보고 → 객석에서 자기를 바라본 뒤 막을 내린다.",
+  "purpose": "이 흐름이 이 서비스가 지향하는 '이상적인 한 판'이다. 출처: /마음무대_물어보살_접수_시나리오.md 시나리오 A. 두 틀로 돈다 — 1부(턴 1~20) 내면의 이야기 만들기: 접수 → 아바타 → 한 장면 → 몸 → 속의 말 → 상대의 속 → 거울에서 '늘 하는 선택'을 유저 말로 한 문장 받는다. 2부(턴 21~40) 선택 바꾸기: 같은 자리 재입장 → 출구 넷 → 테이크마다 '안에서 뭐가 달라졌어?' → 비교 → 미래 → 원래 문장 옆에 새 문장을 나란히 둔다. 디렉터 프롬프트 튜닝, 데모, 평가의 기준.",
   "cast": {
-    "avatar": "노을 — 유저가 만든 가상의 나. 반에서 분위기 잘 맞추는 애, 속은 다름",
-    "other": "지우 — 제일 친했던 애. 요즘 단톡에서 노을만 빼고 약속을 잡는다",
-    "card_main": "🎭 가면 (캐스팅 직후 뽑음)",
-    "card_mid": "🕸️ 거미줄 (말문이 막혔을 때 중간 뽑기)"
+    "avatar": "수민 — 유저가 만든 가상의 나. 조용한데 웃길 때 웃긴 애. 먼저 말은 못 걸고, 간식은 몰래 넣어주는 애",
+    "other": "태윤 — 같은 학원, 톡은 매일. 근데 자꾸 지호 얘기를 한다",
+    "card_main": "🚪 문 (접수·캐스팅 뒤 뽑음 — 고백 얘기니까 말문 여는 소품)",
+    "frame": "1부 내면의 이야기 만들기(1~20) → 2부 선택 바꾸기(21~40)"
   },
   "principles_shown": [
-    "3인칭 거리 — 질문의 주어는 언제나 '노을'",
-    "김창옥 결 — 매 턴 질문하지 않는다. 받아주는 말, 장면 한 줄, 가끔 웃음",
-    "단계도 — L1→L7을 한 칸씩. 닫히면 한 칸 올라간다",
-    "애매하면 카드 — 심문 대신 놀이 (턴 14)",
-    "이중자아 — 속의 노을을 무대에 세운다 (턴 18)",
-    "출구 연습 — 같은 장면을 세 가지 선택으로 돈다 (턴 29~36)",
-    "객석 시점 — 몰입과 거리두기를 번갈아 (턴 20, 35)"
+    "접수 — 물어보살처럼 앉자마자 '무슨 일로 왔어?'. 2비트 안에 끝내고 요약하지 않는다 (턴 1~2)",
+    "1부 종료 조건 — '늘 하는 선택'을 디렉터가 아니라 유저가 한 문장으로 말한다 (턴 20)",
+    "선택 지점 찾기 — '왜'가 아니라 '실제로 뭘 했어' + '처음은 아니지' (턴 11~12)",
+    "이중자아·몸·처음·목소리 — L3→L4→L5 한 칸씩 (턴 13~16)",
+    "상대는 악역이 아니다 — 역할 바꾸기 뒤 바로 돌아온다, 속의 상대도 세운다 (턴 17~18)",
+    "2부 — 원래 선택도 테이크로 돌린다: '똑같이, 근데 알고' (턴 29~31)",
+    "테이크 종료 질문은 항상 '안에서' — 상대가 어떻게 됐나로 묻지 않는다 (턴 23, 27, 30)",
+    "채점 없음 — 달라진 것만 나란히 (턴 32)",
+    "벗어남 — 원래 문장을 지우지 않고 옆에 새 문장을 둔다 (턴 36~37)",
+    "세 비트에 한 번은 질문 없이 끝난다 (턴 6, 14, 21, 25, 31, 37, 39)"
   ],
   "turns": [
     {
       "turn": 1,
-      "movement": "casting",
+      "movement": "intake",
       "depth": 1,
-      "director": "여기는 마음무대야. 오늘 무대에 서는 건 네가 아니라 네가 만드는 애야. 먼저 그 애 이름부터 하나 지어줄래? 진짜 네 이름 말고.",
-      "user": "노을",
-      "technique": "거리 확보",
-      "why": "무대에 서는 건 아바타라는 계약이 첫 턴에 선다",
-      "scene": {
-        "bg": "curtain",
-        "light": 1,
-        "cast": [],
-        "caption": "막이 오르기 전, 빈 무대"
-      }
+      "director": "불 켜자. 여기는 마음무대. 무대 세우기 전에 하나만 — 오늘 무슨 일로 왔어?",
+      "user": "좋아하는 애가 있는데 고백을 해야 할지 모르겠어.",
+      "technique": "접수 — 무슨 일로 왔어",
+      "why": "물어보살처럼 사연부터. 캐릭터보다 '왜 왔는지'가 먼저",
+      "stage": "자, 불 켜자. 접수 창구에 불 하나.",
+      "move": "set",
+      "scene": { "bg": "curtain", "light": 1, "cast": [{ "id": "director", "emo": "smile", "pose": "stand", "x": 0.5 }], "caption": "막 오르기 전, 디렉터 혼자" }
     },
     {
       "turn": 2,
-      "movement": "casting",
+      "movement": "intake",
       "depth": 1,
-      "director": "노을. 이름부터 뭔가 해 질 녘 같네. 노을이는 학교에서 어떤 애야? 남들이 보기에.",
-      "user": "분위기 잘 맞추는 애. 애들 웃길 때도 많고.",
-      "technique": "겉모습부터",
-      "why": "안전한 바깥쪽에서 시작",
-      "scene": {
-        "bg": "spotlight",
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "smile",
-            "pose": "stand",
-            "x": 0.5
-          }
-        ],
-        "caption": "스포트라이트 아래, 노을이 등장"
-      }
+      "director": "아, 그거구나. 하나만 더 — 그 애랑 지금 어느 정도야? 말은 해?",
+      "user": "같은 학원이고 톡은 거의 매일. 근데 걔가 다른 애 얘기를 자주 해.",
+      "technique": "접수 확인 질문 — 관계의 거리",
+      "why": "'아, 그거구나' 한 마디로 받는다. 요약·감정 이름 금지. 🧵 '다른 애 얘기' 저장",
+      "scene": { "bg": "curtain", "light": 1, "cast": [{ "id": "director", "emo": "calm", "pose": "stand", "x": 0.5 }], "caption": "🧵 '다른 애 얘기' — 흘린 말 하나 받아둔다" }
     },
     {
       "turn": 3,
       "movement": "casting",
-      "depth": 2,
-      "director": "분위기 메이커네. 근데 그런 애들이 꼭 하나씩 숨겨놓은 게 있더라? 노을이의 제일 약한 지점은 뭐야. 솔직할수록 이야기가 살아나.",
-      "user": "눈치를 너무 많이 봐. 애들이 잠깐만 조용해져도 자기 때문인가 생각함.",
-      "technique": "약점을 청하기",
-      "why": "뻔한 답 대신 진짜를 한 번 더 부탁하는 자리",
-      "scene": {
-        "bg": "spotlight",
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "worry",
-            "pose": "stand",
-            "x": 0.5
-          }
-        ],
-        "caption": "웃음 뒤의 얼굴이 살짝 보인다"
-      }
+      "depth": 1,
+      "director": "됐어, 충분해. 이 얘기 무대에 세울 애 하나 만들자. 네가 아니고, 네가 만드는 애. 이름부터 — 진짜 네 이름 말고.",
+      "user": "수민.",
+      "technique": "거리 계약",
+      "why": "사연은 유저 것, 무대에 서는 건 아바타. 주제가 있으니 캐스팅은 짧게",
+      "stage": "스포트라이트 하나. 가운데.",
+      "move": "set",
+      "scene": { "bg": "spotlight", "cast": [{ "id": "noeul", "emo": "calm", "pose": "stand", "x": 0.5 }], "caption": "수민이 등장" }
     },
     {
       "turn": 4,
       "movement": "casting",
-      "depth": 2,
-      "director": "잠깐의 정적도 자기 탓으로 가져가는 애구나. 그럼 반대로, 노을이가 제일 센 지점은? 약점만 있으면 이야기가 한쪽으로 기울어.",
-      "user": "눈치 보는 만큼 남 기분을 빨리 알아챔. 힘든 애 먼저 발견하는 것도 노을임.",
-      "technique": "강점 균형",
-      "why": "같은 기질의 양면을 유저가 스스로 발견",
-      "scene": {
-        "bg": "spotlight",
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "worry",
-            "pose": "stand",
-            "x": 0.5
-          }
-        ],
-        "caption": "웃음 뒤의 얼굴이 살짝 보인다"
-      }
+      "depth": 1,
+      "director": "수민이는 학원에서 어떤 애야? 그 애 눈에 보기에.",
+      "user": "조용한데 가끔 웃길 때 되게 웃긴 애. 근데 먼저 말 거는 건 못 해.",
+      "technique": "겉모습부터 — 주제에 맞춰",
+      "why": "'남들 눈'을 '그 애 눈'으로 바꿔 묻는다. 약점이 먼저 나왔으니 약점 청하기는 생략",
+      "scene": { "bg": "spotlight", "cast": [{ "id": "noeul", "emo": "smile", "pose": "stand", "x": 0.5 }], "caption": "웃길 때 웃긴 애" }
     },
     {
       "turn": 5,
       "movement": "casting",
       "depth": 2,
-      "director": "오… 그거 봐. 눈치가 레이더였네. 자, 이제 노을이를 상황에 세워보자. 오늘 이 애는 어떤 상황에 있어?",
-      "user": "제일 친한 애가 요즘 단톡에서 노을이만 빼고 약속을 잡아.",
-      "technique": "상황 투입(throw)",
-      "why": "유저가 여기 온 이유가 3인칭으로 들어오는 자리",
-      "scene": {
-        "bg": "spotlight",
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "calm",
-            "pose": "stand",
-            "x": 0.38
-          },
-          {
-            "id": "inner",
-            "emo": "worry",
-            "pose": "stand",
-            "x": 0.62,
-            "ghost": true
-          }
-        ],
-        "caption": "노을이 뒤로 그림자가 하나 생겼다"
-      }
+      "director": "먼저 못 거는 애구나. 그럼 반대로, 수민이가 제일 센 지점은? 약점만 있으면 무대가 한쪽으로 기울어.",
+      "user": "한 번 친해지면 진짜 잘 챙겨줘. 걔 시험 때 간식 몰래 넣어준 적도 있어.",
+      "technique": "강점 균형",
+      "why": "약점 직후 반드시 한 쌍으로. 🧵 '간식' 저장 — 나중에 거울에서 펼쳐진다",
+      "scene": { "bg": "spotlight", "cast": [{ "id": "noeul", "emo": "smile", "pose": "stand", "x": 0.5 }], "caption": "말은 못 걸고, 간식은 넣는 애" }
     },
     {
       "turn": 6,
       "movement": "draw",
       "depth": 1,
-      "director": "무거운 얘기 꺼내줬네. 들어가기 전에 소품 하나 챙기자. 카드 한 장 뽑아줘 — 해석은 네가 하는 거야. (🎭 가면이 뽑힘) 가면이라… 분위기 메이커 얘기 하다가 이게 나오네.",
-      "user": "(카드를 뽑음) 소름. 딱 노을이네.",
-      "technique": "카드=투사 소품",
-      "why": "카드가 유저의 말을 대신 열어준다. 점이 아니다",
-      "scene": {
-        "bg": "curtain",
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "calm",
-            "pose": "stand",
-            "x": 0.5
-          }
-        ],
-        "prop": "card",
-        "caption": "🎭 가면 카드가 내려온다"
-      }
+      "director": "카드 한 장. 고백 얘기니까 이건 그냥 말문 여는 용도야. (🚪 문) …문 앞에 선 수민이. 열까 말까. 일단 거기 세워두자.",
+      "user": "(카드를 뽑음) 문이네. 딱이다.",
+      "technique": "카드 = 소품",
+      "why": "질문 없이 끝나는 비트. 카드는 해석의 중심이 아니라 소품",
+      "stage": "카드 한 장, 무대 가운데 바닥에.",
+      "scene": { "bg": "curtain", "cast": [{ "id": "noeul", "emo": "calm", "pose": "stand", "x": 0.5 }], "prop": "card", "caption": "🚪 문 — 열까 말까" }
     },
     {
       "turn": 7,
       "movement": "open",
-      "depth": 2,
-      "director": "그 단톡 얘기, 장면으로 가보자. 노을이가 폰을 본 그 순간 — 어디야? 몇 시쯤이고.",
-      "user": "밤 11시. 침대에 누워서. 단톡 알림이 떴는데 토요일에 보자는 얘기였음. 노을이 이름은 없었음.",
-      "technique": "장면화(현재형)",
-      "why": "이야기에 대해 말하기 → 장면 안으로",
-      "scene": {
-        "bg": "room-night",
-        "light": 0,
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "blank",
-            "pose": "phone",
-            "x": 0.42
-          }
-        ],
-        "prop": "phone",
-        "caption": "밤 11시, 폰 불빛만 있는 방"
-      }
+      "depth": 1,
+      "director": "톡 매일 한다 했지. 제일 최근 거 딱 한 장면만 무대에 올리자. 수민이 지금 어디서 폰 보고 있어?",
+      "user": "침대. 밤 11시쯤.",
+      "technique": "현재형 입장",
+      "why": "'어땠어'가 아니라 '지금 어디'. 무대는 항상 현재",
+      "stage": "조명 내리고. 방 하나.",
+      "move": "set",
+      "scene": { "bg": "room-night", "light": 0, "cast": [{ "id": "noeul", "emo": "calm", "pose": "lie", "x": 0.5 }], "prop": "phone", "caption": "밤 11시, 침대" }
     },
     {
       "turn": 8,
       "movement": "open",
       "depth": 2,
-      "director": "밤 11시 침대. 화면 불빛만 있는 방. …그 알림, 노을이는 바로 껐어? 아니면 계속 봤어?",
-      "user": "계속 봤어. 올라오는 말풍선 다 읽었어. 읽으면서도 왜 읽는지 모르겠고.",
-      "technique": "장면에 머물기",
-      "why": "한 장면에 오래 머무는 것이 여러 장면보다 낫다",
-      "decision": {
-        "prompt": "밤 11시. 알림이 멈추지 않는다. 말풍선이 계속 올라온다. — 노을이는…",
-        "label": "📱 끝까지 다 읽는다 (그날의 선택)",
-        "alt": {
-          "label": "🙈 폰을 엎어놓고 자는 척한다",
-          "branch": [
-            {
-              "role": "director",
-              "text": "좋아, 다른 노을이로 가보자. 노을이가 폰을 뒤집어 엎었어. 방이 완전히 깜깜해졌어."
-            },
-            {
-              "role": "director",
-              "text": "…근데 진동이 이불 밑에서 계속 울려. 웅. 웅. 웅. 노을이 심장도 같은 박자로 뛰어."
-            },
-            {
-              "role": "user",
-              "text": "(새벽 1시, 결국 다시 폰을 집는다)"
-            },
-            {
-              "role": "director",
-              "text": "봐 — 안 보는 데도 체력이 들지. 피하는 선택은 공짜가 아니었어. 이것도 노을이의 한 갈래야. 자, 시간을 되감고 진짜 그날로 가자."
-            }
-          ]
-        }
-      },
-      "scene": {
-        "bg": "room-night",
-        "light": 0,
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "blank",
-            "pose": "phone",
-            "x": 0.42
-          }
-        ],
-        "prop": "phone",
-        "caption": "밤 11시, 폰 불빛만 있는 방"
-      }
+      "director": "침대, 11시. 방 불은 켜져 있어, 꺼져 있어?",
+      "user": "꺼져 있고 폰 불빛만.",
+      "technique": "소리·조명",
+      "why": "감각으로 무대를 채운다. 유저가 그 안에 설 수 있게",
+      "scene": { "bg": "room-night", "light": 0, "cast": [{ "id": "noeul", "emo": "calm", "pose": "lie", "x": 0.5 }], "prop": "phone", "caption": "폰 불빛만" }
     },
     {
       "turn": 9,
       "movement": "open",
-      "depth": 3,
-      "director": "읽으면서도 왜 읽는지 모르겠는 거. 그때 노을이 몸은 어땠어? 어디가 제일 먼저 반응했어?",
-      "user": "가슴 한가운데가 좀 내려앉는 느낌? 그리고 손이 차가워졌어.",
-      "technique": "몸 먼저(L3)",
-      "why": "감정의 문은 머리가 아니라 몸",
-      "scene": {
-        "bg": "room-night",
-        "light": 0,
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "sad",
-            "pose": "phone",
-            "x": 0.42
-          }
-        ],
-        "prop": "phone",
-        "caption": "가슴이 내려앉고, 손이 차가워진다"
-      }
+      "depth": 2,
+      "director": "폰 불빛만. 걔가 방금 보낸 말, 요약하지 말고 그대로.",
+      "user": "\"ㅋㅋ 너 진짜 웃겨\" 하고 바로 \"근데 지호 걔 왜 그러냐\".",
+      "technique": "상대의 말 그대로",
+      "why": "요약하면 질감이 사라진다. 🧵 '지호' 저장",
+      "scene": { "bg": "chat", "cast": [{ "id": "noeul", "emo": "calm", "pose": "phone", "x": 0.5 }], "prop": "phone", "caption": "두 줄, 1초 간격" }
     },
     {
       "turn": 10,
       "movement": "open",
       "depth": 3,
-      "director": "가슴이 내려앉고 손이 차가워지고. 그 방에서 소리는 뭐가 들렸어?",
-      "user": "아무 소리도 없었어. 그래서 더 이상했어. 알림 진동만 계속 울리고.",
-      "technique": "무대 디테일",
-      "why": "소리·빛이 채워져야 유저가 그 안에 선다",
-      "scene": {
-        "bg": "room-night",
-        "light": 0,
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "sad",
-            "pose": "phone",
-            "x": 0.42
-          }
-        ],
-        "prop": "phone",
-        "caption": "가슴이 내려앉고, 손이 차가워진다"
-      }
+      "director": "내가 걔 할게. (태윤 역, 폰 화면 두 줄) \"ㅋㅋ 너 진짜 웃겨\" — \"근데 지호 걔 왜 그러냐\" — 수민이 몸 어디부터 반응해?",
+      "user": "첫 줄에서 입꼬리 올라갔다가, 둘째 줄에서 손이 멈춰.",
+      "technique": "보조자아 입장 → 몸 먼저",
+      "why": "상대를 세우자마자 아바타 몸으로 돌아온다. 상대가 무대를 차지하지 않게",
+      "stage": "폰 화면이 무대 뒤에 크게.",
+      "scene": { "bg": "chat", "cast": [{ "id": "noeul", "emo": "blank", "pose": "phone", "x": 0.38 }, { "id": "jiwoo", "emo": "grin", "pose": "phone", "x": 0.78, "flip": true, "ghost": true }], "prop": "phone", "caption": "둘째 줄에서 손이 멈춘다" }
     },
     {
       "turn": 11,
       "movement": "open",
       "depth": 3,
-      "director": "조용한 방에 진동만. 야 이거 무대 다 섰다. 조명 어둡게, 폰 불빛 하나. …다음 날 학교에서 노을이는 지우를 봤을 거 아냐.",
-      "user": "봤지. 지우가 먼저 웃으면서 인사했어. 노을이도 그냥 웃었어.",
-      "technique": "질문 없는 비트",
-      "why": "매 턴 질문하지 않는다. 받아주고 장면을 잇는다",
-      "scene": {
-        "bg": "hallway",
-        "light": 1,
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "mask",
-            "pose": "stand",
-            "x": 0.3
-          },
-          {
-            "id": "jiwoo",
-            "emo": "smile",
-            "pose": "stand",
-            "x": 0.7,
-            "flip": true
-          }
-        ],
-        "caption": "다음 날 아침, 복도"
-      }
-    },
-    {
-      "turn": 12,
-      "movement": "open",
-      "depth": 3,
-      "director": "둘 다 웃었네. 근데 하나는 진짜 웃음이고 하나는… 가면 카드가 일하기 시작하네. 그 웃는 얼굴 뒤에서 노을이 속은 뭐라고 했어?",
-      "user": "어제 그거 뭐야, 라고 묻고 싶었는데 입이 안 열렸어.",
-      "technique": "겉/속 분리 시작",
-      "why": "이중자아 기법의 씨앗",
+      "director": "손이 멈춘 자리. 거기서 수민이 실제로 뭐라고 쳤어?",
+      "user": "\"ㅋㅋ 걔 원래 그래\". 그리고 지호 얘기 받아줬어.",
+      "technique": "선택 지점 찾기 — 실제로 한 것",
+      "why": "'왜 그랬어'가 아니라 '뭘 했어'. 1부가 찾는 건 자동 선택이다",
+      "move": "freeze",
       "decision": {
-        "prompt": "다음 날 아침 복도. 지우가 먼저 웃으며 인사한다. — 노을이는…",
-        "label": "🙂 같이 웃는다 (그날의 선택)",
+        "prompt": "손이 멈춰 있다. 둘째 줄이 떠 있다. — 수민이는…",
+        "label": "💬 \"ㅋㅋ 걔 원래 그래\" 치고 받아준다 (그날의 선택)",
         "alt": {
-          "label": "😶 못 본 척 지나친다",
+          "label": "📵 답 안 보내고 폰을 엎는다",
           "branch": [
-            {
-              "role": "director",
-              "text": "가보자. 노을이가 시선을 바닥에 꽂고 그냥 지나가."
-            },
-            {
-              "role": "other",
-              "speakerName": "지우",
-              "text": "어? 야, 노을아! …뭐지, 못 들었나."
-            },
-            {
-              "role": "director",
-              "text": "지우가 뒤에서 잠깐 서 있다가 고개를 갸웃하고 교실로 들어가. 노을이 등에 그 시선이 그대로 박혀."
-            },
-            {
-              "role": "user",
-              "text": "(심장이 아까보다 더 빨리 뛴다)"
-            },
-            {
-              "role": "director",
-              "text": "피하면 편할 줄 알았는데 몸은 더 시끄럽네. 그날의 노을이가 웃음을 고른 데는 이유가 있었던 거야. 되감자."
-            }
+            { "role": "director", "text": "좋아, 다른 수민이로 가보자. 폰을 뒤집어 엎었어. 방이 완전히 깜깜해졌어." },
+            { "role": "director", "text": "…이불 밑에서 진동이 한 번 더. 웅. 수민이 손이 이불 밖으로 나왔다 들어갔다 해." },
+            { "role": "user", "text": "(새벽 1시, 결국 \"ㅋㅋ 걔 원래 그래\"를 보낸다)" },
+            { "role": "director", "text": "봐 — 두 시간 늦게 같은 말을 쳤어. 안 보내는 것도 공짜가 아니었네. 이것도 수민이의 한 갈래야. 자, 되감고 그날로 가자." }
           ]
         }
       },
-      "scene": {
-        "bg": "hallway",
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "mask",
-            "pose": "stand",
-            "x": 0.3
-          },
-          {
-            "id": "jiwoo",
-            "emo": "grin",
-            "pose": "stand",
-            "x": 0.7,
-            "flip": true
-          },
-          {
-            "id": "inner",
-            "emo": "sad",
-            "pose": "stand",
-            "x": 0.12,
-            "ghost": true
-          }
-        ],
-        "caption": "겉은 웃고, 속은 다른 말을 한다"
-      }
+      "scene": { "bg": "chat", "cast": [{ "id": "noeul", "emo": "blank", "pose": "phone", "x": 0.5 }], "prop": "phone", "caption": "멈춘 손, 그리고 친 말" }
+    },
+    {
+      "turn": 12,
+      "movement": "deepen",
+      "depth": 3,
+      "director": "받아줬구나. 이렇게 받아준 거, 이번이 처음은 아니지?",
+      "user": "아니. 거의 매번. 걔는 지호 얘기할 때 제일 신나.",
+      "technique": "선택 지점 — 반복 확인",
+      "why": "한 번 본 걸 패턴이라 부르지 않는다. 유저가 '매번'이라 해야 성립",
+      "scene": { "bg": "chat", "cast": [{ "id": "noeul", "emo": "calm", "pose": "phone", "x": 0.5 }], "prop": "phone", "caption": "거의 매번" }
     },
     {
       "turn": 13,
-      "movement": "open",
-      "depth": 3,
-      "director": "묻고 싶은 말이 입 앞까지 왔다가 돌아갔구나. 그 말 — '어제 그거 뭐야' — 일단 무대 구석에 세워두자. 이따 꼭 다시 부를게.",
-      "user": "ㅇㅋ. 근데 그 다음은 잘 모르겠어.",
-      "technique": "실마리 보관 선언",
-      "why": "흘린 말을 버리지 않는다는 신뢰",
-      "scene": {
-        "bg": "hallway",
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "mask",
-            "pose": "stand",
-            "x": 0.3
-          },
-          {
-            "id": "jiwoo",
-            "emo": "grin",
-            "pose": "stand",
-            "x": 0.7,
-            "flip": true
-          },
-          {
-            "id": "inner",
-            "emo": "sad",
-            "pose": "stand",
-            "x": 0.12,
-            "ghost": true
-          }
-        ],
-        "caption": "겉은 웃고, 속은 다른 말을 한다"
-      }
+      "movement": "deepen",
+      "depth": 4,
+      "director": "\"거의 매번.\" 손 멈춘 자리에서 멈춰. …수민이 뒤에 하나 더 세울게 — 속의 수민이. 겉은 \"원래 그래\" 치는 동안, 속은 뭐라고 해?",
+      "user": "나 얘기할 땐 저렇게 안 궁금해하잖아.",
+      "technique": "멈춤 → 이중자아",
+      "why": "겉과 속이 다를 때. 속의 말은 유저가 쓴다",
+      "stage": "수민이 뒤로 반투명한 그림자 하나.",
+      "move": "double",
+      "scene": { "bg": "room-night", "light": 0, "cast": [{ "id": "noeul", "emo": "smile", "pose": "phone", "x": 0.4 }, { "id": "inner", "emo": "sad", "pose": "stand", "x": 0.62, "ghost": true }], "prop": "phone", "caption": "겉은 ㅋㅋ, 속은 다른 말" }
     },
     {
       "turn": 14,
       "movement": "deepen",
-      "depth": 2,
-      "director": "모르겠다는 말도 완결된 답이야. 말이 안 나올 땐 머리 말고 손이 고르게 하자 — 카드 한 장 더 뽑아볼래? 뽑힌 게 노을이 얘기랑 어떻게 이어지는지는 네가 정해. (🕸️ 거미줄이 뽑힘)",
-      "user": "(카드를 뽑음) 거미줄… 단톡방이 좀 거미줄 같긴 해. 다 연결돼 있는데 노을이만 줄 끝에 매달려 있는 느낌.",
-      "technique": "중간 카드 뽑기",
-      "why": "애매한 답 2회 → 심문 대신 놀이. 카드가 은유를 열었다",
-      "scene": {
-        "bg": "chat",
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "worry",
-            "pose": "stand",
-            "x": 0.5
-          }
-        ],
-        "prop": "card",
-        "caption": "🕸️ 거미줄 — 줄 끝에 매달린 기분"
-      }
+      "depth": 4,
+      "director": "그 말 할 때 몸 어디가 어떻게 돼? 눌려, 뜨거워, 굳어?",
+      "user": "가슴 가운데가 내려앉아.",
+      "technique": "몸 먼저",
+      "why": "감정 단어는 유저가 붙인다. 디렉터는 '거기 두자'까지. 이 비트는 질문 없이 끝난다",
+      "scene": { "bg": "room-night", "light": 0, "cast": [{ "id": "noeul", "emo": "sad", "pose": "lie", "x": 0.4 }, { "id": "inner", "emo": "sad", "pose": "stand", "x": 0.62, "ghost": true }], "caption": "가슴 가운데. 이름 안 붙여도 돼" }
     },
     {
       "turn": 15,
       "movement": "deepen",
-      "depth": 4,
-      "director": "줄 끝에 매달려 있는 느낌이라는 말, 네가 지금 만든 말이야. 그 느낌에 이름을 붙인다면 뭐라고 부를래? 네 단어로.",
-      "user": "버려질까봐 조마조마한 거. 불안인가.",
-      "technique": "감정 명명(L4)",
-      "why": "이름은 유저가 붙인다. 디렉터가 붙이지 않는다",
-      "scene": {
-        "bg": "chat",
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "worry",
-            "pose": "stand",
-            "x": 0.5
-          }
-        ],
-        "prop": "card",
-        "caption": "🕸️ 거미줄 — 줄 끝에 매달린 기분"
-      }
+      "depth": 5,
+      "director": "이 느낌, 수민이한테 처음은 아니지? 제일 처음은 언제였어?",
+      "user": "중1. 제일 친했던 애가 다른 애랑 더 친해졌을 때. 그때 \"넌 원래 두 번째야\" 했어.",
+      "technique": "처음이 언제",
+      "why": "L4에서 L5로 한 칸. 🧵 '중1 그 애' 저장",
+      "scene": { "bg": "classroom", "light": 1, "cast": [{ "id": "noeul", "emo": "worry", "pose": "sit", "x": 0.3 }, { "id": "classmate", "emo": "grin", "pose": "stand", "x": 0.62 }, { "id": "chingu", "emo": "grin", "pose": "stand", "x": 0.8 }], "caption": "중1 — 처음 '두 번째'가 된 자리" }
     },
     {
       "turn": 16,
       "movement": "deepen",
-      "depth": 4,
-      "director": "불안. 그 단어로 갈게. 노을이의 불안은 밤 11시 침대에만 있어, 아니면 학교에서도 따라다녀?",
-      "user": "학교에서도. 급식실 갈 때 제일 심해. 누구랑 앉을지 정해지는 그 10초.",
-      "technique": "감정의 지도",
-      "why": "유저가 고른 단어를 그대로 쓰며 범위를 넓힌다",
-      "scene": {
-        "bg": "cafeteria",
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "worry",
-            "pose": "walk",
-            "x": 0.3
-          },
-          {
-            "id": "classmate",
-            "emo": "calm",
-            "pose": "sit",
-            "x": 0.72
-          },
-          {
-            "id": "jjak",
-            "emo": "smile",
-            "pose": "sit",
-            "x": 0.88
-          }
-        ],
-        "prop": "tray",
-        "caption": "급식실, 어디 앉을지 정해지는 10초"
-      }
+      "depth": 5,
+      "director": "\"넌 원래 두 번째야\" — 그 말, 누구 목소리로 들려? 수민이 목소리야, 다른 사람 거야?",
+      "user": "…엄마가 언니 얘기할 때 톤이랑 비슷해. 그리고 내려앉는 거 밑에 화도 좀 있어. 나는 걔 얘기 다 들어주는데.",
+      "technique": "그 목소리 누구 + 반대편 감정",
+      "why": "자책의 출처를 묻는다. 🧵 '언니' 저장. '화'는 유저가 먼저 꺼냈다",
+      "scene": { "bg": "room-night", "light": 0, "cast": [{ "id": "noeul", "emo": "worry", "pose": "sit", "x": 0.4 }, { "id": "inner", "emo": "shout", "pose": "stand", "x": 0.64, "ghost": true }], "caption": "내려앉음 밑에, 화 하나" }
     },
     {
       "turn": 17,
-      "movement": "deepen",
-      "depth": 5,
-      "director": "급식실 10초… 아 그거 진짜 길지. 체감 10분이지. 근데 그 불안 밑에 깔린 게 또 있을 것 같은데. 버려질까봐, 다음에 오는 말이 뭐야?",
-      "user": "버려지면 내가 별로라는 게 확인되는 거니까. 그게 무서운 듯.",
-      "technique": "이차감정(L5)",
-      "why": "불안 아래의 수치심 쪽을 유저 스스로 발견",
-      "scene": {
-        "bg": "cafeteria",
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "worry",
-            "pose": "walk",
-            "x": 0.3
-          },
-          {
-            "id": "classmate",
-            "emo": "calm",
-            "pose": "sit",
-            "x": 0.72
-          },
-          {
-            "id": "jjak",
-            "emo": "smile",
-            "pose": "sit",
-            "x": 0.88
-          }
-        ],
-        "prop": "tray",
-        "caption": "급식실, 어디 앉을지 정해지는 10초"
-      }
+      "movement": "meet",
+      "depth": 4,
+      "director": "걔 이름은? …태윤이. 자리 바꿔. 이제 네가 태윤이야. \"지호 걔 왜 그러냐\" 치는 중. 태윤이 눈으로 보면, 왜 수민이한테 그 얘길 해?",
+      "user": "편해서. 수민이한테는 아무 말이나 해도 되니까. …그런 애 별로 없는데.",
+      "technique": "역할 바꾸기",
+      "why": "상대가 평면적일 때. 상대 눈으로 아바타를 본다",
+      "stage": "자리 바꿈. 조명이 반대쪽으로.",
+      "move": "reverse",
+      "scene": { "bg": "chat", "cast": [{ "id": "jiwoo", "emo": "calm", "pose": "phone", "x": 0.35 }, { "id": "noeul", "emo": "calm", "pose": "stand", "x": 0.75, "flip": true, "ghost": true }], "prop": "phone", "caption": "태윤이 자리에서 본 수민이" }
     },
     {
       "turn": 18,
-      "movement": "deepen",
+      "movement": "meet",
       "depth": 5,
-      "director": "무대 한쪽에 '속의 노을'을 따로 세워보자. 겉의 노을이 급식실에서 웃고 있는 동안, 속의 노을은 뒤에서 뭐라고 하고 있어? 대사로 써 줘.",
-      "user": "\"웃지 마. 쟤네 너 안 불렀잖아. 티 내지 말고 그냥 웃어.\"",
-      "technique": "이중자아(더블)",
-      "why": "속마음을 배역으로 세우면 대사가 나온다",
-      "scene": {
-        "bg": "cafeteria",
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "mask",
-            "pose": "stand",
-            "x": 0.32
-          },
-          {
-            "id": "inner",
-            "emo": "sad",
-            "pose": "stand",
-            "x": 0.6,
-            "ghost": true
-          }
-        ],
-        "caption": "무대 한쪽에 「속의 노을」이 선다"
-      }
-    },
-    {
-      "turn": 19,
-      "movement": "deepen",
-      "depth": 6,
-      "director": "\"티 내지 말고 그냥 웃어.\" …이 대사, 누구 목소리 같아? 노을이가 처음 이 말을 배운 게 언제쯤일까.",
-      "user": "초5 때 전학 갔을 때. 울었더니 애들이 더 어색해해서, 그때부터 그냥 웃기로 한 듯.",
-      "technique": "뿌리(L6)",
-      "why": "원인 확정이 아니라 처음 장면의 탐색",
-      "scene": {
-        "bg": "classroom",
-        "light": 0,
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "tear",
-            "pose": "stand",
-            "x": 0.62,
-            "flip": true
-          },
-          {
-            "id": "classmate",
-            "emo": "blank",
-            "pose": "stand",
-            "x": 0.25
-          },
-          {
-            "id": "jjak",
-            "emo": "blank",
-            "pose": "stand",
-            "x": 0.4
-          }
-        ],
-        "caption": "초5 교실 — 웃기로 결심한 날"
-      }
-    },
-    {
-      "turn": 20,
-      "movement": "deepen",
-      "depth": 6,
-      "director": "초5 전학생 노을이가 무대 뒤에 서 있었네, 지금까지. 잠깐 객석에서 보자 — 웃기로 결심하는 그 열두 살, 지금 어떻게 보여?",
-      "user": "짠해. 근데 걔 나름대로 살아남은 거야. 그 방법밖에 없었음.",
-      "technique": "객석 시점(거리두기)",
-      "why": "몰입 후 거리두기. 자기연민이 아니라 이해가 나온다",
-      "scene": {
-        "bg": "spotlight",
-        "cast": [
-          {
-            "id": "inner",
-            "emo": "sad",
-            "pose": "stand",
-            "x": 0.5,
-            "ghost": true
-          },
-          {
-            "id": "noeul",
-            "emo": "calm",
-            "pose": "stand",
-            "x": 0.14
-          }
-        ],
-        "caption": "객석에서 열두 살의 나를 본다"
-      }
-    },
-    {
-      "turn": 21,
-      "movement": "deepen",
-      "depth": 7,
-      "director": "살아남은 방법이었다 — 가면은 약점이 아니라 생존 장비였네. 그럼 지금의 노을이가 진짜 원하는 건 뭘까. 웃는 거 말고.",
-      "user": "그냥 물어보고 싶은 거야. 나 왜 뺐냐고. 그리고 그래도 괜찮다는 대답을 듣고 싶은 거.",
-      "technique": "욕구(L7)",
-      "why": "처방 없이 원함까지만. 여기가 이 세션의 최심부",
-      "scene": {
-        "bg": "spotlight",
-        "cast": [
-          {
-            "id": "inner",
-            "emo": "sad",
-            "pose": "stand",
-            "x": 0.5,
-            "ghost": true
-          },
-          {
-            "id": "noeul",
-            "emo": "calm",
-            "pose": "stand",
-            "x": 0.14
-          }
-        ],
-        "caption": "객석에서 열두 살의 나를 본다"
-      }
-    },
-    {
-      "turn": 22,
-      "movement": "meet",
-      "depth": 3,
-      "director": "좋아, 그럼 이제 그 말을 들을 사람을 무대에 올리자. 지우. 어디에 세울까 — 급식실? 복도? 단톡방 안?",
-      "user": "하교할 때 교문 앞. 둘이만 있을 때가 그나마 말이 나올 것 같아.",
-      "technique": "대면 무대 설계",
-      "why": "유저가 무대를 고른다 = 통제감",
-      "scene": {
-        "bg": "gate",
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "calm",
-            "pose": "stand",
-            "x": 0.35
-          },
-          {
-            "id": "jiwoo",
-            "emo": "calm",
-            "pose": "phone",
-            "x": 0.72,
-            "flip": true
-          }
-        ],
-        "caption": "하교 시간, 교문 앞"
-      }
-    },
-    {
-      "turn": 23,
-      "movement": "meet",
-      "depth": 3,
-      "director": "교문 앞, 하교 시간. 애들 소리 멀어지고 둘만 남는 타이밍. 지우는 어떤 표정으로 서 있어?",
-      "user": "아무것도 모르는 얼굴. 평소처럼 실실 웃으면서 폰 보고 있어.",
-      "technique": "상대 입체화",
-      "why": "상대는 악역이 아니라 평범한 또래",
-      "scene": {
-        "bg": "gate",
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "calm",
-            "pose": "stand",
-            "x": 0.35
-          },
-          {
-            "id": "jiwoo",
-            "emo": "calm",
-            "pose": "phone",
-            "x": 0.72,
-            "flip": true
-          }
-        ],
-        "caption": "하교 시간, 교문 앞"
-      }
-    },
-    {
-      "turn": 24,
-      "movement": "meet",
-      "depth": 4,
-      "director": "그 '아무것도 모르는 얼굴'이 제일 얄밉지. 차라리 미안한 표정이면 쉬운데. 그 얼굴 보는 순간 노을이 몸은?",
-      "user": "목이 좀 조이는 느낌. 할 말이 목까지 왔다가 막힘.",
-      "technique": "몸 신호 재확인",
-      "why": "대면 직전의 신체 반응을 잡아둔다",
-      "scene": {
-        "bg": "gate",
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "worry",
-            "pose": "stand",
-            "x": 0.35
-          },
-          {
-            "id": "jiwoo",
-            "emo": "smile",
-            "pose": "stand",
-            "x": 0.72,
-            "flip": true
-          }
-        ],
-        "caption": "목에서 말이 막힌다"
-      }
-    },
-    {
-      "turn": 25,
-      "movement": "meet",
-      "depth": 4,
-      "director": "목에서 막히는 그 말이 아까 구석에 세워둔 걔지 — '어제 그거 뭐야'. 근데 그날 실제로는 어떻게 됐어?",
-      "user": "지우가 먼저 \"야 내일 뭐함?\" 하고 물었고, 노을이는 \"아무것도~\" 하고 웃고 끝났어.",
-      "technique": "실마리 회수 + 1차 반응",
-      "why": "보관해둔 실마리를 정확히 다시 부른다",
+      "director": "돌아와, 수민이로. 뭘 봤어? …그리고 태윤이는 못 들어. 객석한테만 — 수민이가 삼킨 말, 뭐야?",
+      "user": "편한 애. 근데 유일한 편한 애. 삼킨 말은 \"나도 네 얘기 듣는 거 좋은데, 가끔은 내 얘기도 물어봐 주면 안 돼?\"",
+      "technique": "돌아오기 + 방백",
+      "why": "상대는 2턴 넘게 무대를 차지하지 않는다. 삼킨 말 = 2부 출구 ①의 재료",
       "decision": {
-        "prompt": "교문 앞. 지우: \"야 내일 뭐함?\" — 그날의 노을이는…",
-        "label": "😀 \"아무것도~\" 하고 웃는다 (실제 그날)",
+        "prompt": "삼킨 말이 입 끝까지 올라와 있다. — 수민이는…",
+        "label": "🤐 삼킨다. 객석한테만 말한다 (그날의 선택)",
         "alt": {
-          "label": "💥 그 자리에서 바로 묻는다",
+          "label": "📣 그 자리에서 태윤이한테 바로 친다",
           "branch": [
-            {
-              "role": "director",
-              "text": "오, 바로 가네. 좋아 — 노을이가 웃음을 지우고 지우를 봐."
-            },
-            {
-              "role": "user",
-              "text": "내일 말고. 어제 단톡. 나 왜 빠졌어?"
-            },
-            {
-              "role": "other",
-              "speakerName": "지우",
-              "text": "어…? 아, 그게… (3초 정적) 뭐라고 해야 되지."
-            },
-            {
-              "role": "director",
-              "text": "지우의 3초 정적. 이게 그날 노을이가 제일 무서워한 장면이야 — 어떤 대답이 나올지 모르는 시간. 근데 봐, 무대에선 이 정적을 견뎌냈잖아. 이 장면은 이따 리허설에서 제대로 다시 돈다. 일단 실제 그날로 되감자."
-            }
+            { "role": "director", "text": "좋아. 수민이가 그대로 쳤어. \"가끔은 내 얘기도 물어봐 주면 안 돼?\" 전송." },
+            { "role": "other", "speakerName": "태윤", "text": "어? 아 미안 ㅋㅋ 내가 지호 얘기 너무 했나" },
+            { "role": "user", "text": "(…'미안'이라는 말에 더 작아진다)" },
+            { "role": "director", "text": "봐 — 말은 나갔는데 수민이가 더 작아졌어. 아직 이 자리는 준비가 안 됐던 거야. 그걸 안 것도 데이터야. 되감자." }
           ]
         }
       },
-      "scene": {
-        "bg": "gate",
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "worry",
-            "pose": "stand",
-            "x": 0.35
-          },
-          {
-            "id": "jiwoo",
-            "emo": "smile",
-            "pose": "stand",
-            "x": 0.72,
-            "flip": true
-          }
-        ],
-        "caption": "목에서 말이 막힌다"
-      }
+      "scene": { "bg": "chat", "cast": [{ "id": "noeul", "emo": "sad", "pose": "stand", "x": 0.4 }, { "id": "jiwoo", "emo": "calm", "pose": "phone", "x": 0.82, "flip": true, "ghost": true }], "caption": "태윤이는 못 듣는다. 객석만" }
+    },
+    {
+      "turn": 19,
+      "movement": "mirror",
+      "depth": 4,
+      "director": "객석에서 보자. 동화처럼 읽을게, 틀리면 끊어. — 11시, 불 꺼진 방. '먼저 말 못 거는' 수민이한테 두 줄이 온다. 첫 줄에 입꼬리가 올라가고 둘째 줄에 손이 멈춘다. 속에서 '또야'. 그리고 수민이는 매번 '원래 그래' 치고 지호 얘기를 받아준다. 삼킨 말은 '가끔은 내 얘기도 물어봐 주면 안 돼?' — 어디가 제일 아니야?",
+      "user": "\"엄마 톤\"은 비슷하다고만 했어. 그리고 간식 넣어주는 애라는 것도 넣어줘.",
+      "technique": "3인칭 되읽기 → 유저가 교정",
+      "why": "유저 재료로만. 🧵 '간식'이 여기서 펼쳐진다",
+      "stage": "조명 객석 쪽으로. 무대 위 수민이는 그대로.",
+      "move": "mirror",
+      "scene": { "bg": "mirrorroom", "light": 2, "cast": [{ "id": "noeul", "emo": "calm", "pose": "stand", "x": 0.3 }, { "id": "director", "emo": "calm", "pose": "stand", "x": 0.72 }], "caption": "객석에서 본 '두 번째 줄'" }
+    },
+    {
+      "turn": 20,
+      "movement": "mirror",
+      "depth": 4,
+      "director": "고쳤어. 말은 못 걸고 간식은 넣는 애. 그럼 이 장면에서 수민이가 늘 하는 선택, 한 문장으로 네가 말해줘. 그리고 제목 붙인다면?",
+      "user": "둘째 줄 오면 손 멈췄다가 \"원래 그래\" 치고 걔 얘기 받아준다. 제목은 \"두 번째 줄\".",
+      "technique": "1부 종료 — 늘 하는 선택 한 문장",
+      "why": "디렉터가 문장을 만들어주지 않는다. 이 문장이 있어야 2부로 갈 수 있다",
+      "scene": { "bg": "mirrorroom", "light": 2, "cast": [{ "id": "noeul", "emo": "calm", "pose": "stand", "x": 0.5 }], "caption": "autoLine: 둘째 줄 오면 손 멈췄다가 '원래 그래' 치고 받아준다" }
+    },
+    {
+      "turn": 21,
+      "movement": "replay",
+      "depth": 3,
+      "director": "테이크 2. 같은 침대, 같은 11시, 같은 두 줄. 손 멈춘 자리에서 정지. …이번엔 안 받아주면 어떻게 되는지 보러 가는 거야. 무대니까 몇 번이든 돼. 출구 넷 — 그냥 물어본다 / 화제 돌린다 / 답 안 보낸다 / 똑같이 '원래 그래', 근데 이번엔 알고.",
+      "user": "(준비됐어)",
+      "technique": "2부 시작 — 같은 자리 재입장",
+      "why": "재입장은 정적으로. 출구는 네 개, 원래 선택도 출구 중 하나다",
+      "stage": "조명 다시 침대로. 폰 화면 그대로.",
+      "move": "replay",
+      "scene": { "bg": "room-night", "light": 0, "cast": [{ "id": "noeul", "emo": "calm", "pose": "phone", "x": 0.5 }], "prop": "phone", "caption": "같은 자리. 손 멈춘 데서 정지" }
+    },
+    {
+      "turn": 22,
+      "movement": "replay",
+      "depth": 3,
+      "director": "출구 하나 골라. 이번엔 수민이가 뭘 다르게 해?",
+      "user": "그냥 물어본다. \"나한테는 안 궁금해?\"",
+      "technique": "출구 ① — 삼킨 말 그대로",
+      "why": "출구 ①은 3막에서 삼킨 말을 재료로 쓴다",
+      "choice": { "id": "ask", "label": "💬 그냥 물어본다" },
+      "stage": "폰 화면, 입력창에 커서.",
+      "scene": { "bg": "chat", "cast": [{ "id": "noeul", "emo": "worry", "pose": "phone", "x": 0.5 }], "prop": "phone", "caption": "세 번 지웠다 쓴다" }
+    },
+    {
+      "turn": 23,
+      "movement": "replay",
+      "depth": 4,
+      "director": "수민이가 쳤어. 세 번 지웠다 썼다 하고 보냈어. (태윤 역) …읽음 1 사라짐. 3분. \"뭐가?\" — 상황은 아직 안 바뀌었는데, 수민이 안에서는 뭐가 달라졌어?",
+      "user": "보냈다는 거. 손이 안 멈췄어.",
+      "technique": "결과 돌려주기 — 안에서",
+      "why": "사과 서비스 없음. 질문은 겉이 아니라 '안에서'",
+      "scene": { "bg": "chat", "cast": [{ "id": "noeul", "emo": "worry", "pose": "phone", "x": 0.38 }, { "id": "jiwoo", "emo": "blank", "pose": "phone", "x": 0.78, "flip": true, "ghost": true }], "prop": "phone", "caption": "\"뭐가?\" — 3분 뒤" }
+    },
+    {
+      "turn": 24,
+      "movement": "replay",
+      "depth": 4,
+      "director": "이어가자. \"뭐가?\"가 떠 있어. 수민이 다음에 뭐라고 쳐? …(태윤 역, 이번엔 바로 읽음) \"아 미안 ㅋㅋ 요즘 어떤데\" — 그 '미안 ㅋㅋ' 보고 가슴 가운데는?",
+      "user": "\"나 요즘 어떤지 안 물어봐서\" 쳤어. 내려앉진 않았어. 근데 좀 민망해.",
+      "technique": "한 수 더 — 상대 반응 뒤",
+      "why": "현실적 반응. 민망은 내려앉음과 다른 것",
+      "scene": { "bg": "chat", "cast": [{ "id": "noeul", "emo": "smile", "pose": "phone", "x": 0.38 }, { "id": "jiwoo", "emo": "calm", "pose": "phone", "x": 0.78, "flip": true, "ghost": true }], "prop": "phone", "caption": "\"아 미안 ㅋㅋ 요즘 어떤데\"" }
+    },
+    {
+      "turn": 25,
+      "movement": "replay",
+      "depth": 4,
+      "director": "민망. 내려앉음이랑은 다른 거네. 그렇게 두자.",
+      "user": "응. 다른 거야.",
+      "technique": "관찰만",
+      "why": "질문 없이 끝나는 비트. 정적이 질문보다 깊을 때",
+      "scene": { "bg": "room-night", "light": 0, "cast": [{ "id": "noeul", "emo": "calm", "pose": "lie", "x": 0.5 }], "caption": "민망 ≠ 내려앉음" }
     },
     {
       "turn": 26,
-      "movement": "meet",
-      "depth": 4,
-      "director": "\"아무것도~\" 하고 웃고 끝. 가면 풀가동. …괜찮아, 그게 그날의 최선이었던 거야. 그 순간 속의 노을은 뭐라고 했어?",
-      "user": "\"또 웃었네. 또.\" 약간 자기한테 실망하는 톤으로.",
-      "technique": "1차 반응의 내면",
-      "why": "실패 장면을 비난 없이 기록",
-      "scene": {
-        "bg": "gate",
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "mask",
-            "pose": "stand",
-            "x": 0.35
-          },
-          {
-            "id": "jiwoo",
-            "emo": "grin",
-            "pose": "stand",
-            "x": 0.72,
-            "flip": true
-          },
-          {
-            "id": "inner",
-            "emo": "sad",
-            "pose": "stand",
-            "x": 0.1,
-            "ghost": true
-          }
-        ],
-        "caption": "\"아무것도~\" — 가면 풀가동"
-      }
+      "movement": "replay",
+      "depth": 3,
+      "director": "다른 식으로도 한 번. 같은 자리, 손 멈춤. 이번엔 화제 돌리기 — 수민이가 뭐라고 쳐?",
+      "user": "\"지호 얘긴 됐고 나 오늘 학원에서 웃긴 일 있었는데\"",
+      "technique": "출구 ③ — 비틀기",
+      "why": "내 얘기 먼저. 농담·화제 전환도 출구다",
+      "choice": { "id": "turn", "label": "🌀 화제 돌린다" },
+      "stage": "폰 화면. 같은 두 줄 위에 커서.",
+      "scene": { "bg": "chat", "cast": [{ "id": "noeul", "emo": "grin", "pose": "phone", "x": 0.5 }], "prop": "phone", "caption": "내 얘기부터" }
     },
     {
       "turn": 27,
-      "movement": "meet",
+      "movement": "replay",
       "depth": 4,
-      "director": "\"또 웃었네, 또.\" — 이 대사 아프네. 근데 여기가 무대의 좋은 점이야. 그날은 한 번뿐이었지만 여기선 몇 번이든 다시 갈 수 있어. 준비되면 말해.",
-      "user": "해보자.",
-      "technique": "리허설 예고",
-      "why": "출구 연습으로 넘어가는 다리",
-      "scene": {
-        "bg": "gate",
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "mask",
-            "pose": "stand",
-            "x": 0.35
-          },
-          {
-            "id": "jiwoo",
-            "emo": "grin",
-            "pose": "stand",
-            "x": 0.72,
-            "flip": true
-          },
-          {
-            "id": "inner",
-            "emo": "sad",
-            "pose": "stand",
-            "x": 0.1,
-            "ghost": true
-          }
-        ],
-        "caption": "\"아무것도~\" — 가면 풀가동"
-      }
+      "director": "(태윤 역, 바로 읽음) \"뭔데 ㅋㅋ\" — 아까는 \"뭐가?\" 였고 이번엔 \"뭔데 ㅋㅋ\". 달라진 것만 말했어, 채점 아니야. 몸은 어느 쪽 테이크가 더 편했어?",
+      "user": "이번 거. 근데 아까 게 더 진짜 같아.",
+      "technique": "비교 — 달라진 것만",
+      "why": "좋다/낫다 금지. 편함과 진짜는 다른 축",
+      "scene": { "bg": "chat", "cast": [{ "id": "noeul", "emo": "smile", "pose": "phone", "x": 0.38 }, { "id": "jiwoo", "emo": "grin", "pose": "phone", "x": 0.78, "flip": true, "ghost": true }], "prop": "phone", "caption": "\"뭔데 ㅋㅋ\" — 바로" }
     },
     {
       "turn": 28,
-      "movement": "mirror",
-      "depth": 4,
-      "director": "가기 전에 한 번만 밖에서 보자. — 노을이는 눈치가 레이더인 애였다. 밤 11시, 조용한 방에 진동만 울렸다. \"어제 그거 뭐야\"는 목까지 왔다가 돌아갔다. 속의 노을은 \"티 내지 말고 그냥 웃어\"라고 했다. 초5 교실에서 배운 말이었다. — 틀린 데 있어?",
-      "user": "없어. 근데 이렇게 들으니까 노을이가 되게 애쓰고 산 애 같네.",
-      "technique": "거울(3인칭 서술)",
-      "why": "유저의 말만으로 서술, 수정권은 유저에게",
-      "scene": {
-        "bg": "mirrorroom",
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "calm",
-            "pose": "stand",
-            "x": 0.4
-          }
-        ],
-        "caption": "거울 앞 — 밖에서 다시 읽는다"
-      }
+      "movement": "replay",
+      "depth": 5,
+      "director": "\"편한 건 이번, 진짜는 아까.\" 둘 다 두자. 그럼 원래 선택 — '원래 그래' 치고 받아주기 — 그건 편한 쪽이야, 진짜 쪽이야?",
+      "user": "…둘 다 아니야. 그냥 제일 빠른 거.",
+      "technique": "원래 선택의 자리 묻기",
+      "why": "자동 선택이 편함도 진짜도 아닌 '제일 빠른 것'이었다는 걸 유저가 발견",
+      "scene": { "bg": "room-night", "light": 0, "cast": [{ "id": "noeul", "emo": "blank", "pose": "sit", "x": 0.5 }], "caption": "제일 빠른 거" }
     },
     {
       "turn": 29,
       "movement": "replay",
       "depth": 4,
-      "director": "자, 교문 앞 다시 세운다. 지우: \"야 내일 뭐함?\" — 이번엔 노을이 마음대로 해도 돼. 출구는 여러 개야: 솔직하게 묻기, 농담으로 비틀기, 자리 뜨기, 이번에도 웃기. 뭐든 유효해. 어느 쪽부터 가볼래?",
-      "user": "솔직하게. \"내일 얘기 말고, 어제 단톡 얘기 좀 하자. 나 왜 빠졌어?\"",
-      "technique": "출구 연습 1 — 직구",
-      "why": "4갈래 출구 제시, 선택은 유저",
-      "choice": {
-        "id": "direct",
-        "label": "🎯 돌직구로 묻기"
-      },
-      "scene": {
-        "bg": "gate",
-        "light": 2,
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "calm",
-            "pose": "stand",
-            "x": 0.35
-          },
-          {
-            "id": "jiwoo",
-            "emo": "calm",
-            "pose": "stand",
-            "x": 0.72,
-            "flip": true
-          }
-        ],
-        "caption": "같은 교문 앞, 두 번째 테이크"
-      }
+      "director": "그럼 원래 거도 한 번 가보자. '원래 그래' 치는데 — 이번엔 알고 친다. 같은 자리, 손 멈춤. 치기 전에 속의 수민이가 한 마디 한다면?",
+      "user": "\"오늘은 안 물어볼 거야. 근데 내가 선택한 거야.\"",
+      "technique": "출구 ④ — 똑같이, 근데 알고",
+      "why": "원래 선택도 선택이다. 틀렸다고 하지 않는다",
+      "choice": { "id": "aware", "label": "👁 똑같이 — 근데 알고" },
+      "stage": "속의 수민이가 한 발 앞으로.",
+      "move": "double",
+      "scene": { "bg": "chat", "cast": [{ "id": "noeul", "emo": "calm", "pose": "phone", "x": 0.4 }, { "id": "inner", "emo": "calm", "pose": "stand", "x": 0.62, "ghost": true }], "prop": "phone", "caption": "내가 선택한 거야" }
     },
     {
       "turn": 30,
       "movement": "replay",
       "depth": 4,
-      "director": "(지우 역) \"어…? 아 그거, 네가 요즘 바빠 보여서 그냥… 미안, 별생각 없었어.\" — 노을아, 이 대답 듣고 어때?",
-      "user": "허무해. 별생각이 없었다고? 노을이는 사흘을 생각했는데.",
-      "technique": "보조자아 연기",
-      "why": "상대의 평범한 대답이 주는 허무까지 체험",
-      "scene": {
-        "bg": "gate",
-        "light": 2,
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "shout",
-            "pose": "stand",
-            "x": 0.35
-          },
-          {
-            "id": "jiwoo",
-            "emo": "worry",
-            "pose": "stand",
-            "x": 0.72,
-            "flip": true
-          }
-        ],
-        "caption": "돌직구가 날아갔다"
-      }
+      "director": "치고 보냈어. (태윤 역) \"ㅇㅇ 걔 진짜 이상함 ㅋㅋ\" — 화면은 테이크 1이랑 똑같아. 수민이 안에서는?",
+      "user": "똑같은 말인데 손이 안 떨려. 내가 고른 거라서.",
+      "technique": "결과 돌려주기 — 안에서",
+      "why": "겉은 같고 안이 다르다. 이것이 '벗어남'의 모양",
+      "scene": { "bg": "chat", "cast": [{ "id": "noeul", "emo": "calm", "pose": "phone", "x": 0.38 }, { "id": "jiwoo", "emo": "grin", "pose": "phone", "x": 0.78, "flip": true, "ghost": true }], "prop": "phone", "caption": "같은 화면, 안 떨리는 손" }
     },
     {
       "turn": 31,
       "movement": "replay",
       "depth": 5,
-      "director": "그치, 상대의 '별생각 없음'이 제일 허무하지. 내 사흘이 걔한텐 0초였다는 거니까. 근데 봐 — 노을이 방금 끝까지 말했다? 목에서 안 막혔어. 다른 출구도 가볼래?",
-      "user": "이번엔 농담으로. \"야 나만 빼고 놀면 재밌냐? 다음엔 낄게, 회비 깎아줘.\"",
-      "technique": "출구 연습 2 — 유머",
-      "why": "같은 장면, 다른 선택. 비교는 뒤에서",
-      "choice": {
-        "id": "humor",
-        "label": "😏 농담으로 비틀기"
-      },
-      "scene": {
-        "bg": "gate",
-        "light": 2,
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "grin",
-            "pose": "stand",
-            "x": 0.35
-          },
-          {
-            "id": "jiwoo",
-            "emo": "blank",
-            "pose": "stand",
-            "x": 0.72,
-            "flip": true
-          }
-        ],
-        "caption": "이번엔 농담으로"
-      }
+      "director": "\"같은 말, 내가 고른 거.\" 네가 그렇게 말했어.",
+      "user": "응.",
+      "technique": "관찰만",
+      "why": "질문 없이 끝난다. 유저 문장을 그대로 되비춘다",
+      "scene": { "bg": "room-night", "light": 0, "cast": [{ "id": "noeul", "emo": "calm", "pose": "lie", "x": 0.5 }], "caption": "그 말, 거기 둔다" }
     },
     {
       "turn": 32,
       "movement": "replay",
       "depth": 5,
-      "director": "(지우 역) \"ㅋㅋㅋ 뭐야 서운했냐? 아 미안미안, 담엔 무조건 부른다.\" — 웃음 속에 할 말 다 넣었네. 이 출구는 어때?",
-      "user": "이게 제일 노을이다워. 근데 가면이랑 뭐가 다른지 모르겠어.",
-      "technique": "유저의 자기 질문",
-      "why": "유저가 스스로 핵심 질문에 도달 — 최상의 순간",
-      "scene": {
-        "bg": "gate",
-        "light": 2,
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "smile",
-            "pose": "stand",
-            "x": 0.35
-          },
-          {
-            "id": "jiwoo",
-            "emo": "grin",
-            "pose": "stand",
-            "x": 0.72,
-            "flip": true
-          }
-        ],
-        "caption": "웃음 속에 할 말을 다 넣었다"
-      }
+      "director": "테이크들 나란히 세울게. 채점 없이, 달라진 것만. 받아줌 — 손 멈춤, 가슴 내려앉음 / 물어봄 — 손 안 멈춤, '미안 ㅋㅋ', 민망 / 돌림 — 바로 읽음, 편함 / 알고 받아줌 — 같은 화면, 손 안 떨림. 이 중에 수민이가 다음 주에 실제로 할 것 같은 건?",
+      "user": "돌리기나 알고 받아주기. 물어보는 건 아직.",
+      "technique": "비교 — 나란히",
+      "why": "정답 없음. '다음 주에 실제로' — 현실 기준으로 고른다",
+      "wrapup": true,
+      "stage": "조명 넓게. 무대에 테이크 넷이 나란히.",
+      "scene": { "bg": "spotlight", "light": 2, "cast": [{ "id": "noeul", "emo": "calm", "pose": "stand", "x": 0.2 }, { "id": "noeul", "emo": "worry", "pose": "phone", "x": 0.4 }, { "id": "noeul", "emo": "grin", "pose": "phone", "x": 0.6 }, { "id": "noeul", "emo": "calm", "pose": "phone", "x": 0.8 }], "caption": "테이크 넷, 나란히" }
     },
     {
       "turn": 33,
       "movement": "replay",
       "depth": 5,
-      "director": "오… 그 질문 좋다. 아까 가면 웃음엔 '어제 그거 뭐야'가 목에 걸려 있었고, 방금 농담엔 그 말이 들어 있었어. 웃음이 문제가 아니라, 말이 나갔냐가 다른 거 아닐까. 아니면 말해줘.",
-      "user": "맞네. 웃으면서도 말은 할 수 있구나.",
-      "technique": "비교(채점 없이)",
-      "why": "달라진 지점만 짚는다. 정답 선언 금지",
-      "scene": {
-        "bg": "gate",
-        "light": 2,
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "smile",
-            "pose": "stand",
-            "x": 0.35
-          },
-          {
-            "id": "jiwoo",
-            "emo": "grin",
-            "pose": "stand",
-            "x": 0.72,
-            "flip": true
-          }
-        ],
-        "caption": "웃음 속에 할 말을 다 넣었다"
-      }
+      "director": "\"물어보는 건 아직.\" 그건 뭐가 걸려?",
+      "user": "'미안'이라는 말 듣는 거. 내가 뭘 요구한 사람이 되는 거.",
+      "technique": "출구의 값 묻기",
+      "why": "'아직'에는 이유가 있다. 🧵 '요구한 사람' 저장 — 다음 세션의 씨앗",
+      "scene": { "bg": "spotlight", "light": 1, "cast": [{ "id": "noeul", "emo": "worry", "pose": "stand", "x": 0.5 }], "caption": "🧵 '요구한 사람이 되는 거'" }
     },
     {
       "turn": 34,
       "movement": "replay",
       "depth": 5,
-      "director": "아무 말 안 하고 자리를 뜨는 출구도 있어. 해볼래, 아니면 여기서 접을래? 네 무대야.",
-      "user": "그것도 해볼래. 노을이가 \"먼저 갈게\" 하고 그냥 걸어감. 뒤도 안 돌아보고.",
-      "technique": "출구 연습 3 — 떠나기",
-      "why": "침묵·이탈도 유효한 출구로 존중",
-      "choice": {
-        "id": "leave",
-        "label": "🚶 그냥 떠나기"
-      },
-      "scene": {
-        "bg": "gate",
-        "light": 2,
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "calm",
-            "pose": "walk",
-            "x": 0.25,
-            "flip": true
-          },
-          {
-            "id": "jiwoo",
-            "emo": "worry",
-            "pose": "stand",
-            "x": 0.75,
-            "flip": true
-          }
-        ],
-        "caption": "뒤도 안 돌아보고 걷는다"
-      }
+      "director": "일주일 뒤. 같은 침대, 11시, 폰이 울려. 수민이 거기 누워 있어. 뭐가 달라?",
+      "user": "첫 줄에서 웃고, 둘째 줄 와도 손이 안 멈춰. 뭐라고 칠지 세 개는 있으니까.",
+      "technique": "미래 투사 — 일주일",
+      "why": "출구를 돈 뒤에만. 상황이 아니라 '수민이 안'이 달라진다",
+      "stage": "달력 한 장 넘어가는 소리.",
+      "scene": { "bg": "room-night", "light": 0, "cast": [{ "id": "noeul", "emo": "smile", "pose": "lie", "x": 0.5 }], "prop": "phone", "caption": "일주일 뒤, 같은 11시" }
     },
     {
       "turn": 35,
       "movement": "replay",
       "depth": 5,
-      "director": "객석에서 보자. 뒤도 안 돌아보고 걸어가는 노을이 뒷모습 — 어때 보여?",
-      "user": "생각보다 안 불쌍함. 좀 멋있기까지 함. 떠나는 것도 되는구나.",
-      "technique": "객석 시점 2",
-      "why": "세 출구를 다 본 뒤의 거리두기 — 선택지가 있다는 감각",
-      "scene": {
-        "bg": "gate",
-        "light": 2,
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "calm",
-            "pose": "walk",
-            "x": 0.15,
-            "flip": true
-          },
-          {
-            "id": "inner",
-            "emo": "smile",
-            "pose": "stand",
-            "x": 0.85,
-            "ghost": true
-          }
-        ],
-        "caption": "객석에서 본 뒷모습 — 생각보다 멋있다"
-      }
+      "director": "1년 뒤. 태윤이든 다른 애든, 누가 둘째 줄 같은 걸 보내. 그때 수민이 속에서 '넌 원래 두 번째야'는 몇 번째로 들려?",
+      "user": "…들리긴 하는데 첫 번째는 아닐 것 같아. 그 앞에 \"내가 고르면 돼\"가 먼저.",
+      "technique": "미래 투사 — 1년",
+      "why": "목소리를 없애는 게 아니라 순서를 바꾼다",
+      "scene": { "bg": "room-night", "light": 1, "cast": [{ "id": "noeul", "emo": "calm", "pose": "sit", "x": 0.4 }, { "id": "inner", "emo": "smile", "pose": "stand", "x": 0.62, "ghost": true }], "caption": "1년 뒤 — 먼저 들리는 말" }
     },
     {
       "turn": 36,
       "movement": "replay",
-      "depth": 6,
-      "director": "직구, 농담, 떠나기 — 셋 다 노을이가 했어. 어느 게 정답이란 건 없어. 다만 열두 살 때는 출구가 '웃기' 하나였는데, 지금 무대엔 세 개가 생겼네.",
-      "user": "그러네. 고를 수 있는 거였네.",
-      "technique": "리허설 총정리",
-      "why": "억눌림의 반대는 용기가 아니라 선택지",
-      "wrapup": true,
-      "scene": {
-        "bg": "gate",
-        "light": 2,
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "calm",
-            "pose": "walk",
-            "x": 0.15,
-            "flip": true
-          },
-          {
-            "id": "inner",
-            "emo": "smile",
-            "pose": "stand",
-            "x": 0.85,
-            "ghost": true
-          }
-        ],
-        "caption": "객석에서 본 뒷모습 — 생각보다 멋있다"
-      }
+      "depth": 5,
+      "director": "오늘 시작할 때 네가 말한 문장이 이거야 — \"둘째 줄 오면 손 멈췄다가 '원래 그래' 치고 받아준다.\" 그 옆에 지금 문장을 네가 하나 써줘. 고치는 거 아니고, 옆에 두는 거.",
+      "user": "\"둘째 줄 오면 손이 멈춰도 돼. 그다음은 내가 고른다.\"",
+      "technique": "2부 종료 — 두 문장 나란히",
+      "why": "원래 문장을 지우지 않는다. 벗어남 = 옆에 하나 더 생기는 것",
+      "stage": "무대 바닥에 문장 두 줄. 나란히.",
+      "scene": { "bg": "spotlight", "light": 2, "cast": [{ "id": "noeul", "emo": "calm", "pose": "stand", "x": 0.4 }, { "id": "inner", "emo": "calm", "pose": "stand", "x": 0.6, "ghost": true }], "caption": "newLine: 손이 멈춰도 돼. 그다음은 내가 고른다" }
     },
     {
       "turn": 37,
-      "movement": "curtain",
-      "depth": 4,
-      "director": "슬슬 막 내리자. 오늘 무대 제목 — 「가면 밑의 세 출구」 어때? 별로면 네가 지어도 돼.",
-      "user": "좋은데, 「회비 깎아줘」도 웃겨서 좋음 ㅋㅋ",
-      "technique": "제목 공동 소유",
-      "why": "유저의 유머가 제목이 될 수 있는 가벼움",
-      "scene": {
-        "bg": "curtain",
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "smile",
-            "pose": "stand",
-            "x": 0.5
-          }
-        ],
-        "caption": "막이 내려온다"
-      }
+      "movement": "replay",
+      "depth": 5,
+      "director": "두 문장 나란히. 무대에 둘 다 세워둘게.",
+      "user": "(둘 다 본다)",
+      "technique": "관찰만",
+      "why": "질문 없이 끝난다. 두 문장이 같이 서 있는 걸 보는 시간",
+      "scene": { "bg": "spotlight", "light": 2, "cast": [{ "id": "noeul", "emo": "smile", "pose": "stand", "x": 0.4 }, { "id": "inner", "emo": "smile", "pose": "stand", "x": 0.6, "ghost": true }], "caption": "둘 다, 거기" }
     },
     {
       "turn": 38,
       "movement": "curtain",
-      "depth": 4,
-      "director": "ㅋㅋ 그럼 「회비 깎아줘」로 간다. 오늘 남길 세 줄: ① \"티 내지 말고 그냥 웃어\"는 초5가 만든 생존 장비였다. ② 사흘 고민한 말이 상대에겐 '별생각'일 수 있다 — 그래도 말한 노을이는 목이 안 막혔다. ③ 웃으면서도 말은 나갈 수 있다. 전부 네가 한 말이야.",
-      "user": "저장. 특히 ③.",
-      "technique": "인용 기반 인사이트",
-      "why": "유저가 실제로 쓴 말만 인용",
-      "scene": {
-        "bg": "curtain",
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "smile",
-            "pose": "stand",
-            "x": 0.5
-          }
-        ],
-        "caption": "막이 내려온다"
-      }
+      "depth": 3,
+      "director": "오늘 무대 여기까지. 수민이, 무대에서 내려와. 제목 \"두 번째 줄\" 그대로 갈까?",
+      "user": "응. 그대로.",
+      "technique": "닫기 선언",
+      "why": "제목은 유저가 붙인 것",
+      "stage": "조명 하나씩 꺼진다.",
+      "scene": { "bg": "curtain", "light": 1, "cast": [{ "id": "noeul", "emo": "smile", "pose": "walk", "x": 0.45 }, { "id": "director", "emo": "smile", "pose": "stand", "x": 0.75 }], "caption": "커튼콜 — 두 번째 줄" }
     },
     {
       "turn": 39,
       "movement": "curtain",
       "depth": 3,
-      "director": "아직 안 연 문도 적어둘게 — 초5 전학 첫날 얘기, 오늘 문고리만 잡고 안 들어갔어. 다음에 열고 싶으면 그 무대부터 세우자. 숙제는 아니야.",
-      "user": "ㅇㅋ. 그건 다음에.",
-      "technique": "미개봉 실마리",
-      "why": "다음 세션의 씨앗을 숙제 아닌 초대로",
-      "scene": {
-        "bg": "curtain",
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "smile",
-            "pose": "stand",
-            "x": 0.5
-          }
-        ],
-        "caption": "막이 내려온다"
-      }
+      "director": "나눔 하나. 수민이 보면서 나도 폰 세 번 지웠다 쓴 밤이 생각났어. 그거면 됐고. 네 말로만 세 줄 — '고백을 해야 할지'로 와서 \"나한테는 안 궁금해?\"를 보내봤다 / 원래 선택은 편한 것도 진짜도 아니고 \"제일 빠른 거\"였다 / \"같은 말인데 손이 안 떨려, 내가 고른 거라서\".",
+      "user": "세 번째 줄이 제일 내 말 같아.",
+      "technique": "나눔 + 인용으로 돌려주기",
+      "why": "조언·해석 없음. 디렉터는 자기도 그런 적 있다는 나눔만. 인사이트는 유저 말 인용. 질문 없이 끝난다",
+      "scene": { "bg": "curtain", "light": 1, "cast": [{ "id": "noeul", "emo": "smile", "pose": "stand", "x": 0.4 }, { "id": "director", "emo": "calm", "pose": "stand", "x": 0.72 }], "caption": "네 말로만 세 줄" }
     },
     {
       "turn": 40,
       "movement": "curtain",
       "depth": 2,
-      "director": "🕸️ 거미줄 카드 뒤집으면 ✂️ 끊어진 줄이야 — 전부 풀 필요는 없었어, 한 줄만 끊어도 숨은 쉬어져. 오늘 노을이가 그 한 줄이었네. 막 내릴게. 수고했어, 작가님.",
-      "user": "재밌었다. 다음에 또 올게.",
-      "technique": "카드 뒤집기 + 커튼",
-      "why": "소품으로 시작해 소품으로 닫는다. 작가님 호칭 = 끝까지 거리 유지",
-      "scene": {
-        "bg": "curtain",
-        "cast": [
-          {
-            "id": "noeul",
-            "emo": "smile",
-            "pose": "stand",
-            "x": 0.4
-          },
-          {
-            "id": "director",
-            "emo": "smile",
-            "pose": "stand",
-            "x": 0.72
-          }
-        ],
-        "prop": "card",
-        "caption": "커튼콜 — 수고했어, 작가님"
-      }
+      "director": "🚪 문 뒤집으면 — 문은 그대로고 손잡이가 안쪽에 생겼어. 안 펼친 실마리 셋은 두고 갈게, 숙제 아니야. 🧵 중1 그 애 · 🧵 언니 · 🧵 요구한 사람이 되는 거. 내일 한마디는 네가 골라. 막 내린다. 수고했어, 작가님.",
+      "user": "다음엔 '요구한 사람' 그거 해볼래.",
+      "technique": "실마리 돌려주기 + 커튼",
+      "why": "소품으로 시작해 소품으로 닫는다. 실마리는 다음 접수의 🧵 칩이 된다. 작가님 호칭 = 끝까지 거리 유지",
+      "stage": "커튼.",
+      "scene": { "bg": "curtain", "light": 0, "cast": [{ "id": "noeul", "emo": "smile", "pose": "stand", "x": 0.4 }, { "id": "director", "emo": "smile", "pose": "stand", "x": 0.72 }], "prop": "card", "caption": "커튼콜 — 수고했어, 작가님" }
     }
   ]
 }

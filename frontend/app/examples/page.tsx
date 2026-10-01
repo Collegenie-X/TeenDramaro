@@ -16,12 +16,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import ExampleStage, { type StageSpec } from "@/components/ExampleStage";
+import EmotionPalette from "@/components/EmotionPalette";
+import EmoIcon from "@/components/EmoIcon";
+import { groupOf } from "@/lib/emotions";
 import { Bubble } from "@/components/ChatBits";
 import { MOVEMENTS, movementById, movementIndex } from "@/lib/stage";
 import { rungAt, type DepthLevel } from "@/lib/depth";
 import type { Msg } from "@/lib/types";
 import type { CardId } from "@/lib/cards";
-import friend from "@/data/legend-40.json";
+import love from "@/data/legend-40.json";
 import grade from "@/data/example-grade.json";
 import mirror from "@/data/example-mirror.json";
 
@@ -33,6 +36,10 @@ type Turn = {
   user: string;
   technique?: string;
   why?: string;
+  /** 🎬 디렉터의 무대 지시 — 질문 앞에 붙는 지문 한 줄 */
+  stage?: string;
+  /** 디렉터 기법 — set | freeze | double | reverse | chair | mirror | replay */
+  move?: string;
   /** 🎮 출구 선택 지점 — 재생이 멈추고 보는 사람이 고른다 */
   choice?: { id: string; label: string };
   /** 출구를 다 돈 뒤의 정리 턴 */
@@ -54,17 +61,22 @@ type Example = {
   turns: Turn[];
 };
 
-const EXAMPLES = [friend, grade, mirror] as unknown as Example[];
+const EXAMPLES = [love, grade, mirror] as unknown as Example[];
 
 /** 예시별 무대 설정 — StageScene과 /play?card= 연결에 쓴다 */
 const STAGE_OF: Record<string, { card: CardId; hero: string; other: string }> = {
-  friend: { card: "mask", hero: "노을", other: "지우" },
+  love: { card: "door", hero: "수민", other: "태윤" },
   grade: { card: "chain", hero: "해든", other: "엄마" },
   mirror: { card: "mirror", hero: "린", other: "단톡방" },
 };
 
+const MOVE_LABEL: Record<string, string> = {
+  set: "🎬 장면 세우기", freeze: "⏸ 멈춤", double: "👥 이중자아", reverse: "🔁 역할 바꾸기",
+  chair: "🪑 빈 의자", mirror: "🪞 객석에서", replay: "🎞 다시 하기",
+};
+
 const MV_LABEL: Record<string, string> = {
-  casting: "캐스팅", draw: "카드 뽑기", open: "펼치기", deepen: "깊이 들어가기",
+  intake: "접수", casting: "캐스팅", draw: "카드 뽑기", open: "펼치기", deepen: "깊이 들어가기",
   meet: "마주침", mirror: "거울", replay: "다시 해보기", curtain: "커튼콜",
 };
 
@@ -114,6 +126,21 @@ function StagePlayer({ ex, onExit }: { ex: Example; onExit: () => void }) {
   const [ended, setEnded] = useState(false);
   /** 주관식 입력 */
   const [draft, setDraft] = useState("");
+  /* 💗 턴마다 고른 감정 — { [turn번호]: 감정[] }, 예시별로 localStorage에 둔다 */
+  const feelKey = `teendramaro:feels:${ex.id}`;
+  const [feelMap, setFeelMap] = useState<Record<number, string[]>>({});
+  useEffect(() => {
+    try { setFeelMap(JSON.parse(localStorage.getItem(feelKey) ?? "{}")); } catch { setFeelMap({}); }
+  }, [feelKey]);
+  const toggleFeel = (turn: number, f: string) => setFeelMap((m) => {
+    const cur = m[turn] ?? [];
+    const next = { ...m, [turn]: cur.includes(f) ? cur.filter((x) => x !== f) : [...cur, f] };
+    if (!next[turn].length) delete next[turn];
+    try { localStorage.setItem(feelKey, JSON.stringify(next)); } catch {}
+    return next;
+  });
+  /** 🎬 연출 노트가 펼쳐진 프레임 */
+  const [noteOpen, setNoteOpen] = useState<string | null>(null);
 
   /** 진행 커서 — 메인 흐름 */
   const ti = useRef(0);                   // turns 인덱스
@@ -381,9 +408,35 @@ function StagePlayer({ ex, onExit }: { ex: Example; onExit: () => void }) {
                   <div className={`reel-speaker ${m.role}`}>
                     {speakerOf(m)}{m.role === "user" && f.edited ? " · ✍️ 바꾼 답" : ""}
                   </div>
+                  {m.role === "director" && f.turn?.stage && m.id === f.msgs[0].id && (
+                    <span className="stage-dir">{f.turn.stage}</span>
+                  )}
                   <div className={`bubble ${m.role === "user" ? "b-user" : m.role === "other" ? "b-other" : "b-director"} reel-bubble`}>
                     {m.text}
                   </div>
+                  {m.role === "user" && f.turn && (feelMap[f.turn.turn]?.length ?? 0) > 0 && (
+                    <div className="bubble-feels">
+                      {feelMap[f.turn.turn].map((x) => {
+                        const g = groupOf(x);
+                        return (
+                          <span key={x} className="emo-picked-tag" style={g ? { background: g.tone[0], borderColor: g.tone[1], color: g.tone[2] } : undefined}>
+                            {g && <EmoIcon id={g.id} size={12} />}{x}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
+                  {m.role === "director" && f.turn?.technique && m.id === f.msgs[0].id && (
+                    <button
+                      className={`note-chip${noteOpen === f.id ? " on" : ""}`}
+                      onClick={() => setNoteOpen((n) => (n === f.id ? null : f.id))}
+                    >
+                      {f.turn.move ? `${MOVE_LABEL[f.turn.move] ?? "🎬"} · ` : "🎬 "}{f.turn.technique}
+                    </button>
+                  )}
+                  {m.role === "director" && noteOpen === f.id && f.turn?.why && m.id === f.msgs[0].id && (
+                    <div className="note-why">{f.turn.why}</div>
+                  )}
                 </div>
               ))}
               {f.msgs.length === 1 && f.turn && f.msgs[0].role === "director" && (
@@ -393,30 +446,6 @@ function StagePlayer({ ex, onExit }: { ex: Example; onExit: () => void }) {
           ))}
           {frames.length === 0 && <div className="reel-frame" />}
         </div>
-
-        {/* ✍️ 답하기 — 객관식 + 주관식 */}
-        {gate?.kind === "answer" && (
-          <div className="fate fate-answer">
-            <div className="fate-flash" style={{ fontSize: 15 }}>✍️ 네 차례야 — {st.hero}의 작가는 너니까</div>
-            <button className="fate-btn fate-a" onClick={() => answer(gate.turn, gate.turn.user, false)}>
-              💬 {gate.turn.user.length > 44 ? gate.turn.user.slice(0, 44) + "…" : gate.turn.user}
-              <span className="fate-sub">그날의 답</span>
-            </button>
-            {gate.turn.decision && (
-              <button className="fate-btn fate-b" onClick={() => { setGate(null); decide(gate.turn, false); }}>
-                {(gate.turn.decision as Decision).alt.label}
-                <span className="fate-sub">다른 갈래를 본다</span>
-              </button>
-            )}
-            <div className="fate-write">
-              <textarea
-                className="ta" rows={2} value={draft} placeholder="아니면 네 말로 바꿔 써 — 이야기가 그쪽으로 간다"
-                onChange={(e) => setDraft(e.target.value)}
-              />
-              <button className="send" disabled={!draft.trim()} onClick={() => answer(gate.turn, draft.trim(), true)}>↑</button>
-            </div>
-          </div>
-        )}
 
         {gate?.kind === "decision" && (
           <div className="fate">
@@ -471,6 +500,40 @@ function StagePlayer({ ex, onExit }: { ex: Example; onExit: () => void }) {
           </div>
         )}
       </div>
+
+      {/* ✍️ 답하기 — 지금 턴의 질문 아래, 흐름 안에 붙는다 */}
+      {gate?.kind === "answer" && atLast && (
+        <div className="fate fate-answer">
+          <div className="fate-flash" style={{ fontSize: 15 }}>✍️ 네 차례야 — {st.hero}의 작가는 너니까</div>
+          <button className="fate-btn fate-a" onClick={() => answer(gate.turn, gate.turn.user, false)}>
+            <span className="fate-btn-inner">
+              <span>💬 {gate.turn.user.length > 44 ? gate.turn.user.slice(0, 44) + "…" : gate.turn.user}</span>
+              <span className="fate-arrow">›</span>
+            </span>
+            <span className="fate-sub">그날의 답</span>
+          </button>
+          {gate.turn.decision && (
+            <button className="fate-btn fate-b" onClick={() => { setGate(null); decide(gate.turn, false); }}>
+              <span className="fate-btn-inner">
+                <span>{(gate.turn.decision as Decision).alt.label}</span>
+                <span className="fate-arrow">›</span>
+              </span>
+              <span className="fate-sub">다른 갈래를 본다</span>
+            </button>
+          )}
+          <div className="fate-write">
+            <textarea
+              className="ta" rows={2} value={draft} placeholder="아니면 네 말로 바꿔 써 — 이야기가 그쪽으로 간다"
+              onChange={(e) => setDraft(e.target.value)}
+            />
+            <button className="send" disabled={!draft.trim()} onClick={() => answer(gate.turn, draft.trim(), true)}>↑</button>
+          </div>
+          <EmotionPalette
+            picked={feelMap[gate.turn.turn] ?? []}
+            onToggle={(f) => toggleFeel(gate.turn.turn, f)}
+          />
+        </div>
+      )}
 
       <div className="reel-nav">
         <button className="reel-arrow" disabled={curIdx <= 0} onClick={() => setView((v) => Math.max(0, v - 1))}>‹</button>
@@ -580,7 +643,7 @@ export default function Examples() {
           네가 직접 골라 — 출구를 다 모으면 정리가 열려.
         </div>
         {EXAMPLES.map((e) => (
-          <div key={e.id} className="ex-card" style={{ cursor: "default" }}>
+          <div key={e.id} className="ex-card" style={{ cursor: "pointer" }} onClick={() => { setMode("read"); setOpen(e.id); }}>
             <div className="ex-emoji">{e.emoji}</div>
             <div style={{ flex: 1, textAlign: "left" }}>
               <div className="ex-title">
@@ -590,8 +653,8 @@ export default function Examples() {
               <div className="ex-tag">{e.tagline}</div>
               <div className="ex-meta">{e.theme} · {e.turns.length}턴</div>
               <div className="ex-actions">
-                <button className="choice-chip" onClick={() => { setMode("play"); setOpen(e.id); }}>🎮 무대로 재생</button>
-                <button className="helm-chip" onClick={() => { setMode("read"); setOpen(e.id); }}>📖 전체 읽기</button>
+                <button className="choice-chip" onClick={(ev) => { ev.stopPropagation(); setMode("play"); setOpen(e.id); }}>🎮 무대로 재생</button>
+                <button className="helm-chip" onClick={(ev) => { ev.stopPropagation(); setMode("read"); setOpen(e.id); }}>📖 전체 읽기</button>
               </div>
             </div>
           </div>

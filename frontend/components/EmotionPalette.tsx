@@ -1,77 +1,77 @@
 "use client";
 
 import { useState } from "react";
-import { FEELINGS } from "@/lib/emotions";
+import { FEELINGS, groupOf } from "@/lib/emotions";
+import EmoIcon from "./EmoIcon";
 
-/**
- * "지금 마음은?" — 고르는 게 아니라 이름을 빌려주는 칸.
- * 안 골라도 되고, 여러 개 골라도 되고, 직접 써도 된다.
- */
+export const MAX_FEELS = 2;
+
 export default function EmotionPalette({
   picked, onToggle,
 }: { picked: string[]; onToggle: (f: string) => void }) {
-  const [open, setOpen] = useState(false);
   const [group, setGroup] = useState<string | null>(null);
-
-  if (!open) {
-    return (
-      <button className="feel-btn" onClick={() => setOpen(true)}>
-        {picked.length ? (
-          <>💗 {picked.join(" · ")}</>
-        ) : (
-          <>💗 지금 마음에 이름 붙이기</>
-        )}
-      </button>
-    );
-  }
-
   const g = FEELINGS.find((x) => x.id === group);
 
   return (
-    <div className="feel-panel">
-      <div className="feel-head">
-        <span>지금 마음은? <i>골라도 되고 안 골라도 돼</i></span>
-        <button onClick={() => setOpen(false)} aria-label="닫기">✕</button>
-      </div>
-
-      <div className="feel-groups">
-        {FEELINGS.map((x) => (
-          <button
-            key={x.id}
-            className={`feel-group ${group === x.id ? "on" : ""}`}
-            style={group === x.id ? { background: x.tone[0], borderColor: x.tone[1], color: x.tone[2] } : undefined}
-            onClick={() => setGroup(group === x.id ? null : x.id)}
-          >
-            {x.emoji} {x.label}
-          </button>
-        ))}
-      </div>
-
+    <div className="emo-dock-wrap">
       {g && (
-        <div className="feel-items">
-          {g.items.map((f) => (
-            <button
-              key={f}
-              className={`chip ${picked.includes(f) ? "chip-on" : ""}`}
-              style={picked.includes(f) ? { background: g.tone[0], borderColor: g.tone[1], color: g.tone[2] } : undefined}
-              onClick={() => onToggle(f)}
-            >
-              {f}
-            </button>
-          ))}
+        <div className="emo-popup" style={{ "--emo-bg": g.tone[0], "--emo-border": g.tone[1], "--emo-fg": g.tone[2] } as React.CSSProperties}>
+          <div className="emo-popup-head">
+            <span><EmoIcon id={g.id} size={16} /> {g.label}</span>
+            <span className="emo-count">{picked.length}/{MAX_FEELS}</span>
+            <button onClick={() => setGroup(null)} aria-label="닫기">✕</button>
+          </div>
+          <div className="emo-popup-items">
+            {g.items.map((f) => {
+              const on = picked.includes(f);
+              const full = !on && picked.length >= MAX_FEELS;
+              return (
+                <button key={f} className={`emo-chip${on ? " emo-chip-on" : ""}`} disabled={full} onClick={() => onToggle(f)}>
+                  {on && <span className="emo-chip-check">✓</span>}{f}
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
+
+      <div className="emo-dock">
+        {FEELINGS.map((x) => {
+          const n = picked.filter((p) => x.items.includes(p)).length;
+          return (
+            <button
+              key={x.id}
+              className={`emo-dock-btn${group === x.id ? " emo-dock-on" : ""}${n ? " emo-dock-has" : ""}`}
+              style={{ "--emo-bg": x.tone[0], "--emo-border": x.tone[1], "--emo-fg": x.tone[2] } as React.CSSProperties}
+              onClick={() => setGroup(group === x.id ? null : x.id)}
+              aria-label={x.label}
+              title={x.label}
+            >
+              <EmoIcon id={x.id} />
+              {n > 0 && <span className="emo-dock-badge">{n}</span>}
+            </button>
+          );
+        })}
+      </div>
 
       {picked.length > 0 && (
-        <div className="feel-picked">
-          고른 마음: {picked.join(" · ")}
-          <button onClick={() => picked.forEach(onToggle)}>지우기</button>
+        <div className="emo-picked">
+          {picked.map((f) => {
+            const pg = groupOf(f);
+            return (
+              <button
+                key={f}
+                className="emo-picked-tag"
+                style={pg ? { background: pg.tone[0], borderColor: pg.tone[1], color: pg.tone[2] } : undefined}
+                onClick={() => onToggle(f)}
+                aria-label={`${f} 빼기`}
+              >
+                {pg && <EmoIcon id={pg.id} size={13} />}{f}<span className="emo-picked-x">✕</span>
+              </button>
+            );
+          })}
         </div>
       )}
-
-      <p className="note" style={{ margin: "8px 0 0" }}>
-        여기 없는 마음이면 그냥 네 말로 적어줘. 그게 제일 정확해.
-      </p>
     </div>
   );
 }

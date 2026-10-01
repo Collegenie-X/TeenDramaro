@@ -36,6 +36,7 @@ import { feelingEmoji } from "@/lib/emotions";
 import GroundingSheet from "@/components/GroundingSheet";
 import { DEMO_PACE } from "@/lib/demo";
 import { useSpeaker } from "@/lib/voice";
+import { patternBlock } from "@/lib/patterns";
 
 let seq = 0;
 const uid = () => `m${++seq}`;
@@ -169,6 +170,8 @@ export default function Play() {
   const usedQ = useRef<string[]>([]);
   /** 디렉터가 이미 던진 질문 원문 — AI에게 "겹치지 마라"를 알려준다 */
   const askedQ = useRef<string[]>([]);
+  /** 디렉터 수첩 — 이 세션에서 디렉터가 실제로 쓴 패턴 id (되풀이 억제) */
+  const usedPat = useRef<string[]>([]);
   /** 마지막 비트가 다음 막을 제안했는가 */
   const [nextReady, setNextReady] = useState(false);
   /** 디렉터가 쉬어가자고 먼저 제안했는가 — care 신호 */
@@ -283,6 +286,14 @@ export default function Play() {
 
       const note = [
         stageBrief(m, snap, beatNo, cue),
+        patternBlock(
+          {
+            movement: m.id, depth: cue.level, lastUser, beatNo,
+            used: usedPat.current, vagueStreak: vagueStreak.current,
+            hasOther: Boolean(snap.other.name || snap.other.persona?.name),
+          },
+          { A: snap.character.name || "그 애", B: snap.other.name || "그 사람" }
+        ),
         askedQ.current.length
           ? `[이미 던진 질문 — 문장 구조를 겹치지 마라]\n${askedQ.current.slice(-6).map((q) => `  · ${q}`).join("\n")}`
           : "",
@@ -320,7 +331,10 @@ export default function Play() {
           depthMove: (out.depthMove as OpenBeat["depthMove"]) ?? cue.move,
           depthWhy: cue.why,
           aux: readAux(out, snap),
+          stage: typeof out.stage === "string" ? out.stage.trim().slice(0, 60) : undefined,
+          move: typeof out.move === "string" ? out.move : undefined,
         };
+        if (typeof out.pattern === "string" && out.pattern) usedPat.current.push(out.pattern);
         setFrame(out.frame as SessionState["frame"], out.care);
       } else {
         beat = localBeat(m, snap, beatNo, lastUser, usedQ.current);
@@ -345,7 +359,8 @@ export default function Play() {
         );
       }
       await sleep(beat.aux ? 760 : beat.react ? 560 : 240);
-      push({ role: "director", text: beat.question });
+      // 🎬 무대 지시는 질문 위에 지문으로 붙는다 — 디렉터가 무대를 먼저 움직이고 묻는다
+      push({ role: "director", text: beat.question, action: beat.stage || undefined });
 
       // 유저가 흘린 말을 스레드로 쌓는다 (중복 제거)
       if (beat.threads.length) {

@@ -16,16 +16,26 @@ type Step = {
   body: string;
   line?: { who: string; text: string };
   ritual?: boolean;
+  /** 이 스텝부터 새 부(部)가 시작된다 — 목록에 구분 띠를 띄운다 */
+  part?: { no: string; title: string; goal: string };
 };
 
-/** 실제 엔진의 막 구성(lib/stage.ts)을 이야기 순서대로 풀어 쓴 것 */
+/** 실제 엔진의 막 구성(lib/stage.ts)을 두 부로 묶어 이야기 순서대로 풀어 쓴 것 */
 const STEPS: Step[] = [
+  {
+    em: "🙋",
+    act: "접수",
+    title: "오늘 무슨 일로 왔어?",
+    body: "점집 가면 보살이 제일 먼저 묻잖아. 여기도 그래. 연애, 친구, 부모, 진로 — 칩 하나 누르거나 네 말로 써. 두 개면 더 급한 거 하나만. 나머진 다음에.",
+    line: { who: "디렉터", text: "아, 그거구나. 하나만 더 — 그 애랑 지금 어느 정도야?" },
+    part: { no: "1부", title: "내면의 이야기 만들기", goal: "한 장면 안에서 내가 늘 하는 선택을 찾는다" },
+  },
   {
     em: "🎭",
     act: "무대 입장",
     title: "네가 아니라, 네가 만든 애가 올라가",
-    body: "이름 하나만 줘도 시작돼. 더 꾸미고 싶으면 얼마든지 있어도 되고. 걔가 겪는 일이면 좀 덜 부담돼.",
-    line: { who: "디렉터", text: "무대에 설 캐릭터를 한 명 만들자. 이름을 하나 줘봐." },
+    body: "이름 하나만 줘도 시작돼. 사연이 먼저 들어왔으니까 여기선 짧게 — 그 애의 약한 데랑 센 데 한 쌍이면 충분해.",
+    line: { who: "디렉터", text: "이 얘기 무대에 세울 애 이름부터. 진짜 네 이름 말고." },
   },
   {
     em: "🃏",
@@ -37,15 +47,15 @@ const STEPS: Step[] = [
   {
     em: "📖",
     act: "1막 · 펼치기",
-    title: "하고 싶은 얘기부터 꺼내",
-    body: "정해진 주제 없어. 여기서 제일 오래 있어. 무슨 일이었는지, 어디였는지, 제일 선명하게 남은 게 뭔지 — 줄거리보다 한 컷이 중요해.",
-    line: { who: "디렉터", text: "그 일에서 제일 선명하게 남은 장면이 뭐야? 한 컷만 꺼내봐." },
+    title: "딱 한 장면만 무대에 올려",
+    body: "줄거리 말고 한 컷. 어디, 몇 시, 불은 켜졌는지. 그 애가 보낸 말은 요약하지 말고 그대로. 그리고 — 거기서 네가 만든 애가 실제로 뭘 했는지.",
+    line: { who: "디렉터", text: "손이 멈춘 자리. 거기서 수민이 실제로 뭐라고 쳤어?" },
   },
   {
     em: "💭",
     act: "2막 · 안쪽",
-    title: "무슨 일이 있었나 말고, 그게 건드린 데",
-    body: "제일 쎄했던 지점, 머릿속에 계속 맴돈 말, 그게 누구 목소리였는지. 「모르겠어」도 답이야. 넘어가도 돼.",
+    title: "그 선택 밑에 뭐가 있나",
+    body: "이번이 처음은 아니지? 몸은 어디가 먼저 반응해? 그 말 누구 목소리야? 「모르겠어」도 답이야. 넘어가도 돼.",
   },
   {
     em: "🤝",
@@ -58,22 +68,25 @@ const STEPS: Step[] = [
     em: "🪞",
     act: "4막 · 거울",
     title: "네가 한 말만 모아서 다시 읽어줄게",
-    body: "없는 말 지어내지 않아. 맞는 데, 아닌 데, 빠진 거 — 네가 고쳐.",
+    body: "없는 말 지어내지 않아. 맞는 데, 아닌 데, 빠진 거 — 네가 고쳐. 그리고 마지막에 한 문장. 이 장면에서 그 애가 늘 하는 선택, 네 말로.",
+    line: { who: "너", text: "둘째 줄 오면 손 멈췄다가 「원래 그래」 치고 받아준다." },
     ritual: true,
   },
   {
     em: "⏪",
     act: "5막 · 리플레이",
-    title: "같은 장면, 다른 선택",
-    body: "그때 못 한 말 여기서 해봐. 이게 정답이라고 안 해. 그냥 다른 버전도 된다는 걸 한 번 통과해 보는 거야.",
-    line: { who: "너", text: "나 그 말 들으면 좀 힘들어." },
+    title: "같은 자리, 다른 선택 — 그럼 어떻게 되나",
+    body: "출구 넷을 깔아. 말로 받기, 자리 뜨기, 비틀기, 그리고 원래 하던 거 — 근데 이번엔 알고. 하나 골라서 돌려보면 상대가 현실적으로 반응해. 사과 서비스 없어. 그러고 물어. 상황은 안 바뀌었는데, 그 애 안에서는 뭐가 달라졌어?",
+    line: { who: "너", text: "똑같은 말인데 손이 안 떨려. 내가 고른 거라서." },
     ritual: true,
+    part: { no: "2부", title: "나의 선택 바꾸기", goal: "다른 선택을 돌려보고, 원래 문장 옆에 새 문장을 둔다" },
   },
   {
     em: "👏",
     act: "커튼콜",
-    title: "제목 하나랑, 내일의 한마디",
-    body: "제목 · 인사이트 3줄 · 내일의 한마디. 전부 네가 실제로 쓴 말에서만 나와. 조언도 처방도 없어. 그리고 또 해볼 수 있어 — 다른 대사로, 역할 바꿔서, 1년 뒤로 가서.",
+    title: "두 문장 나란히, 그리고 제목",
+    body: "시작할 때 네가 말한 「늘 하는 선택」 옆에 지금 문장을 하나 써. 고치는 거 아니야, 옆에 두는 거야. 인사이트 3줄은 전부 네가 쓴 말에서만. 조언도 처방도 없어.",
+    line: { who: "너", text: "둘째 줄 오면 손이 멈춰도 돼. 그다음은 내가 고른다." },
     ritual: true,
   },
 ];
@@ -212,11 +225,11 @@ export default function About() {
         {/* ── 히어로 ─────────────────────────────── */}
         <div className="ab-hero">
           <span className="badge">TEENDRAMARO · 마음무대</span>
-          <h1>말로 하기 힘들면,<br />무대에 올리면 돼</h1>
+          <h1>내 얘기를 무대에 올리고,<br />다른 선택을 해보는 곳</h1>
           <p>
-            「무슨 일 있어?」 하면 괜히 「아무것도」가 먼저 나오잖아.<br />
-            여기선 카드가 말문을 열어주고,<br />
-            네가 만든 캐릭터가 대신 올라가.
+            「무슨 일로 왔어?」부터 시작해.<br />
+            네가 만든 캐릭터가 대신 올라가서<br />
+            늘 하던 선택을 찾고, 다르게 해보면 어떻게 되는지 봐.
           </p>
         </div>
         <HeroArt />
@@ -294,15 +307,23 @@ export default function About() {
         </Stage>
 
         {/* ── 03 흐름 ────────────────────────────── */}
-        <Stage no="03" label="흐름" on={active === 2} title={<>얘기 한 편이<br />흘러가는 순서</>}>
+        <Stage no="03" label="흐름" on={active === 2} title={<>한 판은<br />두 부로 흘러가</>}>
           <p className="rv">
-            막이 여덟 개인데 관문은 아니야. 몇 턴 안에 끝내라는 것도 없고.
-            10번 주고받고 끝내도, 100번을 가도 <em>순서는 그대로야</em>.
+            <em>1부는 이야기 만들기</em> — 한 장면 안에서 그 애가 늘 하는 선택을 찾아.
+            <em> 2부는 선택 바꾸기</em> — 같은 자리에서 다른 걸 해보고, 안에서 뭐가 달라지는지 봐.
+            몇 턴 안에 끝내라는 건 없어. 10번을 가도 100번을 가도 순서는 그대로야.
           </p>
           <div className="rv" style={{ marginBottom: 14 }}><ActsArt /></div>
           <div className="story">
             {STEPS.map((s) => (
-              <div key={s.act} className={`story-step rv${s.ritual ? " ritual" : ""}`}>
+              <div key={s.act}>
+                {s.part && (
+                  <div className="story-part rv">
+                    <b>{s.part.no} · {s.part.title}</b>
+                    <small>{s.part.goal}</small>
+                  </div>
+                )}
+              <div className={`story-step rv${s.ritual ? " ritual" : ""}`}>
                 <span className="story-em" aria-hidden="true">{s.em}</span>
                 <span className="story-act">{s.act}</span>
                 <b>{s.title}</b>
@@ -312,6 +333,7 @@ export default function About() {
                     <i>{s.line.who}</i>「{s.line.text}」
                   </div>
                 )}
+              </div>
               </div>
             ))}
           </div>
@@ -366,8 +388,8 @@ export default function About() {
               <h4>여기서 하는 거</h4>
               <ul style={{ margin: 0, padding: 0 }}>
                 <li>네가 만든 캐릭터로 네 상황을 한 발 떨어져서 보기</li>
-                <li>그때 못 한 말 여기서 연습해 보기</li>
-                <li>기분에 이름 붙여보기 — 틀리면 네가 고치기</li>
+                <li>늘 하던 선택을 찾고, 다른 선택을 돌려보기</li>
+                <li>원래 하던 선택도 틀렸다고 안 해 — 「알고 하는 것」도 선택이야</li>
               </ul>
             </div>
             <div className="cmp-col replay">
@@ -437,10 +459,10 @@ export default function About() {
 
         {/* ── 아웃트로 ───────────────────────────── */}
         <div className="ab-outro rv">
-          <h2>말이 안 나올 땐,<br />무대에 올려보면 돼</h2>
+          <h2>같은 자리에서,<br />다른 선택을 한 번 해봐</h2>
           <p>
-            오늘 <em>카드 한 장, 캐릭터 한 명</em>이면 시작돼.<br />
-            나머지는 하다 보면 알아서 흘러가.
+            오늘 <em>사연 하나, 캐릭터 한 명, 카드 한 장</em>이면 시작돼.<br />
+            상대는 안 바뀌어도, 네 안에서 뭔가는 바뀌어.
           </p>
           <Link href="/play" className="cta cta-primary" style={{ display: "block", textAlign: "center", textDecoration: "none" }}>
             무대 올리기

@@ -41,6 +41,10 @@ export type OpenBeat = {
    * 상대의 말은 유저가 준 재료 없이 만들어낼 수 없기 때문이다.
    */
   aux?: { name: string; action: string; line: string };
+  /** 🎬 질문 앞에 붙는 무대 지시 한 줄 — "거기 서", "멈춰", "테이크 2" */
+  stage?: string;
+  /** 이 비트에 쓴 디렉터 기법 — set | freeze | double | reverse | chair | mirror | replay | none */
+  move?: string;
 };
 
 const me = (s: SessionState) => s.character.name || "주인공";
