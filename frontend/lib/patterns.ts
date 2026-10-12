@@ -31,6 +31,8 @@ export type Pattern = {
   priority?: number;
   /** 애매한 답이 n비트 이어졌을 때만 */
   vagueStreak?: number;
+  /** 이 패턴들 중 하나를 이미 쓴 뒤에만 (장면 사슬: 옛 장면에 다녀와야 돌아올 수 있다) */
+  after?: string[];
 };
 
 export const PATTERNS: Pattern[] = (raw as { patterns: Pattern[] }).patterns;
@@ -62,6 +64,7 @@ export function pickPatterns(ctx: PickCtx, n = 3): Scored[] {
     if (!p.movements.includes(ctx.movement)) continue;
     if (p.firstBeatOnly && ctx.beatNo > 0) continue;
     if (p.vagueStreak && (ctx.vagueStreak ?? 0) < p.vagueStreak) continue;
+    if (p.after && !p.after.some((id) => ctx.used.includes(id))) continue;
 
     let score = 0;
     const hit: string[] = [];

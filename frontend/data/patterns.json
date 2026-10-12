@@ -268,6 +268,91 @@
     },
 
     {
+      "id": "arc.wrap", "name": "장면 닫고 객석으로", "move": "mirror",
+      "movements": ["open", "deepen", "meet"], "depth": [3, 4, 5], "signals": ["그랬어|그게 다야|끝이야|그 뒤로|그러고 나서|이게 전부"],
+      "stage": "좋아, 이 장면 여기서 컷. 조명 그대로 두고 객석으로 와.",
+      "question": "저기 서 있는 {A}, 장면 시작할 때랑 지금이랑 뭐가 달라 보여?",
+      "avoid": "장면 안에서 기법(멈춤·이중자아·보조자아)을 한 번은 쓴 뒤에만. 세우자마자 닫지 않는다."
+    },
+    {
+      "id": "chain.back", "name": "옛 장면으로 건너가기", "move": "set",
+      "movements": ["deepen"], "depth": [5, 6], "signals": ["처음|어릴 때|초등학교|중학교|옛날|예전에도|그때부터|전에도"],
+      "stage": "조명 바꿀게. 무대가 조금 어려진다.",
+      "question": "방금 말한 그때로 가보자 — 가도 괜찮으면. {A} 몇 살이고, 거기 어디야?",
+      "avoid": "유저가 '처음'이나 옛날 장면을 먼저 꺼냈을 때만. 디렉터가 과거를 캐내지 않는다. 한 세션에 한 번."
+    },
+    {
+      "id": "chain.return", "name": "지금으로 돌아오기", "move": "set",
+      "movements": ["deepen", "meet", "replay"], "depth": [5, 6, 7], "signals": [], "after": ["chain.back"],
+      "stage": "다시 지금. 아까 그 {장소}로 돌아와.",
+      "question": "어린 {A}를 보고 와서 보니까, 지금 {A}가 저기서 왜 그렇게 서 있는지 좀 보여?",
+      "avoid": "chain.back으로 옛 장면에 다녀온 뒤에만. 옛 장면에 두고 끝내지 않는다 — 반드시 지금으로 데려온다."
+    },
+    {
+      "id": "surplus.concretize", "name": "마음을 무대에 세우기", "move": "set",
+      "movements": ["open", "deepen", "meet"], "depth": [3, 4], "signals": ["불안|걱정|압박|부담|무거|답답|짓눌|숨막|꽉"],
+      "stage": "그 {감정}, 무대에 하나 세워볼게.",
+      "question": "그게 사람이나 물건이라면 뭐야? {A}한테서 얼마나 떨어져 서 있어?",
+      "avoid": "추상적인 감정·압박이 나왔을 때. 디렉터가 모양을 정해주지 않는다 — 유저가 고른다."
+    },
+    {
+      "id": "surplus.sculpt", "name": "사람 지도 세우기", "move": "set",
+      "movements": ["meet"], "depth": [2, 3], "signals": ["친구들|애들|반 애들|우리 반|단톡|가족|무리|다들"],
+      "stage": "{A} 가운데 세우고, 주변에 사람들 하나씩 세워보자.",
+      "question": "누가 제일 가까이 있고, 누가 등 돌리고 서 있어?",
+      "avoid": "여러 사람이 얽혔을 때. 한 명이면 meet.distance로."
+    },
+    {
+      "id": "surplus.council", "name": "속마음 회의", "move": "double",
+      "movements": ["deepen"], "depth": [4, 5], "signals": ["한편으론|근데 또|반반|헷갈|모르겠는데.*(싶|좋)|하고 싶은데|싫은데"],
+      "stage": "{A} 속에 목소리가 하나가 아닌 것 같아. 다 무대로 불러낼게.",
+      "question": "속에서 떠드는 애들 몇 명이야? 제일 목소리 큰 애는 뭐라고 해?",
+      "avoid": "마음이 갈리는 말이 나왔을 때만. 목소리마다 이름은 유저가 붙인다."
+    },
+    {
+      "id": "surplus.goodOther", "name": "그때 필요했던 사람", "move": "chair",
+      "movements": ["deepen", "replay"], "depth": [6, 7], "signals": ["아무도|혼자|몰라줬|안 들어줬|편이 없|기댈"],
+      "stage": "그 장면에 의자 하나 더 놓을게. {A} 옆에.",
+      "question": "그때 거기 누가 한 명 있었다면, 어떤 사람이었으면 좋겠어? 그 사람이 {A}한테 뭐라고 해?",
+      "avoid": "실제 인물을 탓하는 방향으로 가지 않는다. 대사는 유저가 쓴다. 디렉터가 위로 문장을 대신 쓰지 않는다."
+    },
+    {
+      "id": "surplus.magicShop", "name": "마음 가게", "move": "set",
+      "movements": ["replay", "curtain"], "depth": [5, 6, 7], "signals": [],
+      "stage": "무대 한쪽에 작은 가게가 생겼어. 여긴 마음만 팔아.",
+      "question": "{A}는 여기서 뭘 사고 싶어? 대신 값으로 하나는 두고 가야 해. 뭘 두고 갈래?",
+      "avoid": "욕구(L7)가 한 번 나온 뒤에만. 가볍게, 놀이처럼. '두고 가는 것'을 해석하지 않는다."
+    },
+    {
+      "id": "surplus.futureSelf", "name": "미래의 아바타", "move": "double",
+      "movements": ["replay", "curtain"], "depth": [4, 5], "signals": [],
+      "stage": "무대 끝에 몇 년 뒤의 {A}가 서 있어.",
+      "question": "그 {A}가 지금 {A}한테 한마디 해준다면 뭐라고 할 것 같아?",
+      "avoid": "조언 문장을 디렉터가 대신 쓰지 않는다. 유저가 쓴 말만 그대로 받는다."
+    },
+    {
+      "id": "turn.howTo", "name": "해결 질문을 무대로", "move": "replay",
+      "movements": ["open", "deepen", "meet"], "depth": [2, 3, 4, 5], "signals": ["어떻게 해야|어떡해|어떻게 하지|뭐라고 해야|방법|해결"], "priority": 3,
+      "stage": "",
+      "question": "정답은 나도 몰라. 대신 무대에선 해볼 수 있어. {A}를 그 장면에 다시 세우고, 몇 가지 버전으로 가볼까?",
+      "avoid": "조언·처방으로 답하지 않는다. 질문을 리플레이 재료로 돌린다."
+    },
+    {
+      "id": "turn.joke", "name": "농담도 무대에", "move": "double",
+      "movements": ["open", "deepen", "meet"], "depth": [2, 3, 4], "signals": ["ㅋㅋ|ㅎㅎ|장난|농담|웃기|아무튼"],
+      "stage": "ㅋㅋ 그 농담 좋다. 그것도 무대에 올리자.",
+      "question": "{A}가 그 농담 할 때, 웃는 얼굴 뒤에서는 뭐 하고 있어?",
+      "avoid": "농담을 회피라고 지적하지 않는다. 같이 웃고 나서 한 겹만. 두 번 연속 쓰지 않는다."
+    },
+    {
+      "id": "turn.camera", "name": "카메라 돌리기", "move": "set",
+      "movements": ["open", "meet"], "depth": [2, 3], "signals": ["걔가|걔는|그 애가|선생님이|엄마가|아빠가"],
+      "stage": "카메라 {A}한테 돌릴게.",
+      "question": "{B}가 그러는 동안, {A}는 어디 서 있고 뭐 하고 있어?",
+      "avoid": "상대 얘기가 두 비트 넘게 이어질 때만. 상대 얘기를 막지 말고 카메라만 돌린다."
+    },
+
+    {
       "id": "curtain.close", "name": "닫기 선언", "move": "set",
       "movements": ["curtain"], "depth": [2, 3, 4], "signals": [],
       "stage": "조명 하나씩 꺼진다.",
