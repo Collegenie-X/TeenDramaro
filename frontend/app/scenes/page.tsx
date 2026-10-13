@@ -17,6 +17,8 @@ import PieceCard from "@/components/PieceCard";
 import InsightCard from "@/components/InsightCard";
 import BackupCard from "@/components/BackupCard";
 import JourneyStrip from "@/components/JourneyStrip";
+import { EmptyShelfArt } from "@/components/ScenesArt";
+import { TrackArt } from "@/components/HomeArt";
 import { ScenarioBanner, ScenarioEntry } from "@/components/ScenarioPanel";
 import Sheet from "@/components/Sheet";
 import SafetySheet from "@/components/SafetySheet";
@@ -165,12 +167,20 @@ export default function Scenes() {
         )}
 
         {ready && pieces.length === 0 && (
-          <div className="empty">
-            <span className="big">🎬</span>
-            아직 비어 있어. 씬 하나가 끝나면 저절로 여기 쌓여.<br />저장 버튼은 없어.
-            <div className="grid2" style={{ marginTop: 14 }}>
-              <Link href="/situation" className="btn btn-sm">🎞 상황극 하나</Link>
-              <Link href="/inner" className="btn btn-sm">🪞 장면 하나</Link>
+          <div className="sc-empty">
+            <EmptyShelfArt />
+            <p>아직 비어 있어. 씬 하나가 끝나면 <em>저절로 여기 쌓여</em>.<br />저장 버튼은 없어 — 하기만 하면 돼.</p>
+            <div className="hm-tracks">
+              <Link href="/situation" className="hm-track sit">
+                <TrackArt kind="sit" />
+                <b>🎞 상황극 하나</b>
+                <small><em>유명 장면</em> 속에서 놀기</small>
+              </Link>
+              <Link href="/inner" className="hm-track inner">
+                <TrackArt kind="inner" />
+                <b>🪞 장면 하나</b>
+                <small><em>내 얘기</em>를 장면으로</small>
+              </Link>
             </div>
           </div>
         )}

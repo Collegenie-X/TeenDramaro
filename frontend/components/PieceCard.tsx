@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { ICON_TRACK, SPICE, TASKS } from "@/lib/meta";
 import type { ScenePiece } from "@/lib/types";
+import { PieceThumb } from "@/components/ScenesArt";
 
 const d = (iso: string) => { const t = new Date(iso); return `${t.getMonth() + 1}/${t.getDate()}`; };
 
@@ -12,6 +13,7 @@ export default function PieceCard({
   const last = p.takes.at(-1);
   const body = (
     <>
+      <PieceThumb p={p} />
       <div className="p-h">
         <span>{ICON_TRACK[p.source.track]}</span>
         <span style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.title}</span>

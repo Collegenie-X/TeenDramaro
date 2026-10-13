@@ -6,12 +6,15 @@
  */
 import Link from "next/link";
 import about from "@/data/about.json";
+import { Glyph, type GlyphName } from "@/components/AboutArt";
 import copy from "@/data/scenes.json";
 import type { InsightMark, Revision, ScenePiece, Work } from "@/lib/types";
 import { NOTE_MIN_PIECES } from "@/lib/insight";
 
 type Hint = { text: string; cta?: { label: string; href: string } };
 const HINTS = copy.journey.hints as Record<string, Hint>;
+/** 걸음마다 선화 아이콘 */
+const GLYPH: Record<string, GlyphName> = { pick: "pick", play: "clapper", keep: "stack", join: "link", fix: "pencil", look: "lens" };
 const FIX_FIELDS = new Set<Revision["target"]["field"]>(["take", "line", "lastCut"]);
 
 export default function JourneyStrip({
@@ -34,10 +37,13 @@ export default function JourneyStrip({
 
   return (
     <section className="journey" aria-label={copy.journey.title}>
-      <ol>
+      <ol style={{ ["--done" as string]: steps.filter((s) => walked[s.key]).length / (steps.length - 1) }}>
         {steps.map((s) => (
           <li key={s.key} className={walked[s.key] ? "on" : s.key === cur ? "cur" : ""} aria-current={s.key === cur ? "step" : undefined}>
-            <span className="j-dot" aria-hidden="true">{walked[s.key] ? "✓" : ""}</span>
+            <span className="j-dot" aria-hidden="true">
+              <Glyph name={GLYPH[s.key] ?? "check"} size={15} stroke={2} />
+              {walked[s.key] && <i className="j-ok">✓</i>}
+            </span>
             {s.name}
           </li>
         ))}

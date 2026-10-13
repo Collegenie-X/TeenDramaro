@@ -5,19 +5,19 @@
  */
 import type { ReactNode } from "react";
 
-const C = {
+export const C = {
   sit: "#ffcf7a", inner: "#8fbbe0", work: "#c9a6ff", note: "#9fe0c0", marker: "#fff27a",
   ink: "#f3eff8", dim: "#b4abc6", faint: "#7b7290", panel: "#171225", panel2: "#201a33", line: "#2d2542",
   curtain: "#4e2352", curtainD: "#33163a", skin: "#fdf3e6", body: "#e8d9c5", paper: "#fbf3e0",
 };
-const FONT = '-apple-system, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", sans-serif';
+export const FONT = '-apple-system, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", sans-serif';
 const MONO = 'ui-monospace, "SF Mono", Menlo, monospace';
 const SERIF = '"Iowan Old Style", "Apple SD Gothic Neo", serif';
 
 /* ══ 공통 소품 ═══════════════════════════════════════ */
 
 /** 무대에 서는 작은 사람 — 마음무대 /about 의 Kid와 같은 꼴 */
-function Kid({
+export function Kid({
   x, y, s = 1, face = "🙂", tint = C.body, dim = 1, flip, arms = "down", children,
 }: {
   x: number; y: number; s?: number; face?: string; tint?: string; dim?: number; flip?: boolean;
@@ -49,7 +49,7 @@ function Kid({
   );
 }
 
-function Curtains({ h, w = 360, op = 0.75 }: { h: number; w?: number; op?: number }) {
+export function Curtains({ h, w = 360, op = 0.75 }: { h: number; w?: number; op?: number }) {
   return (
     <>
       <path d={`M0 0 H54 Q36 ${h / 2} 50 ${h} H0 Z`} fill={C.curtain} opacity={op} />
@@ -61,7 +61,7 @@ function Curtains({ h, w = 360, op = 0.75 }: { h: number; w?: number; op?: numbe
   );
 }
 
-function Sky({ id, h, top = "#241a44", bottom = "#0c0718" }: { id: string; h: number; top?: string; bottom?: string }) {
+export function Sky({ id, h, top = "#241a44", bottom = "#0c0718" }: { id: string; h: number; top?: string; bottom?: string }) {
   return (
     <>
       <defs>
@@ -74,7 +74,7 @@ function Sky({ id, h, top = "#241a44", bottom = "#0c0718" }: { id: string; h: nu
   );
 }
 
-function Twinkle({ pts }: { pts: [number, number][] }) {
+export function Twinkle({ pts }: { pts: [number, number][] }) {
   return (
     <>
       {pts.map(([x, y], i) => (
@@ -87,7 +87,7 @@ function Twinkle({ pts }: { pts: [number, number][] }) {
 }
 
 /** 씬 한 장 — 별이 박힌 작은 대본 종이 */
-function ScenePage({ x, y, s = 1, tone = C.work, rot = 0, glow }: { x: number; y: number; s?: number; tone?: string; rot?: number; glow?: boolean }) {
+export function ScenePage({ x, y, s = 1, tone = C.work, rot = 0, glow }: { x: number; y: number; s?: number; tone?: string; rot?: number; glow?: boolean }) {
   return (
     <g transform={`translate(${x} ${y}) rotate(${rot}) scale(${s})`}>
       {glow && <circle cx="0" cy="0" r="30" fill={tone} opacity=".22" />}

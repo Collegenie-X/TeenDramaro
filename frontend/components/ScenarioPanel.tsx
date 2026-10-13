@@ -9,6 +9,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { endDemo, goStep, SCENARIO, stepBackup, stepIndex, toggleCheck, type DemoState } from "@/lib/scenario";
+import { StoryRoadArt } from "@/components/AboutArt";
 
 export function ScenarioBanner({ demo }: { demo: DemoState }) {
   const [open, setOpen] = useState(true);
@@ -75,7 +76,8 @@ export function ScenarioBanner({ demo }: { demo: DemoState }) {
 export function ScenarioEntry() {
   return (
     <section className="card demo-entry">
-      <h3>🧪 동작 시나리오로 따라가 보기</h3>
+      <StoryRoadArt />
+      <h3 style={{ marginTop: 12 }}>🧪 동작 시나리오로 따라가 보기</h3>
       <p>{SCENARIO.lead}</p>
       <div className="story" style={{ marginTop: 12 }}>
         {SCENARIO.steps.map((s) => (
