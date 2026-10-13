@@ -1,0 +1,329 @@
+{
+  "genres": [
+    {
+      "id": "romance",
+      "icon": "💘",
+      "label": "로맨스"
+    },
+    {
+      "id": "family",
+      "icon": "🏠",
+      "label": "가족극"
+    },
+    {
+      "id": "mystery",
+      "icon": "🔍",
+      "label": "추리"
+    },
+    {
+      "id": "court",
+      "icon": "⚖️",
+      "label": "법정·토론"
+    },
+    {
+      "id": "comedy",
+      "icon": "😂",
+      "label": "코미디"
+    },
+    {
+      "id": "youth",
+      "icon": "🌱",
+      "label": "청춘물"
+    },
+    {
+      "id": "tragedy",
+      "icon": "🎭",
+      "label": "비극 렌즈",
+      "lower": true
+    },
+    {
+      "id": "folk",
+      "icon": "🇰🇷",
+      "label": "옛이야기",
+      "lower": true
+    }
+  ],
+  "tasks": {
+    "persuade": {
+      "icon": "🗣",
+      "label": "설득",
+      "acting": "마음 바꾸기"
+    },
+    "ask": {
+      "icon": "🙏",
+      "label": "부탁",
+      "acting": "들어주게 하기"
+    },
+    "refuse": {
+      "icon": "✋",
+      "label": "거절",
+      "acting": "상처 안 주고 「아니」"
+    },
+    "secret": {
+      "icon": "🤐",
+      "label": "비밀 지키기",
+      "acting": "들키지 않고 버티기"
+    },
+    "confess": {
+      "icon": "💌",
+      "label": "고백 · 속마음",
+      "acting": "처음 말하기"
+    },
+    "apologize": {
+      "icon": "🙇",
+      "label": "사과",
+      "acting": "늦은 사과"
+    },
+    "deliver": {
+      "icon": "📢",
+      "label": "소식 전하기",
+      "acting": "나쁜 소식 첫 마디"
+    },
+    "uncover": {
+      "icon": "🔍",
+      "label": "알아내기",
+      "acting": "숨긴 걸 캐기"
+    },
+    "deadline": {
+      "icon": "⏳",
+      "label": "시간 안에",
+      "acting": "마감 전에 결정"
+    },
+    "loop": {
+      "icon": "🔁",
+      "label": "다시 그날",
+      "acting": "같은 하루를 다르게"
+    }
+  },
+  "spice": {
+    "mild": {
+      "icon": "🥛",
+      "label": "순한 맛"
+    },
+    "warm": {
+      "icon": "🌶",
+      "label": "보통 맛"
+    },
+    "hot": {
+      "icon": "🌶🌶",
+      "label": "매운 맛"
+    }
+  },
+  "classes": {
+    "chick": {
+      "icon": "🐣",
+      "label": "기초반"
+    },
+    "teen": {
+      "icon": "🐥",
+      "label": "중간반"
+    },
+    "eagle": {
+      "icon": "🦅",
+      "label": "심화반"
+    }
+  },
+  "grades": [
+    {
+      "id": "m1",
+      "label": "중1",
+      "cls": "chick"
+    },
+    {
+      "id": "m2",
+      "label": "중2",
+      "cls": "chick"
+    },
+    {
+      "id": "m3",
+      "label": "중3",
+      "cls": "teen"
+    }
+  ],
+  "dials": [
+    {
+      "key": "honesty",
+      "icon": "🔥",
+      "label": "솔직함",
+      "low": "돌려 말함",
+      "high": "다 말함"
+    },
+    {
+      "key": "eyes",
+      "icon": "👀",
+      "label": "상대 보는 눈",
+      "low": "폰만 봄",
+      "high": "똑바로 봄"
+    },
+    {
+      "key": "stubborn",
+      "icon": "🪨",
+      "label": "고집",
+      "low": "금방 넘어감",
+      "high": "안 넘어감"
+    },
+    {
+      "key": "play",
+      "icon": "🎭",
+      "label": "장난기",
+      "low": "진지",
+      "high": "장난"
+    }
+  ],
+  "defaultDials": {
+    "honesty": 1,
+    "eyes": 1,
+    "stubborn": 2,
+    "play": 1
+  },
+  "frames": {
+    "story": {
+      "icon": "📖",
+      "label": "나만의 이야기",
+      "shape": "씬 5개 → 인트로 → 본론 → 갈등 하이라이트 → 결론(맺음말)",
+      "slots": [
+        "인트로",
+        "본론 ①",
+        "본론 ②",
+        "갈등 하이라이트",
+        "결론 · 맺음말"
+      ]
+    },
+    "three": {
+      "icon": "📦",
+      "label": "세 장면",
+      "shape": "시작 → 부딪힘 → 마지막 컷",
+      "slots": [
+        "시작",
+        "부딪힘",
+        "마지막 컷"
+      ],
+      "cls": "chick"
+    },
+    "then-now-if": {
+      "icon": "🪞",
+      "label": "그때 · 지금 · 나였다면",
+      "shape": "🪞 그때 장면 → 🎞 닮은 상황극 → ⏪ 내가 다시 쓴 장면",
+      "slots": [
+        "🪞 그때 장면",
+        "🎞 닮은 상황극",
+        "⏪ 내가 다시 쓴 장면"
+      ],
+      "cls": "teen"
+    },
+    "serial": {
+      "icon": "📺",
+      "label": "연속극",
+      "shape": "같은 인물 하나가 5편 내내 · 한 주에 한 편",
+      "slots": [
+        "1편",
+        "2편",
+        "3편",
+        "4편",
+        "5편"
+      ],
+      "cls": "eagle"
+    },
+    "free": {
+      "icon": "🧩",
+      "label": "틀 없이",
+      "shape": "고르지 않아도 돼. 놓고 싶은 만큼",
+      "slots": []
+    }
+  },
+  "pivotTones": [
+    "농담으로",
+    "질문으로",
+    "한 단어로",
+    "침묵으로",
+    "반대로",
+    "행동으로"
+  ],
+  "reasons": {
+    "take": [
+      "다르게 해 보고 싶어서",
+      "그때 못 한 말",
+      "웃기게",
+      "더 솔직하게"
+    ],
+    "line": [
+      "이 말이 아니었어",
+      "더 짧게",
+      "진짜 내 말로"
+    ],
+    "lastCut": [
+      "끝이 달라졌어",
+      "아직 못 정했어",
+      "진짜 내 말로"
+    ],
+    "work": [
+      "이야기가 달라졌어"
+    ]
+  },
+  "idleChips": [
+    "패스",
+    "지문만",
+    "컷"
+  ],
+  "bannedInsightWords": [
+    "회피형",
+    "불안형",
+    "애착",
+    "우울",
+    "장애",
+    "성격",
+    "유형이야",
+    "증상",
+    "트라우마",
+    "해야 해",
+    "해 봐"
+  ],
+  "workKinds": {
+    "drama": {
+      "icon": "📺",
+      "label": "드라마"
+    },
+    "film": {
+      "icon": "🎬",
+      "label": "영화"
+    },
+    "anime": {
+      "icon": "🎞",
+      "label": "애니"
+    },
+    "manga": {
+      "icon": "📚",
+      "label": "만화"
+    },
+    "novel": {
+      "icon": "📖",
+      "label": "소설"
+    }
+  },
+  "lengths": [
+    {
+      "id": "short",
+      "max": 4,
+      "icon": "⚡",
+      "label": "짧게"
+    },
+    {
+      "id": "mid",
+      "max": 8,
+      "icon": "🎬",
+      "label": "중간"
+    },
+    {
+      "id": "long",
+      "max": 12,
+      "icon": "📜",
+      "label": "길게"
+    },
+    {
+      "id": "epic",
+      "max": 99,
+      "icon": "🎞",
+      "label": "아주 길게"
+    }
+  ]
+}

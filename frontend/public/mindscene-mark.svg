@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="마음씬">
+  <defs>
+    <linearGradient id="ms-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#211838"/><stop offset="100%" stop-color="#0c0915"/>
+    </linearGradient>
+    <radialGradient id="ms-spot" cx="50%" cy="18%" r="72%">
+      <stop offset="0%" stop-color="#ffe9b8" stop-opacity=".34"/>
+      <stop offset="100%" stop-color="#ffe9b8" stop-opacity="0"/>
+    </radialGradient>
+    <!-- 🎞 상황극(금) → 🔗 이어 붙인 씬(보라) → 🪞 내 무대(파랑) -->
+    <linearGradient id="ms-edge" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffcf7a"/><stop offset="55%" stop-color="#c9a6ff"/><stop offset="100%" stop-color="#8fbbe0"/>
+    </linearGradient>
+    <linearGradient id="ms-heart" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffd98f"/><stop offset="100%" stop-color="#ff9fb4"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="128" height="128" rx="28" fill="url(#ms-bg)"/>
+  <rect width="128" height="128" rx="28" fill="url(#ms-spot)"/>
+
+  <!-- 슬레이트 뚜껑 (씬 한 장의 머리) -->
+  <g transform="rotate(-10 24 44)">
+    <rect x="24" y="30" width="80" height="14" rx="4" fill="#17102a" stroke="url(#ms-edge)" stroke-width="4"/>
+    <path d="M40 31 l-8 12 M58 31 l-8 12 M76 31 l-8 12 M94 31 l-8 12" stroke="#f3eff8" stroke-width="5" stroke-linecap="round" opacity=".85"/>
+  </g>
+
+  <!-- 씬 한 장 -->
+  <rect x="24" y="48" width="80" height="54" rx="9" fill="#17102a" stroke="url(#ms-edge)" stroke-width="4"/>
+
+  <!-- 마음 -->
+  <path d="M64 92 C47 81 44 70 51 64 C56 60 62 62 64 67 C66 62 72 60 77 64 C84 70 81 81 64 92 Z" fill="url(#ms-heart)"/>
+
+  <!-- 무대 바닥 빛 -->
+  <ellipse cx="64" cy="112" rx="34" ry="4" fill="#ffe9b8" opacity=".14"/>
+</svg>

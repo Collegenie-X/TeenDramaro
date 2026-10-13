@@ -1,0 +1,24 @@
+"use client";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+const TABS = [
+  { href: "/", icon: "🎭", label: "무대" },
+  { href: "/drawer", icon: "📖", label: "서랍장" },
+  { href: "/examples", icon: "🎬", label: "예시" },
+  { href: "/about", icon: "✨", label: "소개" },
+];
+
+export default function TabBar() {
+  const path = usePathname();
+  return (
+    <nav className="tabbar">
+      {TABS.map((t) => (
+        <Link key={t.href} href={t.href} className={`tab ${path === t.href ? "on" : ""}`}>
+          <i>{t.icon}</i>
+          {t.label}
+        </Link>
+      ))}
+    </nav>
+  );
+}

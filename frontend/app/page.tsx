@@ -1,102 +1,107 @@
 "use client";
 
+/** 화면 1 · 🏠 홈 — §19 */
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { loadStories, sessionsToday } from "@/lib/store";
-import { DAILY_SESSION_LIMIT } from "@/lib/safety";
-import TabBar from "@/components/TabBar";
-import Logo from "@/components/Logo";
+import TabBar, { useNewInsightCount } from "@/components/TabBar";
+import { GENRES, GRADES, SPICE, TASKS } from "@/lib/meta";
+import { todaysArchetype } from "@/lib/data";
+import { loadPieces, loadProfile, loadWorks, saveProfile, useStore } from "@/lib/store";
+import type { Grade } from "@/lib/types";
 
 export default function Home() {
-  const [stories, setStories] = useState(0);
-  const [used, setUsed] = useState(0);
-
-  useEffect(() => {
-    setStories(loadStories().length);
-    setUsed(sessionsToday());
-  }, []);
-
-  const left = Math.max(0, DAILY_SESSION_LIMIT - used);
+  const [profile] = useStore(loadProfile, { grade: "m2", cls: "chick", showAll: false });
+  const [pieces] = useStore(loadPieces, []);
+  const [works] = useStore(loadWorks, []);
+  const fresh = useNewInsightCount();
+  const today = todaysArchetype();
+  const building = works.find((w) => !w.done);
 
   return (
     <>
       <header className="topbar">
         <div className="topbar-row">
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <Logo size={34} />
-            <div>
-              <div className="topbar-title">TeenDramaro · 마음무대</div>
-              <div className="topbar-sub">타로 × 사이코드라마 × AI 디렉터</div>
-            </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/mindscene-mark.svg" alt="" width={30} height={30} />
+          <div className="topbar-info">
+            <div className="topbar-title">마음씬 · MindScene</div>
+            <div className="topbar-sub">내 안의 무대, 한 씬씩.</div>
           </div>
-          <span className="turn-pill">오늘 {left}/{DAILY_SESSION_LIMIT}회</span>
+          <div className="topbar-right">
+            <label className="muted" style={{ fontSize: 11.5 }}>지금 어디쯤이야?</label>
+            <select
+              className="pill"
+              value={profile.grade}
+              onChange={(e) => {
+                const g = GRADES.find((x) => x.id === e.target.value)!;
+                saveProfile({ grade: g.id as Grade, cls: g.cls });
+              }}
+            >
+              {GRADES.map((g) => <option key={g.id} value={g.id}>{g.label}</option>)}
+            </select>
+          </div>
         </div>
       </header>
 
       <div className="scroll">
-        <div className="hero">
-          <span className="badge">TONIGHT&apos;S STAGE</span>
-          <h1>가상의 나를<br />무대에 올려볼래?</h1>
-          <p>
-            네 이야기를 직접 말하지 않아도 돼.<br />
-            카드가 대신 꺼내고, 네가 만든 캐릭터가 대신 서.<br />
-            너는 작가, 나는 연출자.
-          </p>
+        <div className="hero-stage">
+          <div className="tag">MINDSCENE</div>
+          <h1 className="h1">씬 하나씩 모아서,<br />내 안의 무대를 짓는다.</h1>
+          <p className="lead" style={{ marginTop: 6 }}>씬은 한 테이크로 쭉 가는 작은 이야기야. 모으면 네 무대가 돼.</p>
         </div>
 
-        <svg viewBox="0 0 360 150" className="scene-svg" aria-hidden>
-          <defs>
-            <linearGradient id="h" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#2a1a44" /><stop offset="100%" stopColor="#120c22" />
-            </linearGradient>
-            <radialGradient id="hs" cx="50%" cy="85%" r="60%">
-              <stop offset="0%" stopColor="#ffe9b8" stopOpacity="0.4" />
-              <stop offset="100%" stopColor="#ffe9b8" stopOpacity="0" />
-            </radialGradient>
-          </defs>
-          <rect width="360" height="150" fill="url(#h)" />
-          <rect width="360" height="150" fill="url(#hs)" />
-          <path d="M0 0 H70 Q46 75 66 150 H0 Z" fill="#4a1026" opacity="0.8" />
-          <path d="M360 0 H290 Q314 75 294 150 H360 Z" fill="#4a1026" opacity="0.8" />
-          <ellipse cx="180" cy="132" rx="96" ry="14" fill="#fff" opacity="0.08" />
-          {[110, 180, 250].map((x, i) => (
-            <g key={x} transform={`translate(${x} 96) scale(${0.62 - i * 0.02})`} opacity={i === 1 ? 1 : 0.55}>
-              <path d="M-20 62 L-15 10 Q0 2 15 10 L20 62 Z" fill="#e8d9c5" />
-              <circle cx="0" cy="-12" r="19" fill="#fdf3e6" />
-              <text x="0" y="-4" fontSize="24" textAnchor="middle">{["🎭", "🙂", "🌙"][i]}</text>
-            </g>
-          ))}
-        </svg>
-
-        <Link href="/play" className="cta cta-primary" style={{ display: "block", textAlign: "center", textDecoration: "none" }}>
-          무대 올리기 · 오늘의 이야기
-        </Link>
-
-        <Link href="/drawer" className="row-item" style={{ textDecoration: "none", color: "inherit" }}>
-          <span className="lg">📖</span>
-          <div style={{ flex: 1 }}>
-            <b>이야기 서랍장</b>
-            <small>{stories === 0 ? "지난 이야기 다시 보기 · 카드 골라 시작하기" : `지난 이야기 ${stories}편 · 카드 골라 시작하기`}</small>
+        {/* 🎞 상황극 무대 */}
+        <section className="card card-sit track-sit" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <div className="h2" style={{ margin: 0, color: "var(--sit)" }}>🎞 상황극 무대</div>
+          <Link href={`/situation/${today.id}`} className="row" style={{ background: "#241a0a", borderColor: "#4a3816" }}>
+            <span className="ic">{today.origin === "classic" ? "🏛" : "🎬"}</span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <small style={{ marginTop: 0, color: "var(--sit)" }}>오늘의 상황극</small>
+              <b>「{today.adaptTitle}」</b>
+              <small>{TASKS[today.task.kind].icon} {TASKS[today.task.kind].label} · {SPICE[today.spice].icon} · {today.minutes}분</small>
+            </div>
+            <span className="chev">›</span>
+          </Link>
+          <div className="grid3" style={{ gridTemplateColumns: "repeat(6, 1fr)" }}>
+            {GENRES.filter((g) => !g.lower).map((g) => (
+              <Link key={g.id} href={`/situation?genre=${g.id}`} className="genre-chip" aria-label={g.label}>
+                <i>{g.icon}</i>{g.label.split("·")[0]}
+              </Link>
+            ))}
           </div>
-          <span style={{ color: "var(--ink-faint)" }}>›</span>
-        </Link>
+        </section>
 
-        <Link href="/examples" className="row-item" style={{ textDecoration: "none", color: "inherit" }}>
-          <span className="lg">🎬</span>
+        {/* 🪞 내 무대 */}
+        <section className="card card-inner track-inner" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <div className="h2" style={{ margin: 0, color: "var(--inner)" }}>🪞 내 무대</div>
+          <p className="lead">「장면 하나만 세워 볼래? 진행자가 같이 있어.」</p>
+          <Link href="/inner" className="btn btn-tone btn-block">시작</Link>
+        </section>
+
+        {/* 🎬 내 씬 — 두 무대에서 나온 씬이 다 여기로. 잇기 · 보이는 것도 여기 안에 */}
+        <Link href={building ? `/scenes/join/${building.id}` : "/scenes"} className="row">
+          <span className="ic">🎬</span>
           <div style={{ flex: 1 }}>
-            <b>예시 무대</b>
-            <small>세 가지 상황 · 실제 화면처럼 재생해 볼 수 있어</small>
+            <b>
+              내 씬 {pieces.length}개
+              {fresh > 0 && <span className="pill" style={{ color: "var(--note)", marginLeft: 6 }}>🔍 보이는 것 {fresh}</span>}
+            </b>
+            <small>{building ? `잇는 중: 「${building.title}」 · 씬 ${building.slots.length}개` : "씬을 모으고, 이어 붙이고, 돌아보는 곳"}</small>
           </div>
-          <span style={{ color: "var(--ink-faint)" }}>›</span>
+          <span className="chev">›</span>
         </Link>
 
+        <div className="sep" />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12 }}>
+          <button className={`chip ${profile.showAll ? "on" : ""}`} onClick={() => saveProfile({ showAll: !profile.showAll })}>
+            🐣 기초반 · {profile.showAll ? "다 보는 중" : "다 보기"}
+          </button>
+          <Link href="/situation?genre=tragedy" className="muted" style={{ textDecoration: "none" }}>🌶🌶 진한 방 · 🔥 따로 ›</Link>
+        </div>
         <p className="note">
-          진단이나 처방은 하지 않아. 여기는 탐색하고 알아차리는 무대야.<br />
-          하기 싫은 질문은 넘겨도 되고, 한 줄만 써도 충분해.<br />
-          한 세션은 약 25분, 하루 {DAILY_SESSION_LIMIT}회까지.
+          진단이나 정답은 없어. 기록은 이 기기 안에만 남아.<br />
+          아무것도 안 해도 괜찮고, 「여기까지」도 완결이야.
         </p>
       </div>
-
       <TabBar />
     </>
   );

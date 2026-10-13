@@ -1,204 +1,244 @@
-import type { CardId } from "./cards";
-
-export type Act = "entry" | "act1" | "act2" | "act3" | "act4" | "curtain";
-
-export const ACT_META: Record<Act, { label: string; sub: string; turns: [number, number] }> = {
-  entry:   { label: "무대 입장", sub: "캐릭터를 만들고 카드를 뽑아요", turns: [1, 3] },
-  act1:    { label: "1막 · 상황 열기", sub: "무슨 일이 있었는지 꺼내봐요", turns: [4, 7] },
-  act2:    { label: "2막 · 역할 대화", sub: "그 사람과 다시 마주쳐요", turns: [8, 13] },
-  act3:    { label: "3막 · 거울", sub: "밖에서 내 이야기를 봐요", turns: [14, 16] },
-  act4:    { label: "4막 · 리플레이", sub: "같은 장면, 다른 선택", turns: [17, 19] },
-  curtain: { label: "커튼콜", sub: "이야기가 완성돼요", turns: [20, 20] },
-};
-
-/** 삽화 무대의 상태 — 턴마다 조금씩 변한다 */
-export type SceneState = {
-  /** 배경 프리셋 */
-  backdrop: "curtain" | "school" | "room" | "split" | "hallway" | "mirror" | "stage" | "sky";
-  /** 0 = 완전히 닫힘/어두움 → 4 = 환함 */
-  light: 0 | 1 | 2 | 3 | 4;
-  /** 주인공 표정 */
-  mood: "bright" | "flat" | "tear" | "think" | "warm" | "shout";
-  /** 가면이 얼마나 씌워져 있나 (1 = 완전, 0 = 벗음) */
-  mask: 0 | 0.5 | 1;
-  /** 속박 소품 세기 */
-  chain: 0 | 0.5 | 1;
-  /** 상대 인물 등장 여부 */
-  other: boolean;
-  /** 카드 부유 표시 */
-  card: "none" | "back" | "face" | "flipped";
-  /** 삽화 아래 캡션 */
-  caption?: string;
-  /** 분할 화면 두 칸의 라벨 */
-  split?: [string, string];
-  /** 역할 교체 — 상대가 주인공 자리에 선다 */
-  swapped?: boolean;
-};
-
 /**
- * 인물 카드 — character.ai의 Definition에 해당한다. 상대(보조자아)를 연기할 때
- * 매 호출에 다시 주입해서, 세션 내내 같은 사람이 무대에 서게 한다.
- * 유저 말에서 뽑아낸 것만 담는다. 디렉터가 상상해서 채우지 않는다.
+ * 마음씬 — 데이터 모양.
+ * 원천: docs/마음무대_씬무대_유저시나리오_ver2.md 부록 B-1
+ *
+ * 두 트랙(🎞 상황극 무대 · 🪞 내 무대)이 같은 모양의 ScenePiece를 만든다.
+ * 그래서 섞어서 조립하고, 같은 방식으로 고치고, 같은 방식으로 돌아본다.
  */
-export type PersonaCard = {
+
+/** 맛 — 🥛 순한 맛이 기본 무대 */
+export type Spice = "mild" | "warm" | "hot";
+/** 반 — 🐣 기초반 · 🐥 · 🦅 */
+export type Class = "chick" | "teen" | "eagle";
+export type Grade = "m1" | "m2" | "m3";
+
+export type Genre =
+  | "romance" | "family" | "mystery" | "court" | "comedy" | "youth"   // 메뉴판 위쪽 6
+  | "tragedy" | "folk";                                                // 메뉴판 아래쪽
+
+export type Origin = "classic" | "film";
+
+/** §4 연기 실습식 과제 유형 */
+export type TaskKind =
+  | "persuade" | "ask" | "refuse" | "secret" | "confess"
+  | "apologize" | "deliver" | "uncover" | "deadline" | "loop";
+
+/** §12 다이얼 4개 — 두 트랙 공통. 0~4 */
+export type Dials = { honesty: number; eyes: number; stubborn: number; play: number };
+
+/** 🎭 등장 인물 생김새 — components/CastArt.tsx가 얼굴을 그린다 */
+export type Look = {
+  age: "teen" | "adult" | "elder";
+  hair: "short" | "long" | "pony" | "bob" | "curly" | "bun";
+  hairColor?: string;
+  shirt: string;     // 옷 색
+  acc?: "glasses" | "earphone" | "cap" | "whistle" | "headband" | "cardigan" | "lanyard" | "apron";
+};
+
+/** 🎭 상대 인물의 결 — 연기 재료. 진단·성격 유형이 아니라 이 장면에서 보이는 모습 */
+export type Persona = {
+  tag: string;       // 어떤 사람인지 한 줄
+  speech: string;    // 말투
+  body: string[];    // 자꾸 나오는 몸짓 — 지문 재료
+  soft: string;      // 이런 말엔 풀린다
+  sore: string;      // 이런 말엔 서운해진다
+};
+
+export type Character = {
   name: string;
-  /** 한 줄 정의 */
-  one: string;
-  /** 이 인물 입에서 나올 문장 질감 1~3개 */
-  speech: string[];
-  /** 겉으로 원하는 것 */
-  wants: string;
-  /** 속으로 무서운 것 */
-  fears: string;
-  /** 몸에 나오는 습관 */
-  tells: string;
-  /** 이 인물이 절대 하지 않는 것 */
-  nevers: string;
+  want: string;      // 원하는 것
+  hide: string;      // 숨기는 것
+  habit?: string;    // 말버릇
+  look?: Look;
+  persona?: Persona;
+  /** 🎭 여러 명일 때 — 이 인물만의 애드립 재료. 없으면 archetype.pool */
+  pool?: string[];
 };
 
-export type Msg = {
-  id: string;
-  /** director = AI 디렉터, user = 유저, other = 보조자아(갈등 상대) */
-  role: "director" | "user" | "other" | "system";
+/** 👀 지켜보는 사람 — 판을 끌진 않지만, 반응이 장면에 끼어든다 */
+export type Watcher = {
+  name: string;
+  at?: string;          // 어디서 보나
+  look?: Look;
+  lines: string[];      // 속삭임 · 반응 · 몸짓. {w} = 내 말에서 받은 한 단어
+  seen: string;         // 🎬 작가실 — 이 사람 눈에 비친 장면
+  /** inner = 속마음이 들린다(그 사람 머릿속 소리) */
+  voice?: "aside" | "inner";
+};
+
+/** 📜 정해진 턴에 일어나는 일 — 긴 장면의 굴곡 */
+export type ArcEvent = {
+  at: number;           // 내 몇 번째 말 뒤에
+  kind: "event" | "line" | "watch";
+  by?: string;
   text: string;
-  /** 🔍 추론 블록 */
-  inference?: Inference;
-  /** 나란히 비교 블록 (T18) */
-  compare?: { first: string; replay: string; labels?: [string, string] };
-  /** 이 메시지와 함께 갱신되는 무대 */
-  scene?: SceneState;
-  /** 보조자아 이름 */
-  speakerName?: string;
-  /** 대사 앞의 지문 — 보조자아가 무대에서 하는 몸짓 한 줄 */
-  action?: string;
-  /** 유저가 이 말과 함께 고른 감정 */
-  feelings?: string[];
-  /** 이 말에서 새 장(章)이 열린다 — 채팅 흐름에 꽂히는 이야기 구분선 */
-  chapter?: { act: string; note: string };
+  dir?: string;
+  /** queue 모드 — 이 인물이 이제부터 판을 끈다 */
+  lead?: boolean;
 };
 
-export type Inference = {
-  reading: string;
-  emotions: string[];
-  pattern: string;
-  keywords: string[];
-};
-
-export type Branch = "lines" | "swap" | "future" | "newcard";
-
-/** 🎬 유저가 답할 수 있는 네 갈래 — 매 비트마다 새로 만들어진다 */
-export type Direction = {
-  /** scene = 구체적 장면 · feeling = 감정/속마음 · turn = 예상 밖 · hold = 지금은 말 안 하기 */
-  kind: "scene" | "feeling" | "turn" | "hold";
-  label: string;
-  text: string;
-  /** 이 칩을 누르면 대략 어느 깊이(L1~L7)로 가는지 — 단계도 참고용 */
-  depth?: number;
-};
-
-/**
- * 디렉터가 유저 말에서 읽어낸 것 — 단정이 아니라 항상 수정 가능한 제안.
- * 비트마다 함께 오고, 확신이 낮으면 화면에 띄우지 않는다.
- */
-export type BeatRead = {
-  /** 유저가 쓴 단어 그대로 되비추는 조각들 */
-  echo: string[];
-  /** 짐작한 감정 — 디렉터가 붙인 이름이므로 유저가 고친 것보다 약하다 */
-  feelingGuess: string[];
-  /** low면 화면에 띄우지 않는다 */
-  confidence: "low" | "mid" | "high";
-  /** 짐작을 내놓을 때 붙이는 수정 여지 한 문장 */
-  hedge: string;
-};
-
-/** 장면화 재료 — 디렉터가 지금 세우고 있는 무대의 뼈대 */
-export type BeatFrame = {
-  where: string;
-  when: string;
-  who: string[];
-  /** 조명·밝기 */
-  light: string;
-  /** 들리는 소리 */
-  sound: string;
-};
-
-/** 안전 신호 — 매 비트 함께 온다. AI보다 앞단의 safety.ts와 별개의 보조 신호다. */
-export type BeatCare = {
-  /** 힘들어 보이는 신호가 있는지 */
-  strain: boolean;
-  /** 쉬어가자고 먼저 제안할지 */
-  offerPause: boolean;
-  /** 지금 넘어가도 된다고 알려줄지 */
-  offerSkip: boolean;
-};
-
-/** 유저가 흘렸지만 아직 안 펼친 말 — 이야기가 자라는 씨앗 */
-export type Thread = {
-  id: string;
-  /** 유저가 쓴 표현 그대로 */
-  text: string;
-  /** 어느 막에서 나왔는지 */
-  from: string;
-  pulled?: boolean;
-};
-
-export type SessionState = {
-  id: string;
-  createdAt: number;
-  turn: number;
-  character: { name: string; profile: string };
-  cardId: CardId | null;
-  other: { name: string; trigger: string; persona?: PersonaCard | null };
-  /** 턴 인덱스별 유저 원문 */
-  answers: Record<number, string>;
-  /** 재도전 분기에서 받은 답 (키는 분기 스텝의 bkey) */
-  branchAnswers: Record<string, string>;
-  firstResponse: string;
-  replayResponse: string;
-  coreFeeling: string;
-  emotionFlow: string[];
-  /** 세션 내내 유저가 고른 감정 (중복 없이 순서대로) */
-  feelings: string[];
-  messages: Msg[];
-  scene: SceneState;
-  done: boolean;
-  title?: string;
-  insights?: string[];
-  tomorrow?: string;
-  branchesUsed: Branch[];
-
-  /* ── 열린 무대 엔진 (막 기반, 턴 수 무제한) ── */
-  /** 지금 막 id — 열린 엔진에서만 쓴다 */
-  movement?: string;
-  /** 지금 막에서 몇 번째 주고받는 중인지 */
-  beats?: number;
-  /** 유저가 흘렸지만 아직 안 펼친 말 */
-  threads?: Thread[];
-
-  /* ── 단계도 (lib/depth.ts) ── */
-  /** 지금 깊이 L1~L7 */
-  depth?: number;
-  /** 지금 깊이에서 몇 비트째 머물고 있는지 */
-  depthBeats?: number;
-  /** 이 세션에서 도달한 가장 깊은 단 — 커튼콜에서 쓴다 */
-  depthMax?: number;
-  /** 깊이 이동 기록 — 어디서 닫히고 어디서 열렸는지 */
-  depthLog?: { movement: string; level: number; move: string; why: string }[];
-  /** 디렉터가 세우고 있는 장면의 뼈대 (마지막 비트 기준) */
-  frame?: BeatFrame;
-};
-
-export type StoryRecord = {
-  id: string;
-  date: string;
-  cardId: CardId;
-  flippedTo: string;
+/** 📺 원작 — 유명한 드라마 · 영화 · 애니 · 만화의 그 장면 */
+export type WorkRef = {
+  kind: "drama" | "film" | "anime" | "manga" | "novel";
   title: string;
-  characterName: string;
-  emotionFlow: string[];
-  /** 세션 내내 유저가 고른 감정 (중복 없이 순서대로) */
-  feelings: string[];
-  insights: string[];
-  tomorrow: string;
-  branchesUsed: Branch[];
+  scene: string;        // 원작의 그 장면 — 우리 말로 요약 (대사 인용 없음)
 };
+
+/** 최종.md §2 형식 — 장소·인물·고정 사실·열린 것 */
+export type Scene = {
+  place: string;
+  time: string;
+  light: string;     // 빛·소리 하나
+  me: Character;
+  other: Character;
+  /** 다 : 1 — 같이 말하는 사람들 */
+  others?: Character[];
+  /** 👀 주변에서 지켜보는 사람들 */
+  watchers?: Watcher[];
+  fixed: string[];
+  open: string[];
+};
+
+export type ActingTask = {
+  kind: TaskKind;
+  want: string;
+  obstacle: string;
+  secret?: string;
+  timer?: number;    // 초
+  body?: string;     // 몸 하나
+};
+
+/** 🎞 상황극 원형 */
+export type Archetype = {
+  id: string;
+  genre: Genre;
+  origin: Origin;
+  classicTitle?: string;     // 🏛만. 🎬은 앱에 노출하는 제목 없음
+  typeName: string;          // 원형 이름 — 「발코니 고백」
+  skeleton: string;          // 상황의 뼈대
+  adaptTitle: string;        // 🥛 중학생 자리로 옮긴 제목
+  spice: Spice;
+  minutes: number;
+  /** 💬 결정적 자리까지 내 말 수 — 짧게 4 · 중간 6~8 · 길게 10~12 · 아주 길게 14~16 */
+  turns?: number;
+  /** ensemble = 여럿이 번갈아 · queue = 한 명씩 차례로 등장 (arc의 lead로 바뀐다) */
+  mode?: "ensemble" | "queue";
+  arc?: ArcEvent[];
+  work?: WorkRef;
+  scene: Scene;
+  task: ActingTask;
+  opener: { line: string; dir?: string; by?: string };
+  /** 상대 인물의 애드립 재료. {w} = 내 말에서 받은 한 단어 */
+  pool: string[];
+  /** 🟡 새 사실 — 판 중간에 드러난다 */
+  facts: string[];
+  twists: string[];          // ⚡ 돌발
+  pivot: string;             // 🌟 결정적 자리 질문
+  reveal: { original?: string; gloss: string; after: string };
+  /** 사용자가 🪞 장면을 상황극으로 옮겨 만든 카드 */
+  custom?: { fromPieceId: string };
+};
+
+export type Who = "me" | "other" | "director" | "pd" | "system" | "watch";
+
+export type TechId =
+  | "scene" | "freeze" | "double" | "soliloquy" | "reversal"
+  | "chair" | "distance" | "mirror" | "retake" | "future";
+
+export type Beat = {
+  id: string;
+  who: Who;
+  text: string;
+  dir?: string;          // 지문 (기울임)
+  by?: string;           // 🎭 여러 명일 때 — 누가 말했나 (other · watch)
+  fact?: boolean;        // 🟡 새 사실
+  tech?: TechId;         // 🪞 이 비트에서 쓴 기법
+  asOther?: boolean;     // 🔄 자리 바꾸기 중 — 내가 상대로 말함
+  direction?: boolean;   // 지문만 (내가 쓴 몸짓)
+};
+
+export type LastCut = { line: string; direction: string };
+
+export type PdLog = { at: string; what: string; before?: string; after?: string };
+
+export type Take = {
+  n: number;
+  beats: Beat[];
+  lastCut: LastCut;
+  dials: Dials;
+  branches: string[];    // 🌟 나였다면? 가지들
+  pdLog: PdLog[];
+  reason?: string;       // 다시 찍은 이유 칩
+  createdAt: string;
+};
+
+export type SceneSource =
+  | { track: "situation"; archetypeId: string; origin: Origin | "custom" }
+  | { track: "inner"; avatar: boolean; cardId?: string; fromArchetypeId?: string };
+
+export type Curtain = { title: string; lines: string[]; tomorrow: string };
+
+/** 🧩 씬 조각 — 두 트랙 공통 */
+export type ScenePiece = {
+  id: string;
+  title: string;
+  source: SceneSource;
+  scene: Scene;
+  task?: ActingTask;
+  pivot: string;
+  takes: Take[];          // 지우지 않음
+  facts: string[];        // 이 씬에서 드러난 🟡 새 사실
+  techniques: TechId[];   // 🪞 쓴 기법
+  curtain?: Curtain;
+  spice: Spice;
+  cls: Class;
+  /** 위기 신호가 있던 장면 — 다리를 놓지 않는다 */
+  sealed?: boolean;
+  /** 🧪 동작 시나리오로 만든 씬 — 시나리오 id. 「시나리오 기록 지우기」가 이것만 지운다 */
+  demo?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type Frame = "story" | "three" | "then-now-if" | "serial" | "free";
+
+export type Slot = { pieceId: string; takeN: number; seam?: string; carryFacts: string[] };
+
+export type Work = {
+  id: string;
+  title: string;
+  frame: Frame;
+  slots: Slot[];
+  caption?: string;
+  done: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+/** ✏️ 고친 기록 — 덮어쓰지 않는다 */
+export type RevisionField =
+  | "take" | "line" | "lastCut" | "dials"
+  | "order" | "slotAdd" | "slotRemove" | "slotTake" | "seam" | "caption" | "title";
+
+export type Revision = {
+  id: string;
+  at: string;
+  target: { pieceId?: string; workId?: string; field: RevisionField; label: string };
+  before: string;
+  after: string;
+  reason?: { chip?: string; note?: string };
+};
+
+export type EvidenceKind = "lastCut" | "revision" | "taskChoice" | "beatLength" | "castReuse" | "reason";
+
+/** 🔍 나 노트 한 줄 — 근거는 사용자 말·고침뿐 */
+export type Insight = {
+  key: string;            // 같은 근거면 같은 key → 「아닌데」면 다시 안 나옴
+  text: string;
+  evidence: { kind: EvidenceKind; refs: string[]; quotes: string[] }[];
+  goto?: { label: string; href: string };
+};
+
+export type InsightMark = { mark: "yes" | "no" | "unsure"; note?: string; at: string };
+
+export type Profile = { grade: Grade; cls: Class; showAll: boolean };

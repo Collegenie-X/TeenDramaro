@@ -1,0 +1,486 @@
+{
+  "id": "haeun-2weeks",
+  "title": "하은이의 2주",
+  "lead": "✨ 소개의 「예시」를 그대로 내 씬에 채워 보는 동작 시나리오야. 단계를 누르면 그날까지 쌓였을 씬이 localStorage에 들어가고, 화면마다 확인할 것이 떠.",
+  "keep": "지금 내 기록은 따로 챙겨 뒀다가, 「시나리오 끝내기」를 누르면 그대로 되돌려 놔.",
+  "_time": "createdAt · updatedAt · at 은 「-13d 16:20」 꼴 — 오늘에서 며칠 전, 몇 시. 불러올 때 진짜 날짜로 바뀐다.",
+
+  "steps": [
+    {
+      "id": "d0",
+      "day": "Day 0",
+      "name": "빈 무대",
+      "body": "아직 아무 씬도 없어. 처음 들어온 날의 내 씬.",
+      "pieces": [],
+      "works": [],
+      "revisions": [],
+      "marks": [],
+      "checks": [
+        { "id": "empty", "text": "「아직 비어 있어 … 저장 버튼은 없어」 빈 화면이 떠" },
+        { "id": "journey", "text": "여섯 걸음 줄에서 「고르기」가 지금 걸음으로 켜져 있어" },
+        { "id": "cta", "text": "빈 화면의 「🎞 상황극 하나」를 누르면 상황극 고르기로 가", "href": "/situation" },
+        { "id": "nojoin", "text": "위 오른쪽에 「🔗 이어 붙이기」 버튼이 아직 없어 (씬 2개부터)" }
+      ]
+    },
+    {
+      "id": "d1",
+      "day": "Day 1–3",
+      "name": "가볍게 놀기",
+      "body": "🎞 상황극 두 판. 졸업 D-7 도서관 서고에서 남의 편지 수수께끼를 풀고, 친구 대신 DM도 써 봤어.",
+      "pieces": [{ "id": "demo-letter", "takes": 1 }, { "id": "demo-dm", "takes": 1 }],
+      "works": [],
+      "revisions": [],
+      "marks": [],
+      "checks": [
+        { "id": "two", "text": "🎞 씬 카드 두 장 — 왼쪽 모서리가 금색이야" },
+        { "id": "filter", "text": "필터 「🎞」를 누르면 두 장만, 「🪞」는 비어 있어" },
+        { "id": "seen-wait", "text": "맨 위에 「🔍 씬이 3개 모이면 …」 안내가 떠" },
+        { "id": "anatomy", "text": "「졸업 D-7, 도서관 서고」를 열고 🧩 씬 카드를 펼치면 배경 · 출처 · 뼈대 · 결정적 자리 · 마지막 컷 다섯 칸이 보여", "href": "/scenes/demo-letter" },
+        { "id": "fact", "text": "같은 씬 아래에 🟡 새 사실 2개가 남아 있어", "href": "/scenes/demo-letter" }
+      ]
+    },
+    {
+      "id": "d2",
+      "day": "Day 4–6",
+      "name": "다리 건너기",
+      "body": "「이거 내 얘긴데」. 반납함에서 찾은 내 편지, 1년 전 말없이 이사 간 서진이. 빈 의자에 처음으로 말하고, 졸업식 날 장면도 세워 봤어.",
+      "pieces": [
+        { "id": "demo-letter", "takes": 1 },
+        { "id": "demo-dm", "takes": 1 },
+        { "id": "demo-box", "takes": 1 },
+        { "id": "demo-truck", "takes": 1 },
+        { "id": "demo-grad", "takes": 1 }
+      ],
+      "works": [],
+      "revisions": ["demo-r-truck-line"],
+      "marks": [],
+      "checks": [
+        { "id": "inner", "text": "🪞 씬 세 장 — 모서리가 파란색, 「졸업식, 운동장 끝」엔 🌶🌶 매운 맛 표시" },
+        { "id": "seen", "text": "맨 위에 「🔍 네 씬에서 보이는 것」이 생기고, 아래 탭 🎬에 새 줄 점이 떠" },
+        { "id": "evidence", "text": "보이는 것의 「근거 보기」를 펼치면 내가 쓴 말 · 몸짓만 있어 (진단 말 없음)" },
+        { "id": "chair", "text": "「1년 전, 이삿짐 트럭이 떠난 날」 → 🪑 빈 의자 말풍선 · ✏️ 고친 기록 1줄", "href": "/scenes/demo-truck" },
+        { "id": "picking", "text": "「🔗 이어 붙이기」를 누르고 씬을 고르면 S#1 · S#2 … 칸 이름이 붙어" }
+      ]
+    },
+    {
+      "id": "d3",
+      "day": "Day 7–12",
+      "name": "잇고 고치기",
+      "body": "다섯 장을 이어 「반납함 속 편지」 한 편. 졸업식 날 마지막 컷 「몰라. 안 읽었어.」를 「…읽었어. 백 번.」으로 — 진짜 내 말로.",
+      "pieces": [
+        { "id": "demo-letter", "takes": 1 },
+        { "id": "demo-dm", "takes": 1 },
+        { "id": "demo-box", "takes": 1 },
+        { "id": "demo-truck", "takes": 1 },
+        { "id": "demo-grad", "takes": 2 },
+        { "id": "demo-again", "takes": 1 }
+      ],
+      "works": ["demo-w-story"],
+      "revisions": [
+        "demo-r-truck-line", "demo-r-grad-take", "demo-r-again-cut",
+        "demo-r-w-join", "demo-r-w-seam1", "demo-r-w-seam3", "demo-r-w-caption"
+      ],
+      "marks": [],
+      "checks": [
+        { "id": "joined", "text": "필터 「🔗 이은 씬」에 「반납함 속 편지」 — 🪞 → 🎞 → 🪞 → 🪞 → 🪞, 🔒 나만 보기" },
+        { "id": "story", "text": "이은 씬을 열면 📖 나만의 이야기 · 칸 이름이 인트로 → 본론 → 갈등 하이라이트 → 결론", "href": "/scenes/join/demo-w-story" },
+        { "id": "read", "text": "「▶ 이어서 보기」에서 마지막 컷과 이음새 한 줄이 차례로 이어져", "href": "/scenes/join/demo-w-story?tab=read" },
+        { "id": "side", "text": "「졸업식, 운동장 끝」 ↔ 나란히 — T1 「몰라. 안 읽었어.」 옆에 T2 「…읽었어. 백 번.」", "href": "/scenes/demo-grad?view=side" },
+        { "id": "revs", "text": "보이는 것에 「다시 찍으니 마지막 컷이 바뀌었어」 · 「진짜 내 말로를 2번」 줄이 더해져" }
+      ]
+    },
+    {
+      "id": "d4",
+      "day": "Day 14",
+      "name": "돌아보기",
+      "body": "보이는 것: 「마지막 컷 대부분에 말 옆에 몸짓이 있어.」\n하은이의 한 줄: 「말로 못 하는 걸, 손이 먼저 하나 봐.」",
+      "pieces": [
+        { "id": "demo-letter", "takes": 1 },
+        { "id": "demo-dm", "takes": 1 },
+        { "id": "demo-box", "takes": 1 },
+        { "id": "demo-truck", "takes": 1 },
+        { "id": "demo-grad", "takes": 2 },
+        { "id": "demo-again", "takes": 1 }
+      ],
+      "works": ["demo-w-story"],
+      "revisions": [
+        "demo-r-truck-line", "demo-r-grad-take", "demo-r-again-cut",
+        "demo-r-w-join", "demo-r-w-seam1", "demo-r-w-seam3", "demo-r-w-caption"
+      ],
+      "marks": [
+        { "prefix": "lastcut-body:", "mark": "yes", "note": "말로 못 하는 걸, 손이 먼저 하나 봐.", "at": "0d 20:10" },
+        { "prefix": "take-shift:demo-grad", "mark": "yes", "at": "0d 20:12" }
+      ],
+      "checks": [
+        { "id": "mine", "text": "보이는 것 맨 위엔 아직 안 누른 줄만 떠. 「더 보기」를 누르면 몸짓 줄에 「맞아」가 켜져 있고 「✍️ 내 말 — 말로 못 하는 걸, 손이 먼저 하나 봐.」가 보여" },
+        { "id": "no", "text": "다른 줄에 「아닌데」를 누르면 「알았어, 지울게」 뒤에 그 줄이 사라져" },
+        { "id": "month", "text": "「🗓 한 달 돌아보기」를 열면 마지막 컷 여섯 줄이 날짜 순서로 나란히" },
+        { "id": "all", "text": "여섯 걸음이 다 켜지고 「「여기까지」도 완결이야」가 떠" },
+        { "id": "export", "text": "💾 내 기록 → 「⬇ JSON 내보내기」로 이 상태를 파일 하나로 받을 수 있어" }
+      ]
+    }
+  ],
+
+  "pieces": [
+    {
+      "id": "demo-letter",
+      "title": "졸업 D-7, 도서관 서고",
+      "source": { "track": "situation", "archetypeId": "loveletter", "origin": "film" },
+      "scene": {
+        "place": "학교 도서관 서고 맨 안쪽",
+        "time": "졸업 일주일 전, 오후 5시 40분",
+        "light": "창으로 노을, 바닥에 먼지가 떠다님",
+        "me": { "name": "윤서", "want": "반납함 편지를 누가 보냈는지 알아내기", "hide": "봉투 글씨를 보자마자 누군지 알아봤다" },
+        "other": { "name": "지호", "want": "문 닫기 전에 서고 정리 끝내기", "hide": "도현이 이사 가기 전날, 그 편지를 맡겼다", "habit": "그건 도서부 비밀인데" },
+        "fixed": ["편지 받는 사람은 윤서, 보낸 사람 칸은 비어 있다", "같은 책 대출 카드마다 「도현」이 적혀 있다", "도현이는 1년 전 말없이 이사 갔다"],
+        "open": ["지호가 어디까지 아는지", "윤서가 편지를 지금 뜯을지", "도현이한테 연락할지"]
+      },
+      "task": {
+        "kind": "uncover",
+        "want": "지호가 먼저 「도현이가 맡긴 거야」라고 말하게 하기",
+        "obstacle": "지호는 「도서부 비밀」이라며 자꾸 책 정리 얘기로 돌린다",
+        "secret": "너는 봉투 글씨를 이미 알아봤다 — 1년 동안 매일 옆자리에서 본 글씨",
+        "timer": 300,
+        "body": "편지 봉투 모서리를 접었다 폈다 한다"
+      },
+      "pivot": "지호가 대출 카드를 뒤집어 내민다. 뒷면에 연필로 그린 얼굴. 「…이거, 너 맞지?」 너였다면?",
+      "takes": [
+        {
+          "n": 1,
+          "beats": [
+            { "id": "a1", "who": "other", "text": "그 책, 반납 안 한 거 너지? 대출 카드 좀 봐 봐.", "dir": "서고 사다리 위에서 책을 내려 주며" },
+            { "id": "a2", "who": "me", "text": "내 거 아니야. 근데 이 이름… 다 도현이네?" },
+            { "id": "a3", "who": "other", "text": "도현이? 그건 도서부 비밀인데." },
+            { "id": "a4", "who": "system", "text": "1년 동안 매주 금요일마다 도현이는 이 책만 빌렸다", "fact": true },
+            { "id": "a5", "who": "me", "text": "비밀이면, 너는 알고 있었다는 거잖아." },
+            { "id": "a6", "who": "other", "text": "…이거, 너 맞지?", "dir": "대출 카드를 뒤집어 내민다" },
+            { "id": "a7", "who": "system", "text": "대출 카드 뒷면에 연필로 그린 얼굴이 있다 — 윤서를 닮았다", "fact": true }
+          ],
+          "lastCut": { "line": "이거, 도현이 글씨 맞지?", "direction": "대출 카드를 뒤집는다" },
+          "dials": { "honesty": 1, "eyes": 2, "stubborn": 2, "play": 1 },
+          "branches": ["질문으로: 너는 언제부터 알았어?", "농담으로: 도서부 비밀 치고 너무 허술한데?"],
+          "pdLog": [],
+          "createdAt": "-13d 16:20"
+        }
+      ],
+      "facts": ["도현이는 1년 동안 매주 금요일마다 이 책만 빌렸다", "대출 카드 뒷면에 연필로 그린 얼굴이 있다 — 윤서를 닮았다"],
+      "techniques": [],
+      "spice": "mild",
+      "cls": "chick",
+      "createdAt": "-13d 16:20",
+      "updatedAt": "-13d 16:31"
+    },
+    {
+      "id": "demo-dm",
+      "title": "대신 쓰는 DM",
+      "source": { "track": "situation", "archetypeId": "cyrano", "origin": "classic" },
+      "scene": {
+        "place": "학원 자습실 맨 뒤",
+        "time": "밤 9시 40분",
+        "light": "형광등 하나 깜빡",
+        "me": { "name": "하은", "want": "도윤을 도와주는 것", "hide": "하은도 서아랑 친해지고 싶다" },
+        "other": { "name": "도윤", "want": "서아가 답장하는 것", "hide": "사실 첫 줄을 이미 세 번 지웠다", "habit": "아 그거 완전 나잖아" },
+        "fixed": ["폰은 도윤 거", "학원 끝까지 20분", "서아는 지금 온라인"],
+        "open": ["하은이 몇 줄을 쓰나", "도윤이 그 문장을 읽고 뭘 느끼나", "보내나"]
+      },
+      "task": {
+        "kind": "secret",
+        "want": "내 마음은 안 들키고, 도윤 마음은 들키게",
+        "obstacle": "도윤은 네 문장을 그대로 보내려 한다",
+        "secret": "너는 어제 서아랑 둘이 편의점에 갔다",
+        "timer": 180,
+        "body": "펜 뚜껑을 닫았다 열었다 한다"
+      },
+      "pivot": "도윤이 폰을 내리며 「…야. 너도 봤던 거야? 그 웃는 거.」 너였다면?",
+      "takes": [
+        {
+          "n": 1,
+          "beats": [
+            { "id": "b1", "who": "other", "text": "첫 줄만. 첫 줄이 제일 어려워.", "dir": "폰을 내밀며" },
+            { "id": "b2", "who": "me", "text": "짧으면 장난 같잖아. 좀 길게 써야 진심 같지." },
+            { "id": "b3", "who": "other", "text": "진심… 아 그거 완전 나잖아. 너 왜 이렇게 잘 알아?" },
+            { "id": "b4", "who": "me", "text": "그냥, 책에서 봤어." },
+            { "id": "b5", "who": "system", "text": "도윤은 네가 쓴 문장을 소리 내서 읽는 버릇이 있다", "fact": true },
+            { "id": "b6", "who": "other", "text": "…야. 너도 봤던 거야? 그 웃는 거." }
+          ],
+          "lastCut": { "line": "첫 줄은 네 말로 써. 내 말 말고.", "direction": "" },
+          "dials": { "honesty": 1, "eyes": 1, "stubborn": 2, "play": 2 },
+          "branches": ["침묵으로: (펜 뚜껑을 닫는다)"],
+          "pdLog": [],
+          "createdAt": "-12d 21:40"
+        }
+      ],
+      "facts": ["도윤은 네가 쓴 문장을 소리 내서 읽는 버릇이 있다"],
+      "techniques": [],
+      "spice": "mild",
+      "cls": "chick",
+      "createdAt": "-12d 21:40",
+      "updatedAt": "-12d 21:47"
+    },
+    {
+      "id": "demo-box",
+      "title": "반납함 속 편지",
+      "source": { "track": "inner", "avatar": false, "fromArchetypeId": "loveletter" },
+      "scene": {
+        "place": "도서관 반납함 앞",
+        "time": "졸업 일주일 전, 해 질 녘",
+        "light": "반납함 철문이 덜컹 닫히는 소리",
+        "me": { "name": "하은", "want": "", "hide": "" },
+        "other": { "name": "서진", "want": "", "hide": "" },
+        "fixed": ["반납함 책 사이에서 「To. 하은」 편지가 떨어졌다", "보낸 사람 칸은 비어 있다", "1년 동안 매일 옆자리에서 본 글씨다"],
+        "open": ["편지를 지금 뜯을지", "누구한테 말할지", "서진이한테 연락할지"]
+      },
+      "pivot": "봉투를 뒤집다 손이 멈춰. 서진이 글씨야 — 나였다면?",
+      "takes": [
+        {
+          "n": 1,
+          "beats": [
+            { "id": "c1", "who": "director", "text": "제일 또렷한 장면 하나만. 어디야?" },
+            { "id": "c2", "who": "me", "text": "도서관 반납함. 책을 넣는데 편지가 떨어졌어." },
+            { "id": "c3", "who": "me", "text": "이 글씨, 알아.", "tech": "soliloquy" },
+            { "id": "c4", "who": "director", "text": "자리 바꿔 볼까? 이번엔 편지를 넣은 서진이 자리에 서 봐." },
+            { "id": "c5", "who": "me", "text": "직접 주면 네가 대답해야 하잖아. 대답 안 해도 되게, 반납함에 넣은 거야. 그럼 언젠가 네가 찾을 거고, 그땐 내가 없으니까.", "asOther": true, "tech": "reversal" },
+            { "id": "c6", "who": "director", "text": "제자리로 돌아와. 지금 손에 뭐가 있어?" },
+            { "id": "c7", "who": "me", "text": "편지. 아직 안 뜯었어." }
+          ],
+          "lastCut": { "line": "…설마.", "direction": "편지를 가방 깊숙이 넣는다" },
+          "dials": { "honesty": 1, "eyes": 1, "stubborn": 1, "play": 0 },
+          "branches": [],
+          "pdLog": [],
+          "createdAt": "-10d 17:05"
+        }
+      ],
+      "facts": [],
+      "techniques": ["scene", "soliloquy", "reversal"],
+      "curtain": {
+        "title": "반납함 속 편지",
+        "lines": ["글씨를 보자마자 알았어.", "서진이 자리에 서 보니까, 직접 못 준 게 이해가 됐어.", "아직 안 뜯었어."],
+        "tomorrow": "뜯을지는 내일 정할래."
+      },
+      "spice": "mild",
+      "cls": "chick",
+      "createdAt": "-10d 17:05",
+      "updatedAt": "-10d 17:24"
+    },
+    {
+      "id": "demo-truck",
+      "title": "1년 전, 이삿짐 트럭이 떠난 날",
+      "source": { "track": "inner", "avatar": false },
+      "scene": {
+        "place": "우리 집 거실 창가",
+        "time": "1년 전 토요일 아침 8시",
+        "light": "창밖으로 트럭 시동 거는 소리",
+        "me": { "name": "하은", "want": "", "hide": "" },
+        "other": { "name": "서진", "want": "", "hide": "" },
+        "fixed": ["서진이네 이삿짐 트럭이 아파트 앞에 서 있었다", "나는 창문 앞에서 보고만 있었다", "서진이는 아무 말도 안 하고 갔다"],
+        "open": ["그때 내려갔다면", "서진이가 위를 봤는지", "지금 하고 싶은 말"]
+      },
+      "pivot": "빈 의자에 서진이가 앉아 있다고 해 봐. 지금 한 마디 — 나였다면?",
+      "takes": [
+        {
+          "n": 1,
+          "beats": [
+            { "id": "d1", "who": "director", "text": "그날로 가 볼게. 창문 앞이야. 뭐가 보여?" },
+            { "id": "d2", "who": "me", "text": "트럭. 서진이가 박스 들고 왔다 갔다 해." },
+            { "id": "d3", "who": "director", "text": "✋ 멈춤. 지금 몸이 어때?", "tech": "freeze" },
+            { "id": "d4", "who": "me", "text": "커튼 잡고 있어. 손에 힘이 들어가." },
+            { "id": "d5", "who": "director", "text": "빈 의자 하나 둘게. 서진이가 앉아 있어. 하고 싶은 말, 지금 해도 돼." },
+            { "id": "d6", "who": "me", "text": "왜 아무 말도 안 하고 갔어? 나 그날 창문 앞에 있었어.", "tech": "chair" }
+          ],
+          "lastCut": { "line": "왜 아무 말도 안 하고 갔어?", "direction": "창문을 닫는다" },
+          "dials": { "honesty": 2, "eyes": 1, "stubborn": 1, "play": 0 },
+          "branches": [],
+          "pdLog": [],
+          "createdAt": "-9d 22:10"
+        }
+      ],
+      "facts": [],
+      "techniques": ["scene", "freeze", "chair"],
+      "curtain": {
+        "title": "트럭이 떠난 날",
+        "lines": ["그날 나도 아무 말 안 했어.", "처음으로 소리 내서 물어봤어.", "창문 닫는 소리가 아직 기억나."],
+        "tomorrow": "졸업식 날 장면도 세워 볼래."
+      },
+      "spice": "warm",
+      "cls": "chick",
+      "createdAt": "-9d 22:10",
+      "updatedAt": "-8d 09:15"
+    },
+    {
+      "id": "demo-grad",
+      "title": "졸업식, 운동장 끝",
+      "source": { "track": "inner", "avatar": false },
+      "scene": {
+        "place": "운동장 끝 벤치",
+        "time": "졸업식 오후 2:10",
+        "light": "꽃다발 비닐 소리, 멀리서 「하나, 둘, 셋」",
+        "me": { "name": "하은", "want": "", "hide": "" },
+        "other": { "name": "서진", "want": "", "hide": "" },
+        "fixed": ["서진이는 1년 전 말없이 이사 갔어", "반납함 편지 글씨가 서진이 거야", "서진이가 「그 편지, 읽었어?」라고 물어"],
+        "open": ["모른 척할까", "왜 말없이 갔냐고 물을까", "편지를 꺼내 보일까"]
+      },
+      "pivot": "「그 편지, 읽었어?」 — 나였다면?",
+      "takes": [
+        {
+          "n": 1,
+          "beats": [
+            { "id": "e1", "who": "director", "text": "졸업식 끝나고, 운동장 끝이야. 누가 와?" },
+            { "id": "e2", "who": "me", "text": "서진이. 교복이 아니라 사복이야." },
+            { "id": "e3", "who": "other", "text": "그 편지, 읽었어?" },
+            { "id": "e4", "who": "me", "text": "무슨 편지?" },
+            { "id": "e5", "who": "other", "text": "…반납함에 넣었던 거." }
+          ],
+          "lastCut": { "line": "몰라. 안 읽었어.", "direction": "뒤돌아선다" },
+          "dials": { "honesty": 0, "eyes": 0, "stubborn": 3, "play": 0 },
+          "branches": ["농담으로: 편지? 요즘 누가 편지를 써~", "질문으로: 너는 왜 그걸 반납함에 넣었어?", "침묵으로: (고개만 끄덕인다)"],
+          "pdLog": [],
+          "createdAt": "-8d 21:30"
+        },
+        {
+          "n": 2,
+          "beats": [
+            { "id": "e1", "who": "director", "text": "같은 자리, 다시 한 테이크. 이번엔 네가 정해." },
+            { "id": "e2", "who": "me", "text": "서진이가 와. 이번엔 내가 먼저 봤어." },
+            { "id": "e3", "who": "other", "text": "그 편지, 읽었어?" },
+            { "id": "e4", "who": "me", "text": "응." },
+            { "id": "e5", "who": "other", "text": "…다?" }
+          ],
+          "lastCut": { "line": "…읽었어. 백 번.", "direction": "주머니 속 편지를 꺼낸다" },
+          "dials": { "honesty": 3, "eyes": 3, "stubborn": 1, "play": 0 },
+          "branches": [],
+          "pdLog": [],
+          "reason": "진짜 내 말로",
+          "createdAt": "-4d 20:05"
+        }
+      ],
+      "facts": [],
+      "techniques": ["scene", "retake"],
+      "curtain": {
+        "title": "운동장 끝",
+        "lines": ["처음엔 모른 척했어.", "두 번째엔 「백 번」이라고 했어.", "주머니 속 편지를 꺼내는 손이 떨렸어."],
+        "tomorrow": "다시 도서관에 가 볼래."
+      },
+      "spice": "hot",
+      "cls": "chick",
+      "createdAt": "-8d 21:30",
+      "updatedAt": "-4d 20:12"
+    },
+    {
+      "id": "demo-again",
+      "title": "다시, 반납함 앞",
+      "source": { "track": "inner", "avatar": false },
+      "scene": {
+        "place": "도서관 반납함 앞",
+        "time": "졸업식 다음 날 오후",
+        "light": "텅 빈 열람실, 시계 초침 소리",
+        "me": { "name": "하은", "want": "", "hide": "" },
+        "other": { "name": "서진", "want": "", "hide": "" },
+        "fixed": ["서진이가 오늘 다시 떠난다", "반납함은 오늘 마지막으로 열린다", "내 손엔 답장이 있다"],
+        "open": ["답장을 반납함에 넣을지", "직접 줄지", "뭐라고 말할지"]
+      },
+      "pivot": "서진이가 반납함 앞에 서 있어. 이번엔 내가 먼저 — 나였다면?",
+      "takes": [
+        {
+          "n": 1,
+          "beats": [
+            { "id": "f1", "who": "director", "text": "마지막 장면이야. 오늘은 뭐가 달라?" },
+            { "id": "f2", "who": "me", "text": "이번엔 반납함에 안 넣을 거야. 직접 줄 거야." },
+            { "id": "f3", "who": "other", "text": "…왔네." },
+            { "id": "f4", "who": "me", "text": "어제 백 번 읽었다는 거, 진짜야." }
+          ],
+          "lastCut": { "line": "잘 가. 이번엔 내가 먼저 말할게.", "direction": "꽃다발을 내민다" },
+          "dials": { "honesty": 3, "eyes": 3, "stubborn": 1, "play": 1 },
+          "branches": [],
+          "pdLog": [],
+          "createdAt": "-5d 16:40"
+        }
+      ],
+      "facts": [],
+      "techniques": ["scene", "future"],
+      "curtain": {
+        "title": "다시, 반납함 앞",
+        "lines": ["이번엔 직접 줬어.", "「잘 가」가 끝이 아니라 시작 같았어.", "편지는 내가 가지고 있기로 했어."],
+        "tomorrow": "다섯 장을 이어서 한 편으로 만들래."
+      },
+      "spice": "mild",
+      "cls": "chick",
+      "createdAt": "-5d 16:40",
+      "updatedAt": "-3d 19:20"
+    }
+  ],
+
+  "works": [
+    {
+      "id": "demo-w-story",
+      "title": "반납함 속 편지",
+      "frame": "story",
+      "slots": [
+        { "pieceId": "demo-box", "takeN": 1, "seam": "그날 밤, 남의 편지 이야기로 상황극을 했다. 글씨가 자꾸 겹쳐 보였다.", "carryFacts": [] },
+        { "pieceId": "demo-letter", "takeN": 1, "carryFacts": ["대출 카드 뒷면에 연필로 그린 얼굴이 있다 — 윤서를 닮았다"] },
+        { "pieceId": "demo-truck", "takeN": 1, "seam": "그날, 트럭은 생각보다 빨리 떠났다. 그리고 1년 뒤, 졸업식.", "carryFacts": [] },
+        { "pieceId": "demo-grad", "takeN": 2, "carryFacts": [] },
+        { "pieceId": "demo-again", "takeN": 1, "carryFacts": [] }
+      ],
+      "caption": "말로 못 하는 걸, 손이 먼저 했다.",
+      "done": true,
+      "createdAt": "-5d 21:00",
+      "updatedAt": "-2d 22:15"
+    }
+  ],
+
+  "revisions": [
+    {
+      "id": "demo-r-truck-line",
+      "at": "-8d 09:15",
+      "target": { "pieceId": "demo-truck", "field": "line", "label": "1년 전, 이삿짐 트럭이 떠난 날 · 테이크 1 · 대사" },
+      "before": "왜 갔어.",
+      "after": "왜 아무 말도 안 하고 갔어? 나 그날 창문 앞에 있었어.",
+      "reason": { "chip": "이 말이 아니었어" }
+    },
+    {
+      "id": "demo-r-grad-take",
+      "at": "-4d 20:12",
+      "target": { "pieceId": "demo-grad", "field": "take", "label": "졸업식, 운동장 끝 · 테이크 2" },
+      "before": "몰라. 안 읽었어.",
+      "after": "…읽었어. 백 번.",
+      "reason": { "chip": "진짜 내 말로" }
+    },
+    {
+      "id": "demo-r-again-cut",
+      "at": "-3d 19:20",
+      "target": { "pieceId": "demo-again", "field": "lastCut", "label": "다시, 반납함 앞 · 테이크 1 · 마지막 컷" },
+      "before": "안녕.",
+      "after": "잘 가. 이번엔 내가 먼저 말할게.",
+      "reason": { "chip": "진짜 내 말로" }
+    },
+    {
+      "id": "demo-r-w-join",
+      "at": "-5d 21:00",
+      "target": { "workId": "demo-w-story", "field": "slotAdd", "label": "씬 5개 이어 붙이기" },
+      "before": "",
+      "after": "반납함 속 편지 → 졸업 D-7, 도서관 서고 → 1년 전, 이삿짐 트럭이 떠난 날 → 졸업식, 운동장 끝 → 다시, 반납함 앞"
+    },
+    {
+      "id": "demo-r-w-seam1",
+      "at": "-5d 21:08",
+      "target": { "workId": "demo-w-story", "field": "seam", "label": "S#1→S#2 이음새" },
+      "before": "",
+      "after": "그날 밤, 남의 편지 이야기로 상황극을 했다. 글씨가 자꾸 겹쳐 보였다."
+    },
+    {
+      "id": "demo-r-w-seam3",
+      "at": "-4d 20:20",
+      "target": { "workId": "demo-w-story", "field": "seam", "label": "S#3→S#4 이음새" },
+      "before": "그리고 1년 뒤.",
+      "after": "그날, 트럭은 생각보다 빨리 떠났다. 그리고 1년 뒤, 졸업식."
+    },
+    {
+      "id": "demo-r-w-caption",
+      "at": "-2d 22:15",
+      "target": { "workId": "demo-w-story", "field": "caption", "label": "자막 한 줄" },
+      "before": "",
+      "after": "말로 못 하는 걸, 손이 먼저 했다.",
+      "reason": { "chip": "이야기가 달라졌어" }
+    }
+  ]
+}

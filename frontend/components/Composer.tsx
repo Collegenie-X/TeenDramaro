@@ -1,149 +1,115 @@
 "use client";
 
+/**
+ * 입력창 — 모든 입력에 🎙 (§21 글자 대신 말로도).
+ * 30초 비면 칩 3개(패스 · 지문만 · 컷) — 「아무것도 안 해도 괜찮아」가 보이게.
+ */
 import { useEffect, useRef, useState } from "react";
-import EmotionPalette from "./EmotionPalette";
-import { useDictation } from "@/lib/voice";
+import { IDLE_CHIPS } from "@/lib/meta";
 
-export type Choice = { label: string; text: string };
+type SR = {
+  lang: string; interimResults: boolean; continuous: boolean;
+  onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
+  onend: (() => void) | null;
+  start: () => void; stop: () => void;
+};
 
 export default function Composer({
-  placeholder, hints, onSubmit, disabled, feelings = true, choices = [], choiceReact = "",
-  autofill,
+  placeholder = "말하거나 써도 돼…",
+  onSend,
+  onIdle,
+  allowDirection,
+  disabled,
+  extra,
 }: {
-  placeholder: string;
-  hints: string[];
-  onSubmit: (text: string, feelings: string[]) => void;
+  placeholder?: string;
+  onSend: (text: string, opts: { direction: boolean }) => void;
+  /** 30초 칩 — 없으면 칩을 안 띄운다 */
+  onIdle?: (chip: "패스" | "지문만" | "컷") => void;
+  allowDirection?: boolean;
   disabled?: boolean;
-  /** 감정 팔레트를 띄울지 (이름 짓기 같은 턴에서는 끈다) */
-  feelings?: boolean;
-  /** 🎬 AI가 만든 방향 선택지 — 누르면 입력창에 채워지고, 고쳐서 보낼 수 있다 */
-  choices?: Choice[];
-  /** 선택지 위에 띄울 디렉터의 짧은 반응 */
-  choiceReact?: string;
-  /** 데모 모드에서 밖에서 입력창을 채운다 — {text, chip}이 바뀔 때마다 반영 */
-  autofill?: { text: string; chip?: string; feels?: string[]; nonce: number };
+  extra?: React.ReactNode;
 }) {
   const [text, setText] = useState("");
-  const [open, setOpen] = useState(false);
-  /** 기획서 §8.2 — 힌트는 한 번에 다 보여주지 않고 1~2개씩 점진 공개 */
-  const [shown, setShown] = useState(1);
-  const [picked, setPicked] = useState<string[]>([]);
-  const [pickedChip, setPickedChip] = useState<string | null>(null);
-  const ref = useRef<HTMLTextAreaElement>(null);
-
-  /* ── 🎙 말로 입력 — Whisper, 안 되면 브라우저 내장 ── */
-  const dict = useDictation((t) => {
-    setText(t);
-    requestAnimationFrame(grow);
-  });
-  const toggleMic = () => {
-    if (dict.state === "recording") dict.stop();
-    else if (dict.state === "idle") void dict.start(text);
-  };
-
-  const pickChip = (c: Choice) => {
-    setPickedChip(c.label);
-    setText(c.text);
-    requestAnimationFrame(() => {
-      grow();
-      ref.current?.focus();
-    });
-  };
+  const [direction, setDirection] = useState(false);
+  const [idle, setIdle] = useState(false);
+  const [listening, setListening] = useState(false);
+  const [canVoice, setCanVoice] = useState(false);
+  const recRef = useRef<SR | null>(null);
+  const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (!autofill) return;
-    setText(autofill.text);
-    if (autofill.chip) setPickedChip(autofill.chip);
-    if (autofill.feels) setPicked(autofill.feels);
-    requestAnimationFrame(grow);
-    // nonce만 보면 된다 — 같은 문장을 다시 채우는 경우도 있다.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autofill?.nonce]);
+    const w = window as unknown as { SpeechRecognition?: new () => SR; webkitSpeechRecognition?: new () => SR };
+    setCanVoice(!!(w.SpeechRecognition || w.webkitSpeechRecognition));
+  }, []);
 
-  const toggle = (f: string) =>
-    setPicked((p) => (p.includes(f) ? p.filter((x) => x !== f) : [...p, f]));
-
-  const grow = () => {
-    const el = ref.current;
-    if (!el) return;
-    el.style.height = "auto";
-    el.style.height = Math.min(el.scrollHeight, 120) + "px";
-  };
+  // 30초 동안 아무것도 안 하면 칩
+  useEffect(() => {
+    if (!onIdle || disabled) return;
+    if (idleTimer.current) clearTimeout(idleTimer.current);
+    setIdle(false);
+    idleTimer.current = setTimeout(() => setIdle(true), 30_000);
+    return () => { if (idleTimer.current) clearTimeout(idleTimer.current); };
+  }, [text, onIdle, disabled]);
 
   const send = () => {
-    dict.stop();
     const t = text.trim();
     if (!t || disabled) return;
-    onSubmit(t, picked);
+    onSend(t, { direction });
     setText("");
-    setPicked([]);
-    setPickedChip(null);
-    if (ref.current) ref.current.style.height = "auto";
+    setDirection(false);
+  };
+
+  const toggleVoice = () => {
+    if (listening) { recRef.current?.stop(); return; }
+    const w = window as unknown as { SpeechRecognition?: new () => SR; webkitSpeechRecognition?: new () => SR };
+    const C = w.SpeechRecognition || w.webkitSpeechRecognition;
+    if (!C) return;
+    const rec = new C();
+    rec.lang = "ko-KR";
+    rec.interimResults = true;
+    rec.continuous = false;
+    const base = text ? text + " " : "";
+    rec.onresult = (e) => {
+      const said = Array.from(e.results).map((r) => r[0].transcript).join("");
+      setText(base + said);
+    };
+    rec.onend = () => setListening(false);
+    recRef.current = rec;
+    setListening(true);
+    rec.start();
   };
 
   return (
     <div className="composer">
-      {open && (
-        <div className="hints">
-          <div className="hints-h">💡 대신 물어볼게 — 답은 네가 골라</div>
-          <ul style={{ margin: 0, padding: 0 }}>
-            {hints.slice(0, shown).map((h, i) => <li key={i}>{h}</li>)}
-          </ul>
-          {shown < hints.length ? (
-            <button className="more" onClick={() => setShown((n) => n + 1)}>힌트 하나 더 보기 ›</button>
-          ) : (
-            <div className="note" style={{ marginTop: 4 }}>이것도 아니면 네 말로 해봐. 문장 안 되어도 알아들어.</div>
-          )}
+      {idle && onIdle && (
+        <div className="chips" style={{ alignItems: "center" }}>
+          <span className="muted" style={{ fontSize: 11.5 }}>아무것도 안 해도 괜찮아 ·</span>
+          {IDLE_CHIPS.map((c) => (
+            <button key={c} className="chip" onClick={() => { setIdle(false); onIdle(c as "패스" | "지문만" | "컷"); if (c === "지문만") setDirection(true); }}>{c}</button>
+          ))}
         </div>
       )}
-
-      {choices.length > 0 && (
-        <div className="choice-box">
-          {choiceReact && <div className="choice-react">{choiceReact}</div>}
-          <div className="choice-h">🎬 이런 방향도 있어 — 눌러서 고쳐 써도 되고, 네 말로 써도 돼</div>
-          <div className="choice-row">
-            {choices.map((c) => (
-              <button
-                key={c.label}
-                className={`choice-chip${pickedChip === c.label ? " choice-chip-on" : ""}`}
-                onClick={() => pickChip(c)}
-              >
-                {c.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {!open && hints.length > 0 && (
-        <button className="hint-btn" onClick={() => setOpen(true)} style={{ marginBottom: 9 }}>
-          💡 막히면 눌러
-        </button>
-      )}
-
+      {extra}
       <div className="input-row">
-        {dict.supported && (
-          <button
-            className={`mic mic-${dict.state}`}
-            onClick={toggleMic}
-            disabled={dict.state === "working"}
-            aria-label={dict.state === "recording" ? "말하기 멈추기" : "말로 입력하기"}
-            title="글로 쓰기 힘들면 말로 해도 돼"
-          >
-            {dict.state === "recording" ? "⏹" : dict.state === "working" ? "…" : "🎙"}
-          </button>
-        )}
         <textarea
-          ref={ref} className="ta" rows={1} value={text} placeholder={placeholder}
-          onChange={(e) => { setText(e.target.value); grow(); }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); send(); }
-          }}
+          className="ta"
+          rows={1}
+          value={text}
+          disabled={disabled}
+          placeholder={direction ? "몸짓만 써 줘 — 예: 가방끈을 꽉 쥔다" : placeholder}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); send(); } }}
         />
-        <button className="send" onClick={send} disabled={!text.trim() || disabled} aria-label="보내기">↑</button>
+        {allowDirection && (
+          <button className={`icon-btn ${direction ? "on" : ""}`} style={direction ? { animation: "none", borderColor: "var(--tone)", background: "var(--tone-deep)" } : undefined}
+            onClick={() => setDirection(!direction)} aria-label="지문만" title="지문만">🖐</button>
+        )}
+        {canVoice && (
+          <button className={`icon-btn ${listening ? "on" : ""}`} onClick={toggleVoice} aria-label="말로 입력">🎙</button>
+        )}
+        <button className="icon-btn send" onClick={send} disabled={!text.trim() || disabled} aria-label="보내기">↑</button>
       </div>
-
-      {feelings && <EmotionPalette picked={picked} onToggle={toggle} />}
     </div>
   );
 }
